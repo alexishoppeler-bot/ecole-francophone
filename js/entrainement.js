@@ -1092,66 +1092,79 @@
     var score = 0;
     var history = [];
 
-    function renderDial() {
-      var histHtml = history.map(function(h) {
+    var totalUserSteps = steps.filter(function(s){ return s.from === 'user'; }).length;
+
+    function buildHist() {
+      return history.map(function(h) {
         return '<div class="game-dial-bubble game-dial-bubble--' + h.from + '">'
           + '<span class="game-dial-who">' + (h.from==='bot'?'🤖':'👤') + '</span>'
           + '<span class="game-dial-text">' + esc(h.text) + '</span>'
-          + (h.fb?'<span class="game-dial-fb game-dial-fb--'+(h.ok?'ok':'err')+'">'+esc(h.fb)+'</span>':'')
+          + (h.fb ? '<span class="game-dial-fb game-dial-fb--' + (h.ok?'ok':'err') + '">' + esc(h.fb) + '</span>' : '')
           + '</div>';
       }).join('');
+    }
+
+    function renderDial() {
+      // Auto-process consecutive bot messages
+      while (stepIdx < steps.length && steps[stepIdx].from === 'bot') {
+        history.push({ from: 'bot', text: steps[stepIdx].text });
+        stepIdx++;
+      }
 
       if (stepIdx >= steps.length) {
-        var pct = Math.round(score / steps.filter(function(s){return s.from==='user';}).length * 100);
+        var pct = Math.round(score / totalUserSteps * 100);
         wrap.innerHTML = '<div class="game-dial-container">'
-          + '<div class="game-dial-history">' + histHtml + '</div>'
+          + '<div class="game-dial-history">' + buildHist() + '</div>'
           + '<div class="game-score-screen" style="margin-top:16px">'
-          + '<div class="game-score-emoji">'+(pct===100?'🏆':pct>=70?'⭐':'👍')+'</div>'
-          + '<div class="game-score-num">' + score + '<span>/'+(steps.filter(function(s){return s.from==='user';}).length)+'</span></div>'
-          + '<div class="game-score-label">'+(pct===100?'Dialogue parfait !':pct>=70?'Très bien !':'Continuez à pratiquer !')+'</div>'
+          + '<div class="game-score-emoji">' + (pct===100?'🏆':pct>=70?'⭐':'👍') + '</div>'
+          + '<div class="game-score-num">' + score + '<span>/' + totalUserSteps + '</span></div>'
+          + '<div class="game-score-label">' + (pct===100?'Dialogue parfait !':pct>=70?'Très bien !':'Continuez à pratiquer !') + '</div>'
           + '<div class="game-score-actions">'
           + '<button class="game-btn game-btn--secondary" id="gReplay">🔄 Recommencer</button>'
-          + (entry?'<a class="game-btn game-btn--primary" href="entrainement-a1.html?unite='+esc(badge)+'">← Jeux</a>':'')
+          + (entry ? '<a class="game-btn game-btn--primary" href="entrainement-a1.html?unite=' + esc(badge) + '">← Jeux</a>' : '')
           + '</div></div></div>';
-        var rb=wrap.querySelector('#gReplay');
-        if(rb) rb.addEventListener('click',function(){ stepIdx=0; score=0; history=[]; renderDial(); });
+        var rb = wrap.querySelector('#gReplay');
+        if (rb) rb.addEventListener('click', function(){ stepIdx=0; score=0; history=[]; renderDial(); });
         return;
       }
 
-      var step = steps[stepIdx];
-      if (step.from === 'bot') {
-        history.push({from:'bot', text:step.text});
-        stepIdx++;
-        var optHtml = stepIdx < steps.length && steps[stepIdx].from==='user'
-          ? '<div class="game-dial-options">' + steps[stepIdx].options.map(function(opt,oi){
-              return '<button class="game-dial-opt" data-oi="'+oi+'" data-ok="'+(opt.ok?'1':'0')+'" data-fb="'+esc(opt.fb)+'">'+esc(opt.text)+'</button>';
-            }).join('') + '</div>'
-          : '<button class="game-btn game-btn--primary" id="dialNext">Continuer →</button>';
+      // User step — show options with retry on wrong answer
+      var userStep = steps[stepIdx];
+      var tried = [];
+
+      function renderOptions(errFb) {
+        var optHtml = '<div class="game-dial-options">'
+          + userStep.options.map(function(opt, oi) {
+              var wasTried = tried.indexOf(oi) >= 0;
+              return '<button class="game-dial-opt' + (wasTried ? ' game-dial-opt--err' : '') + '"'
+                + (wasTried ? ' disabled' : '') + ' data-oi="' + oi + '">' + esc(opt.text) + '</button>';
+            }).join('')
+          + '</div>'
+          + (errFb ? '<p class="game-dial-inline-fb">' + esc(errFb) + '</p>' : '');
 
         wrap.innerHTML = '<div class="game-dial-container">'
           + '<div class="game-dial-scenario"><strong>🎭 ' + esc(scenario.title) + '</strong> — ' + esc(scenario.context) + '</div>'
-          + '<div class="game-dial-history">' + histHtml + '</div>'
+          + '<div class="game-dial-history">' + buildHist() + '</div>'
           + optHtml + '</div>';
 
-        wrap.querySelectorAll('.game-dial-opt').forEach(function(btn){
-          btn.addEventListener('click', function(){
-            var oi = parseInt(btn.dataset.oi,10);
-            var ok = btn.dataset.ok==='1';
-            var fb = btn.dataset.fb;
-            if(ok) score++;
-            history.push({from:'user', text:steps[stepIdx].options[oi].text, ok:ok, fb:fb});
-            stepIdx++;
-            wrap.querySelectorAll('.game-dial-opt').forEach(function(b){ b.disabled=true; });
-            setTimeout(renderDial, 1000);
+        wrap.querySelectorAll('.game-dial-opt:not([disabled])').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            var oi = parseInt(btn.dataset.oi, 10);
+            var opt = userStep.options[oi];
+            if (opt.ok) {
+              if (tried.length === 0) score++; // only full point if first try
+              history.push({ from: 'user', text: opt.text, ok: true, fb: opt.fb });
+              stepIdx++;
+              setTimeout(renderDial, 1000);
+            } else {
+              tried.push(oi);
+              renderOptions(opt.fb);
+            }
           });
         });
-        var nextBtn=wrap.querySelector('#dialNext');
-        if(nextBtn) nextBtn.addEventListener('click', renderDial);
-      } else {
-        // user step without bot preceding — shouldn't happen with good data
-        stepIdx++;
-        renderDial();
       }
+
+      renderOptions(null);
     }
     // Initial render with scenario info
     wrap.innerHTML = '<div class="game-dial-container">'
