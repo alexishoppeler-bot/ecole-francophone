@@ -492,6 +492,72 @@ window.EXERCISE_CONTENT_PARTS["a1"] = {
               ]
             }
           ]
+        },
+        {
+          "title": "À la mairie",
+          "context": "Vous vous inscrivez dans une commune de Suisse romande.",
+          "steps": [
+            { "from": "bot", "text": "Bonjour ! Vous êtes de quelle nationalité ?" },
+            {
+              "from": "user",
+              "options": [
+                { "text": "Je suis marocain(e).", "ok": true, "fb": "Parfait ! Nationalité = Je suis + adjectif (marocain, suisse, français…)." },
+                { "text": "Je suis du Maroc.", "ok": false, "fb": "Pour la nationalité, on dit 'Je suis marocain(e)', pas 'Je suis du Maroc'." },
+                { "text": "Moi Maroc.", "ok": false, "fb": "Construisez une phrase complète : sujet + verbe + adjectif." }
+              ]
+            },
+            { "from": "bot", "text": "Quelle langue parlez-vous ?" },
+            {
+              "from": "user",
+              "options": [
+                { "text": "Je parle arabe et un peu français.", "ok": true, "fb": "Très bien ! 'Je parle + langue' est la bonne structure." },
+                { "text": "Moi parler arabe.", "ok": false, "fb": "Conjuguez le verbe : 'Je parle arabe'." },
+                { "text": "Je parle l'arabe et peu le français.", "ok": false, "fb": "On dit 'un peu de français', pas 'peu le français'." }
+              ]
+            },
+            { "from": "bot", "text": "Vous habitez à quelle adresse ?" },
+            {
+              "from": "user",
+              "options": [
+                { "text": "J'habite à Lausanne, dans le canton de Vaud.", "ok": true, "fb": "Excellent ! 'à + ville' et 'dans le canton de + nom' sont corrects." },
+                { "text": "J'habite en Lausanne.", "ok": false, "fb": "Avec une ville, on dit 'à Lausanne', pas 'en Lausanne'." },
+                { "text": "Je suis dans Lausanne.", "ok": false, "fb": "Avec une ville, on utilise 'à' : 'J'habite à Lausanne'." }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Présentation en classe",
+          "context": "Vous vous présentez devant la classe au premier jour du cours.",
+          "steps": [
+            { "from": "bot", "text": "Bonjour ! Présentez-vous, s'il vous plaît." },
+            {
+              "from": "user",
+              "options": [
+                { "text": "Je m'appelle Sofia. Je viens de Pologne.", "ok": true, "fb": "Parfait ! Prénom + origine. Après 'venir de', les pays féminins n'ont pas d'article." },
+                { "text": "Je m'appelle Sofia. Je viens de la Pologne.", "ok": false, "fb": "Après 'venir de', on supprime l'article : 'Je viens de Pologne' (pas 'de la Pologne')." },
+                { "text": "Moi Sofia. Pologne.", "ok": false, "fb": "Construisez des phrases complètes avec sujet et verbe." }
+              ]
+            },
+            { "from": "bot", "text": "Et vous habitez où en Suisse romande ?" },
+            {
+              "from": "user",
+              "options": [
+                { "text": "J'habite à Fribourg.", "ok": true, "fb": "Correct ! 'J'habite à + ville'." },
+                { "text": "J'habite dans Fribourg.", "ok": false, "fb": "Avec une ville, on dit 'à Fribourg', pas 'dans Fribourg'." },
+                { "text": "Je vis en Fribourg.", "ok": false, "fb": "Avec une ville, on dit 'à Fribourg', pas 'en Fribourg'." }
+              ]
+            },
+            { "from": "bot", "text": "Est-ce que Fribourg est une ville francophone ?" },
+            {
+              "from": "user",
+              "options": [
+                { "text": "Oui, c'est une ville bilingue : on parle français et allemand.", "ok": true, "fb": "Excellent ! Fribourg est effectivement bilingue : français et allemand." },
+                { "text": "Oui, à Fribourg on parle seulement français.", "ok": false, "fb": "Fribourg est bilingue : on y parle français ET allemand." },
+                { "text": "Non, Fribourg est en Suisse alémanique.", "ok": false, "fb": "Fribourg est à la frontière des deux régions : c'est une ville bilingue." }
+              ]
+            }
+          ]
         }
       ],
       "construire": [

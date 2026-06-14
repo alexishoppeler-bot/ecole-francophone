@@ -251,9 +251,6 @@
           + '<button class="game-vf-btn game-vf-btn--faux" data-val="false">' + t(['vraiFaux', 'falseLabel'], '✗ Faux') + '</button>'
           + '</div>'
           + '<p class="game-feedback" aria-live="polite"></p>'
-          + '<div style="text-align:center;margin-top:16px">'
-          + '<button class="game-btn game-btn--secondary" onclick="location.reload()">🔄 Recommencer</button>'
-          + '</div>'
           + '</div>';
       },
       bindQ: function(q, c, onAnswer) {
@@ -856,6 +853,29 @@
     }
     renderMG();
 
+    // Hover preview: highlight cells between start and hovered cell
+    wrap.addEventListener('mouseover', function(e) {
+      if (!startSel) return;
+      var btn = e.target.closest('.game-wg-cell');
+      if (!btn) return;
+      var r = parseInt(btn.dataset.r,10), c = parseInt(btn.dataset.c,10);
+      wrap.querySelectorAll('.wg-hover').forEach(function(el){ el.classList.remove('wg-hover'); });
+      var dr = r-startSel.r, dc = c-startSel.c;
+      if (dr===0 && dc===0) return;
+      var validDir = dr===0||dc===0||Math.abs(dr)===Math.abs(dc);
+      if (!validDir) return;
+      var len = Math.max(Math.abs(dr),Math.abs(dc))+1;
+      var stepR = dr===0?0:(dr>0?1:-1), stepC = dc===0?0:(dc>0?1:-1);
+      for (var i=0;i<len;i++) {
+        var nr=startSel.r+i*stepR, nc=startSel.c+i*stepC;
+        var cell=wrap.querySelector('.game-wg-cell[data-r="'+nr+'"][data-c="'+nc+'"]');
+        if(cell) cell.classList.add('wg-hover');
+      }
+    });
+    wrap.addEventListener('mouseleave', function() {
+      wrap.querySelectorAll('.wg-hover').forEach(function(el){ el.classList.remove('wg-hover'); });
+    });
+
     wrap.addEventListener('click', function(e) {
       var btn = e.target.closest('.game-wg-cell');
       if (!btn) return;
@@ -968,8 +988,17 @@
 
         var asmEl = wrap.querySelector('#anaAssembled');
         if(asmEl) asmEl.innerHTML = assembledCopy.length
-          ? assembledCopy.map(function(l,i){ return '<button class="game-ana-chip game-ana-chip--placed" data-ai="'+i+'">'+esc(l)+'</button>'; }).join('')
+          ? assembledCopy.map(function(l,i){ return '<button class="game-ana-chip game-ana-chip--placed" data-ai="'+i+'" title="Retirer">'+esc(l)+'</button>'; }).join('')
           : '<span class="game-ana-placeholder">Cliquez les lettres</span>';
+
+        // Placed letter click: remove that letter
+        wrap.querySelectorAll('#anaAssembled .game-ana-chip--placed').forEach(function(btn){
+          btn.addEventListener('click', function(){
+            var ai = parseInt(btn.dataset.ai, 10);
+            assembled.splice(ai, 1);
+            rebuildAna();
+          });
+        });
 
         // Bank click: add letter
         wrap.querySelectorAll('#anaBank .game-ana-chip').forEach(function(btn){
@@ -1086,92 +1115,99 @@
       wrap.innerHTML = '<div class="game-empty"><p>Pas de dialogue pour cette unité.</p><a href="entrainement-a1.html?unite=' + esc(badge) + '">← Retour</a></div>';
       return;
     }
-    var scenario = scenarios[0];
-    var steps = scenario.steps;
-    var stepIdx = 0;
-    var score = 0;
-    var history = [];
 
-    var totalUserSteps = steps.filter(function(s){ return s.from === 'user'; }).length;
+    function startScenario(scenIdx) {
+      var scenario = scenarios[scenIdx];
+      var steps = scenario.steps;
+      var stepIdx = 0, score = 0, history = [];
+      var totalUserSteps = steps.filter(function(s){ return s.from === 'user'; }).length;
 
-    function buildHist() {
-      return history.map(function(h) {
-        return '<div class="game-dial-bubble game-dial-bubble--' + h.from + '">'
-          + '<span class="game-dial-who">' + (h.from==='bot'?'🤖':'👤') + '</span>'
-          + '<span class="game-dial-text">' + esc(h.text) + '</span>'
-          + (h.fb ? '<span class="game-dial-fb game-dial-fb--' + (h.ok?'ok':'err') + '">' + esc(h.fb) + '</span>' : '')
-          + '</div>';
-      }).join('');
-    }
-
-    function renderDial() {
-      // Auto-process consecutive bot messages
-      while (stepIdx < steps.length && steps[stepIdx].from === 'bot') {
-        history.push({ from: 'bot', text: steps[stepIdx].text });
-        stepIdx++;
+      function buildHist() {
+        return history.map(function(h) {
+          return '<div class="game-dial-bubble game-dial-bubble--' + h.from + '">'
+            + '<span class="game-dial-who">' + (h.from==='bot'?'🤖':'👤') + '</span>'
+            + '<span class="game-dial-text">' + esc(h.text) + '</span>'
+            + (h.fb ? '<span class="game-dial-fb game-dial-fb--' + (h.ok?'ok':'err') + '">' + esc(h.fb) + '</span>' : '')
+            + '</div>';
+        }).join('');
       }
 
-      if (stepIdx >= steps.length) {
-        var pct = Math.round(score / totalUserSteps * 100);
-        wrap.innerHTML = '<div class="game-dial-container">'
-          + '<div class="game-dial-history">' + buildHist() + '</div>'
-          + '<div class="game-score-screen" style="margin-top:16px">'
-          + '<div class="game-score-emoji">' + (pct===100?'🏆':pct>=70?'⭐':'👍') + '</div>'
-          + '<div class="game-score-num">' + score + '<span>/' + totalUserSteps + '</span></div>'
-          + '<div class="game-score-label">' + (pct===100?'Dialogue parfait !':pct>=70?'Très bien !':'Continuez à pratiquer !') + '</div>'
-          + '<div class="game-score-actions">'
-          + '<button class="game-btn game-btn--secondary" id="gReplay">🔄 Recommencer</button>'
-          + (entry ? '<a class="game-btn game-btn--primary" href="entrainement-a1.html?unite=' + esc(badge) + '">← Jeux</a>' : '')
-          + '</div></div></div>';
-        var rb = wrap.querySelector('#gReplay');
-        if (rb) rb.addEventListener('click', function(){ stepIdx=0; score=0; history=[]; renderDial(); });
-        return;
-      }
+      function renderDial() {
+        while (stepIdx < steps.length && steps[stepIdx].from === 'bot') {
+          history.push({ from: 'bot', text: steps[stepIdx].text });
+          stepIdx++;
+        }
 
-      // User step — show options with retry on wrong answer
-      var userStep = steps[stepIdx];
-      var tried = [];
+        if (stepIdx >= steps.length) {
+          var pct = Math.round(score / totalUserSteps * 100);
+          var nextIdx = (scenIdx + 1) % scenarios.length;
+          wrap.innerHTML = '<div class="game-dial-container">'
+            + '<div class="game-dial-history">' + buildHist() + '</div>'
+            + '<div class="game-score-screen" style="margin-top:16px">'
+            + '<div class="game-score-emoji">' + (pct===100?'🏆':pct>=70?'⭐':'👍') + '</div>'
+            + '<div class="game-score-num">' + score + '<span>/' + totalUserSteps + '</span></div>'
+            + '<div class="game-score-label">' + (pct===100?'Dialogue parfait !':pct>=70?'Très bien !':'Continuez à pratiquer !') + '</div>'
+            + '<div class="game-score-actions">'
+            + '<button class="game-btn game-btn--secondary" id="gReplay">🔄 Recommencer</button>'
+            + (scenarios.length > 1 ? '<button class="game-btn game-btn--primary" id="gNextDial">Dialogue suivant →</button>' : '')
+            + (entry ? '<a class="game-btn game-btn--outline" href="entrainement-a1.html?unite=' + esc(badge) + '">← Jeux</a>' : '')
+            + '</div></div></div>';
+          var rb = wrap.querySelector('#gReplay');
+          if (rb) rb.addEventListener('click', function(){ startScenario(scenIdx); });
+          var nb = wrap.querySelector('#gNextDial');
+          if (nb) nb.addEventListener('click', function(){ startScenario(nextIdx); });
+          return;
+        }
 
-      function renderOptions(errFb) {
-        var optHtml = '<div class="game-dial-options">'
-          + userStep.options.map(function(opt, oi) {
-              var wasTried = tried.indexOf(oi) >= 0;
-              return '<button class="game-dial-opt' + (wasTried ? ' game-dial-opt--err' : '') + '"'
-                + (wasTried ? ' disabled' : '') + ' data-oi="' + oi + '">' + esc(opt.text) + '</button>';
-            }).join('')
-          + '</div>'
-          + (errFb ? '<p class="game-dial-inline-fb">' + esc(errFb) + '</p>' : '');
+        var userStep = steps[stepIdx];
+        var tried = [];
 
-        wrap.innerHTML = '<div class="game-dial-container">'
-          + '<div class="game-dial-scenario"><strong>🎭 ' + esc(scenario.title) + '</strong> — ' + esc(scenario.context) + '</div>'
-          + '<div class="game-dial-history">' + buildHist() + '</div>'
-          + optHtml + '</div>';
+        function renderOptions(errFb) {
+          var optHtml = '<div class="game-dial-options">'
+            + userStep.options.map(function(opt, oi) {
+                var wasTried = tried.indexOf(oi) >= 0;
+                return '<button class="game-dial-opt' + (wasTried ? ' game-dial-opt--err' : '') + '"'
+                  + (wasTried ? ' disabled' : '') + ' data-oi="' + oi + '">' + esc(opt.text) + '</button>';
+              }).join('')
+            + '</div>'
+            + (errFb ? '<p class="game-dial-inline-fb">' + esc(errFb) + '</p>' : '');
 
-        wrap.querySelectorAll('.game-dial-opt:not([disabled])').forEach(function(btn) {
-          btn.addEventListener('click', function() {
-            var oi = parseInt(btn.dataset.oi, 10);
-            var opt = userStep.options[oi];
-            if (opt.ok) {
-              if (tried.length === 0) score++; // only full point if first try
-              history.push({ from: 'user', text: opt.text, ok: true, fb: opt.fb });
-              stepIdx++;
-              setTimeout(renderDial, 1000);
-            } else {
-              tried.push(oi);
-              renderOptions(opt.fb);
-            }
+          wrap.innerHTML = '<div class="game-dial-container">'
+            + '<div class="game-dial-scenario">'
+            + (scenarios.length > 1 ? '<span class="game-dial-badge">Dialogue ' + (scenIdx+1) + ' / ' + scenarios.length + '</span> ' : '')
+            + '<strong>🎭 ' + esc(scenario.title) + '</strong> — ' + esc(scenario.context) + '</div>'
+            + '<div class="game-dial-history">' + buildHist() + '</div>'
+            + optHtml + '</div>';
+
+          wrap.querySelectorAll('.game-dial-opt:not([disabled])').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+              var oi = parseInt(btn.dataset.oi, 10);
+              var opt = userStep.options[oi];
+              if (opt.ok) {
+                if (tried.length === 0) score++;
+                history.push({ from: 'user', text: opt.text, ok: true, fb: opt.fb });
+                stepIdx++;
+                setTimeout(renderDial, 1000);
+              } else {
+                tried.push(oi);
+                renderOptions(opt.fb);
+              }
+            });
           });
-        });
+        }
+
+        renderOptions(null);
       }
 
-      renderOptions(null);
+      wrap.innerHTML = '<div class="game-dial-container">'
+        + (scenarios.length > 1 ? '<span class="game-dial-badge">Dialogue ' + (scenIdx+1) + ' / ' + scenarios.length + '</span>' : '')
+        + '<div class="game-dial-scenario"><strong>🎭 ' + esc(scenario.title) + '</strong><br>' + esc(scenario.context) + '</div>'
+        + '<button class="game-btn game-btn--primary" id="dialStart">Commencer →</button></div>';
+      var startBtn = wrap.querySelector('#dialStart');
+      if (startBtn) startBtn.addEventListener('click', renderDial);
     }
-    // Initial render with scenario info
-    wrap.innerHTML = '<div class="game-dial-container">'
-      + '<div class="game-dial-scenario"><strong>🎭 ' + esc(scenario.title) + '</strong><br>' + esc(scenario.context) + '</div>'
-      + '<button class="game-btn game-btn--primary" id="dialStart">Commencer le dialogue →</button></div>';
-    var startBtn=wrap.querySelector('#dialStart');
-    if(startBtn) startBtn.addEventListener('click', renderDial);
+
+    startScenario(0);
   }
 
   /* ══════════════════════════════════════════════
@@ -1237,7 +1273,7 @@
 
         wrap.innerHTML = progressBar(idx, pool.length)
           + '<div class="game-build-container">'
-          + '<p class="game-build-instr">Remettez les mots dans le bon ordre :</p>'
+          + '<p class="game-build-instr">Remettez les ' + words.length + ' mots dans le bon ordre :</p>'
           + answerHtml + bankHtml
           + (feedback ? '<p class="game-build-fb '+feedback.cls+'">'+esc(feedback.txt)+'</p>' : '<p class="game-build-fb"></p>')
           + (placed.length===words.length
@@ -1268,8 +1304,8 @@
             rebuildBuild({cls:'game-feedback--ok', txt:'✓ Correct ! "'+sentence+'"'});
             setTimeout(function(){idx++;placed=[];renderBuild();},1200);
           } else {
-            rebuildBuild({cls:'game-feedback--err', txt:'✗ Réessayez !'});
-            setTimeout(function(){placed=[];rebuildBuild(null);},1000);
+            rebuildBuild({cls:'game-feedback--err', txt:'✗ Ordre incorrect. La phrase : « ' + sentence + ' »'});
+            setTimeout(function(){idx++;placed=[];renderBuild();},2200);
           }
         });
       }

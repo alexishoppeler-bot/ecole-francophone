@@ -1976,6 +1976,7 @@ body.focus-mode .cours-back {
 .game-wg-cell:hover     { background:var(--surface2,#f0f4ff); }
 .game-wg-cell.wg-selected { background:var(--accent,#5AABF0); color:#fff; transform:scale(1.1); }
 .game-wg-cell.wg-found    { background:#22c55e; color:#fff; border-color:transparent; cursor:default; }
+.game-wg-cell.wg-hover    { background:rgba(90,171,240,.28); border-color:var(--accent,#5AABF0); }
 .game-wg-cell.wg-err      { background:#ef4444; color:#fff; }
 .game-wg-status    { font-size:.9rem; font-weight:600; color:var(--accent,#5AABF0); }
 
@@ -2025,6 +2026,8 @@ body.focus-mode .cours-back {
    DIALOGUE SIMULÉ
 ═══════════════════════════════════════════════════════════ */
 .game-dial-container { display:flex; flex-direction:column; gap:12px; }
+.game-dial-badge     { display:inline-block; background:var(--accent2,#9B35EC); color:#fff; font-size:.75rem;
+                       font-weight:700; padding:2px 10px; border-radius:50px; margin-bottom:6px; }
 .game-dial-scenario  { background:var(--surface2,#f0f4ff); border-radius:10px; padding:12px 16px;
                        font-size:.9rem; color:var(--text-muted,#555); border-left:4px solid var(--accent,#5AABF0); }
 .game-dial-history   { display:flex; flex-direction:column; gap:10px; }
