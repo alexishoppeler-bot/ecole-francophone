@@ -237,91 +237,66 @@ window.EXERCISE_CONTENT_PARTS["a1"] = {
         }
       ],
       "completer": [
-        {
-          "display": "La ___ est en Europe",
-          "answer": "suisse",
-          "full": "La Suisse est en Europe."
-        },
-        {
-          "display": "À ___ on parle français",
-          "answer": "genève",
-          "full": "À Genève, on parle français."
-        },
-        {
-          "display": "Berne est la ___ de la Suisse",
-          "answer": "capitale",
-          "full": "Berne est la capitale de la Suisse."
-        },
-        {
-          "display": "Le ___ est un pays francophone en partie",
-          "answer": "canada",
-          "full": "Le Canada est un pays francophone en partie."
-        },
-        {
-          "display": "Je vis en ___ romande",
-          "answer": "suisse",
-          "full": "Je vis en Suisse romande."
-        },
-        {
-          "display": "Elle ___ à Lausanne",
-          "answer": "habite",
-          "full": "Elle habite à Lausanne."
-        }
+        { "display": "Berne est la ___ de la Suisse", "answer": "capitale", "full": "Berne est la capitale de la Suisse." },
+        { "display": "À Genève, on parle ___", "answer": "français", "full": "À Genève, on parle français." },
+        { "display": "La Suisse ___ quatre langues nationales", "answer": "possède", "full": "La Suisse possède quatre langues nationales." },
+        { "display": "Je ___ de Suisse", "answer": "viens", "full": "Je viens de Suisse." },
+        { "display": "Elle habite à ___", "answer": "Lausanne", "full": "Elle habite à Lausanne." },
+        { "display": "Le romanche est ___ dans les Grisons", "answer": "parlé", "full": "Le romanche est parlé dans les Grisons." },
+        { "display": "Genève est une ville ___", "answer": "internationale", "full": "Genève est une ville internationale." },
+        { "display": "La Suisse romande est la partie ___ de la Suisse", "answer": "francophone", "full": "La Suisse romande est la partie francophone de la Suisse." },
+        { "display": "Un ___ est une personne qui parle une langue", "answer": "locuteur", "full": "Un locuteur est une personne qui parle une langue." },
+        { "display": "Fribourg est une ville ___", "answer": "bilingue", "full": "Fribourg est une ville bilingue." },
+        { "display": "Le Canada est un pays ___ en partie", "answer": "francophone", "full": "Le Canada est un pays francophone en partie." },
+        { "display": "Une ___ sépare deux pays", "answer": "frontière", "full": "Une frontière sépare deux pays." }
       ],
       "ecouter": [
-        {
-          "prompt": "Pour parler d'un pays féminin, on dit…",
-          "choices": [
-            "en Suisse",
-            "au Suisse",
-            "à Suisse"
-          ],
-          "answer": 0
-        },
-        {
-          "prompt": "Berne est…",
-          "choices": [
-            "une langue",
-            "une capitale",
-            "un continent"
-          ],
-          "answer": 1
-        },
-        {
-          "prompt": "La Suisse romande correspond à…",
-          "choices": [
-            "la partie francophone de la Suisse",
-            "tout le territoire suisse",
-            "un autre pays"
-          ],
-          "answer": 0
-        }
+        { "prompt": "La Suisse romande est…", "choices": ["la partie francophone de la Suisse", "tout le territoire suisse", "une ville"], "answer": 0 },
+        { "prompt": "Pour parler d'un pays féminin, on dit…", "choices": ["en Suisse", "au Suisse", "à Suisse"], "answer": 0 },
+        { "prompt": "Berne est…", "choices": ["une langue", "la capitale de la Suisse", "un canton"], "answer": 1 },
+        { "prompt": "Le romanche est…", "choices": ["une ville", "une langue nationale suisse", "une préposition"], "answer": 1 },
+        { "prompt": "Un locuteur est…", "choices": ["une personne qui vit dans un lieu", "une personne qui parle une langue", "une ville"], "answer": 1 },
+        { "prompt": "Pour le Canada, on dit…", "choices": ["en Canada", "au Canada", "à Canada"], "answer": 1 },
+        { "prompt": "Genève est connue pour…", "choices": ["être la capitale de la Suisse", "être une ville bilingue", "accueillir des organisations internationales"], "answer": 2 },
+        { "prompt": "La Suisse possède…", "choices": ["deux langues nationales", "trois langues nationales", "quatre langues nationales"], "answer": 2 },
+        { "prompt": "Un canton est…", "choices": ["une ville", "une division administrative de la Suisse", "une langue"], "answer": 1 },
+        { "prompt": "Pour les États-Unis, on dit…", "choices": ["en États-Unis", "au États-Unis", "aux États-Unis"], "answer": 2 }
       ],
       "conjugaison": {
         "verbs": [
           "être",
+          "avoir",
           "parler",
-          "venir",
-          "situer",
           "habiter",
+          "venir",
           "comprendre",
           "apprendre",
           "découvrir"
         ],
         "conjugations": [
           "<strong>être</strong> : je suis, tu es, il/elle est, nous sommes, vous êtes, ils/elles sont",
-          "<strong>parler</strong> : je parle, tu parles, il/elle parle, nous parlons, vous parlez, ils/elles parlent"
+          "<strong>avoir</strong> : j'ai, tu as, il/elle a, nous avons, vous avez, ils/elles ont",
+          "<strong>parler</strong> : je parle, tu parles, il/elle parle, nous parlons, vous parlez, ils/elles parlent",
+          "<strong>habiter</strong> : j'habite, tu habites, il/elle habite, nous habitons, vous habitez, ils/elles habitent",
+          "<strong>venir</strong> : je viens, tu viens, il/elle vient, nous venons, vous venez, ils/elles viennent",
+          "<strong>comprendre</strong> : je comprends, tu comprends, il/elle comprend, nous comprenons, vous comprenez, ils/elles comprennent",
+          "<strong>apprendre</strong> : j'apprends, tu apprends, il/elle apprend, nous apprenons, vous apprenez, ils/elles apprennent",
+          "<strong>découvrir</strong> : je découvre, tu découvres, il/elle découvre, nous découvrons, vous découvrez, ils/elles découvrent"
         ]
       },
       "motsMeles": [
-        "UNE",
-        "UNE",
-        "UNE",
+        "SUISSE",
+        "GENEVE",
+        "BERNE",
+        "LAUSANNE",
+        "CANADA",
         "BILINGUE",
-        "UNE",
-        "CONTINENT",
+        "FRANCOPHONE",
         "FRONTIERE",
-        "LANGUE"
+        "CANTON",
+        "LOCUTEUR",
+        "ROMANCHE",
+        "CAPITALE"
       ],
       "flashcards": [
         {
@@ -525,7 +500,11 @@ window.EXERCISE_CONTENT_PARTS["a1"] = {
         "Berne est la capitale de la Suisse.",
         "Le Canada est un pays francophone en partie.",
         "Je vis en Suisse romande.",
-        "Elle habite à Lausanne."
+        "Elle habite à Lausanne.",
+        "La francophonie regroupe de nombreux pays.",
+        "Le romanche est parlé dans les Grisons.",
+        "Genève est une ville internationale.",
+        "Je viens de Suisse."
       ],
       "validation": [
         {
