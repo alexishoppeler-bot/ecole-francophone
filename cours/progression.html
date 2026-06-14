@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <link rel="icon" href="../assets/logo.png" type="image/png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ã‰cole Francophone | Mon Tableau de Progression</title>
+  <title>École Francophone | Mon Tableau de Progression</title>
   <link rel="stylesheet" href="../css/theme.css">
   <link rel="stylesheet" href="../css/layout.css">
   <link rel="stylesheet" href="cours.css">
@@ -14,13 +14,13 @@
   <div class="page-wrap">
     <div id="sidebar-slot"></div>
     <main class="unite-main">
-      <a class="cours-back" href="index.html">â† Cours</a>
+      <a class="cours-back" href="index.html">← Cours</a>
       <div class="unite-hero blue">
         <div class="unite-hero-copy">
           <h2 class="unite-hero-title">Mon tableau de progression</h2>
           <p class="unite-hero-sub">Suivez votre avancement dans tous les niveaux</p>
         </div>
-        <span class="unite-hero-icon" aria-hidden="true">ðŸ“Š</span>
+        <span class="unite-hero-icon" aria-hidden="true">📊</span>
       </div>
       <div class="unite-sections" id="prog-root"></div>
     </main>
@@ -58,15 +58,15 @@
     });
 
     var pctAll = totalAll > 0 ? Math.round(doneAll / totalAll * 100) : 0;
-    var emoji  = pctAll === 100 ? 'ðŸ†' : pctAll >= 75 ? 'â­' : pctAll >= 40 ? 'ðŸ‘' : 'ðŸ’ª';
+    var emoji  = pctAll === 100 ? '🏆' : pctAll >= 75 ? '⭐' : pctAll >= 40 ? '👍' : '💪';
 
     var html = '<section class="unite-section prog-global" style="--section-i:0">'
-      + '<h3 class="unite-section-title"><span class="unite-section-icon" aria-hidden="true">ðŸŒ</span>Progression globale</h3>'
+      + '<h3 class="unite-section-title"><span class="unite-section-icon" aria-hidden="true">🌐</span>Progression globale</h3>'
       + '<div class="prog-global-card">'
       + '<div class="prog-global-emoji">' + emoji + '</div>'
       + '<div class="prog-global-info">'
       + '<div class="prog-global-pct">' + pctAll + '%</div>'
-      + '<div class="prog-global-label">' + doneAll + ' / ' + totalAll + ' unitÃ©s consultÃ©es</div>'
+      + '<div class="prog-global-label">' + doneAll + ' / ' + totalAll + ' unités consultées</div>'
       + '</div>'
       + '<div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:' + pctAll + '%"></div></div>'
       + '</div>'
@@ -75,7 +75,7 @@
     sectionStats.forEach(function(sec, si) {
       var pct = sec.total > 0 ? Math.round(sec.done / sec.total * 100) : 0;
       html += '<section class="unite-section" style="--section-i:' + (si+1) + '">'
-        + '<h3 class="unite-section-title"><span class="unite-section-icon unite-section-icon--' + sec.cls + '" aria-hidden="true">' + sec.title + '</span>' + sec.title + ' â€” ' + pct + '% (' + sec.done + '/' + sec.total + ')</h3>'
+        + '<h3 class="unite-section-title"><span class="unite-section-icon unite-section-icon--' + sec.cls + '" aria-hidden="true">' + sec.title + '</span>' + sec.title + ' — ' + pct + '% (' + sec.done + '/' + sec.total + ')</h3>'
         + '<div class="prog-bar-wrap prog-bar-wrap--sm"><div class="prog-bar-fill prog-bar-fill--' + sec.cls + '" style="width:' + pct + '%"></div></div>'
         + '<div class="prog-unit-grid">'
         + sec.entries.map(function(e) {
@@ -85,7 +85,7 @@
             return '<a class="prog-unit-chip prog-unit-chip--' + status + '" href="' + e.href + '" title="' + e.label + '">'
               + '<span class="prog-unit-badge">' + (e.badge !== undefined ? e.badge : '') + '</span>'
               + '<span class="prog-unit-label">' + e.label + '</span>'
-              + (isDone ? '<span class="prog-unit-check" aria-hidden="true">âœ“</span>' : '')
+              + (isDone ? '<span class="prog-unit-check" aria-hidden="true">✓</span>' : '')
               + '</a>';
           }).join('')
         + '</div>'
@@ -94,14 +94,14 @@
 
     if (doneAll === 0) {
       html += '<section class="unite-section" style="--section-i:' + (sectionStats.length+1) + '">'
-        + '<div class="prog-empty"><p>ðŸŒ± Vous n\'avez pas encore commencÃ©. Consultez les unitÃ©s pour enregistrer votre progression !</p>'
-        + '<a class="game-btn game-btn--primary" href="index.html">Commencer les cours â†’</a></div>'
+        + '<div class="prog-empty"><p>🌱 Vous n\'avez pas encore commencé. Consultez les unités pour enregistrer votre progression !</p>'
+        + '<a class="game-btn game-btn--primary" href="index.html">Commencer les cours →</a></div>'
         + '</section>';
     }
 
     html += '<section class="unite-section" style="--section-i:' + (sectionStats.length+2) + '">'
       + '<div class="prog-reset-wrap">'
-      + '<button class="game-btn game-btn--secondary" id="progReset">ðŸ—‘ RÃ©initialiser ma progression</button>'
+      + '<button class="game-btn game-btn--secondary" id="progReset">🗑 Réinitialiser ma progression</button>'
       + '</div></section>';
 
     root.innerHTML = html;
@@ -109,7 +109,7 @@
     var resetBtn = document.getElementById('progReset');
     if (resetBtn) {
       resetBtn.addEventListener('click', function() {
-        if (confirm('Effacer toute votre progression ? Cette action est irrÃ©versible.')) {
+        if (confirm('Effacer toute votre progression ? Cette action est irréversible.')) {
           localStorage.removeItem(STORAGE_KEY);
           location.reload();
         }

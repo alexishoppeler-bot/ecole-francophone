@@ -251,6 +251,9 @@
           + '<button class="game-vf-btn game-vf-btn--faux" data-val="false">' + t(['vraiFaux', 'falseLabel'], '✗ Faux') + '</button>'
           + '</div>'
           + '<p class="game-feedback" aria-live="polite"></p>'
+          + '<div style="text-align:center;margin-top:16px">'
+          + '<button class="game-btn game-btn--secondary" onclick="location.reload()">🔄 Recommencer</button>'
+          + '</div>'
           + '</div>';
       },
       bindQ: function(q, c, onAnswer) {
@@ -395,55 +398,92 @@
       })
     )).slice(0, items.length + 3);
 
-    var answers = items.map(function() { return null; });
-    var placed  = items.map(function() { return null; });
+    // placed[slotIdx] = bankIdx or null
+    var placed = items.map(function() { return null; });
+    var dragging = null; // { bankIdx, word, from: 'bank'|'slot', slotIdx? }
+
+    function resetPlaced() { placed = items.map(function() { return null; }); }
 
     function renderFill() {
+      var usedBankIdx = {};
+      placed.forEach(function(bi) { if (bi !== null) usedBankIdx[bi] = true; });
+
       var sentencesHtml = items.map(function(it, i) {
-        return '<div class="fill-row" data-idx="' + i + '">'
+        var word = placed[i] !== null ? bank[placed[i]] : null;
+        var slotContent = word
+          ? '<span class="fill-slot-word" data-sidx="' + i + '">' + esc(word) + '</span>'
+          : '<span class="fill-slot-empty">···</span>';
+        return '<div class="fill-row">'
           + it.display.split('___').map(function(part, pi) {
-              return esc(part) + (pi === 0 ? '<span class="fill-slot" data-idx="' + i + '">' + (placed[i] ? esc(placed[i]) : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;') + '</span>' : '');
+              return esc(part) + (pi === 0 ? '<span class="fill-slot" data-idx="' + i + '">' + slotContent + '</span>' : '');
             }).join('')
           + '</div>';
       }).join('');
 
-      var bankHtml = bank.map(function(w) {
-        var used = placed.indexOf(w) !== -1;
-        return '<button class="fill-word' + (used ? ' fill-word--used' : '') + '" data-word="' + esc(w) + '"' + (used ? ' disabled' : '') + '>' + esc(w) + '</button>';
+      var bankHtml = bank.map(function(w, bi) {
+        var used = !!usedBankIdx[bi];
+        return '<div class="fill-word' + (used ? ' fill-word--used' : '') + '" draggable="' + (!used) + '" data-bidx="' + bi + '">' + esc(w) + '</div>';
       }).join('');
 
       wrap.innerHTML = '<div class="game-fill-container">'
-        + '<p class="game-fill-instruction">Cliquez un mot, puis la place qui lui correspond.</p>'
+        + '<p class="game-fill-instruction">Glissez les mots dans les cases.</p>'
         + '<div class="game-fill-sentences">' + sentencesHtml + '</div>'
         + '<div class="game-fill-bank">' + bankHtml + '</div>'
         + '<button class="game-btn game-btn--primary" id="gCheck">Vérifier ✓</button>'
+        + '<div style="text-align:center;margin-top:12px"><button class="game-btn game-btn--secondary" onclick="location.reload()">🔄 Recommencer</button></div>'
         + '<p class="game-fill-result" aria-live="polite"></p>'
         + '</div>';
 
-      var selectedWord = null;
-      wrap.addEventListener('click', function(e) {
-        var wordBtn = e.target.closest('.fill-word:not([disabled])');
-        var slotEl  = e.target.closest('.fill-slot');
-        if (wordBtn) {
-          if (selectedWord) selectedWord.classList.remove('fill-word--selected');
-          selectedWord = wordBtn;
-          wordBtn.classList.add('fill-word--selected');
-        } else if (slotEl && selectedWord) {
-          var si = parseInt(slotEl.dataset.idx, 10);
-          // Return previous word to bank
-          if (placed[si]) {
-            var prev = placed[si];
-            var prevBtn = wrap.querySelector('.fill-word[data-word="' + prev + '"]');
-            if (prevBtn) { prevBtn.disabled = false; prevBtn.classList.remove('fill-word--used'); }
-          }
-          placed[si] = selectedWord.dataset.word;
-          selectedWord.disabled = true;
-          selectedWord.classList.add('fill-word--used');
-          selectedWord.classList.remove('fill-word--selected');
-          selectedWord = null;
+      // Drag from bank
+      wrap.querySelectorAll('.fill-word:not(.fill-word--used)').forEach(function(el) {
+        el.addEventListener('dragstart', function(e) {
+          dragging = { bankIdx: parseInt(el.dataset.bidx, 10), word: bank[parseInt(el.dataset.bidx, 10)], from: 'bank' };
+          el.classList.add('fill-word--dragging');
+          e.dataTransfer.effectAllowed = 'move';
+        });
+        el.addEventListener('dragend', function() { el.classList.remove('fill-word--dragging'); });
+      });
+
+      // Drag from slot (pick back up)
+      wrap.querySelectorAll('.fill-slot').forEach(function(slot) {
+        var si = parseInt(slot.dataset.idx, 10);
+        slot.addEventListener('dragover', function(e) { e.preventDefault(); slot.classList.add('fill-slot--over'); });
+        slot.addEventListener('dragleave', function() { slot.classList.remove('fill-slot--over'); });
+        slot.addEventListener('drop', function(e) {
+          e.preventDefault();
+          slot.classList.remove('fill-slot--over');
+          if (!dragging) return;
+          if (dragging.from === 'slot') placed[dragging.slotIdx] = null;
+          placed[si] = dragging.bankIdx;
+          dragging = null;
           renderFill();
+        });
+
+        var wordEl = slot.querySelector('.fill-slot-word');
+        if (wordEl) {
+          wordEl.setAttribute('draggable', 'true');
+          wordEl.addEventListener('dragstart', function(e) {
+            dragging = { bankIdx: placed[si], word: bank[placed[si]], from: 'slot', slotIdx: si };
+            wordEl.classList.add('fill-word--dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.stopPropagation();
+          });
         }
       });
+
+      // Drop back to bank
+      var bankEl = wrap.querySelector('.game-fill-bank');
+      if (bankEl) {
+        bankEl.addEventListener('dragover', function(e) { e.preventDefault(); });
+        bankEl.addEventListener('drop', function(e) {
+          e.preventDefault();
+          if (dragging && dragging.from === 'slot') {
+            placed[dragging.slotIdx] = null;
+            dragging = null;
+            renderFill();
+          }
+        });
+      }
 
       var checkBtn = wrap.querySelector('#gCheck');
       if (checkBtn) {
@@ -452,7 +492,8 @@
           items.forEach(function(it, i) {
             var slot = wrap.querySelector('.fill-slot[data-idx="' + i + '"]');
             if (!slot) return;
-            if (placed[i] && placed[i].toLowerCase() === it.answer) {
+            var word = placed[i] !== null ? bank[placed[i]] : null;
+            if (word && word.toLowerCase() === it.answer) {
               slot.classList.add('fill-slot--ok'); correct++;
             } else {
               slot.classList.add('fill-slot--err');
@@ -468,12 +509,12 @@
                 + '<div class="game-score-num">' + correct + '<span>/' + items.length + '</span></div>'
                 + '<div class="game-score-label">Excellent !</div>'
                 + '<div class="game-score-actions">'
-                + '<button class="game-btn game-btn--secondary" id="gReplay">🔄 Rejouer</button>'
+                + '<button class="game-btn game-btn--secondary" id="gReplay">🔄 Recommencer</button>'
                 + hubBtn()
                 + (entry ? '<a class="game-btn game-btn--primary" href="' + entry.href + '">📖 Leçon</a>' : '')
                 + '</div></div>';
               var rb = wrap.querySelector('#gReplay');
-              if (rb) rb.addEventListener('click', function() { placed = items.map(function() { return null; }); renderFill(); });
+              if (rb) rb.addEventListener('click', function() { resetPlaced(); renderFill(); });
             }, 800);
           }
         });
@@ -650,6 +691,29 @@
     }
     var pronouns = ['je', 'tu', 'il/elle', 'nous', 'vous', 'ils/elles'];
 
+    // Build lookup: { verb -> { pronoun -> form } }
+    var conjugationRefs = exUnit && exUnit.conjugaison && exUnit.conjugaison.conjugations
+      ? exUnit.conjugaison.conjugations
+      : conjugations;
+    var lookup = {};
+    if (conjugationRefs) {
+      conjugationRefs.forEach(function(line) {
+        var clean = line.replace(/<[^>]+>/g, '');
+        var sep = clean.indexOf(' : ');
+        if (sep === -1) return;
+        var verb = clean.slice(0, sep).trim().toLowerCase();
+        var forms = clean.slice(sep + 3).split(', ');
+        lookup[verb] = {};
+        pronouns.forEach(function(pr) {
+          forms.forEach(function(f) {
+            if (f.toLowerCase().startsWith(pr + ' ')) {
+              lookup[verb][pr] = f.slice(pr.length + 1).trim().toLowerCase();
+            }
+          });
+        });
+      });
+    }
+
     wrap.innerHTML = '<div class="game-conj-container">'
       + '<p class="game-conj-instruction">Écrivez la bonne forme du verbe pour chaque pronom.</p>'
       + verbs.map(function(verb) {
@@ -659,43 +723,34 @@
             + pronouns.map(function(pr) {
                 return '<div class="game-conj-row">'
                   + '<span class="game-conj-pr">' + esc(pr) + '</span>'
-                  + '<input class="game-conj-input" data-verb="' + esc(verb) + '" data-pr="' + esc(pr) + '" placeholder="…">'
+                  + '<input class="game-conj-input" data-verb="' + esc(verb.toLowerCase()) + '" data-pr="' + esc(pr) + '" placeholder="…" autocomplete="off" autocorrect="off" spellcheck="false">'
                   + '<span class="game-conj-fb" aria-live="polite"></span>'
                   + '</div>';
               }).join('')
             + '</div>'
             + '</div>';
         }).join('')
-      + '<button class="game-btn game-btn--primary" id="gConjCheck">Vérifier ✓</button>'
-      + '<p class="game-conj-result" aria-live="polite"></p>'
       + '</div>';
 
-    // Conjugation check — use centralized conjugations as reference
-    var checkBtn = wrap.querySelector('#gConjCheck');
-    if (checkBtn) {
-      checkBtn.addEventListener('click', function() {
-        var ok = 0; var total = 0;
-        wrap.querySelectorAll('.game-conj-input').forEach(function(inp) {
-          total++;
-          var val = inp.value.trim().toLowerCase();
-          var fb  = inp.nextElementSibling;
-          // We can't verify without a full conjugation table, so just check non-empty
-          if (val.length > 0) {
-            fb.textContent = '→ ' + val; fb.className = 'game-conj-fb game-conj-fb--neutral'; ok++;
-          } else {
-            fb.textContent = '?'; fb.className = 'game-conj-fb game-conj-fb--empty';
-          }
-        });
-        // Show reference table
-        var conjugationRefs = exUnit && exUnit.conjugaison && exUnit.conjugaison.conjugations
-          ? exUnit.conjugaison.conjugations
-          : conjugations;
-        if (conjugationRefs) {
-          var res = wrap.querySelector('.game-conj-result');
-          if (res) res.innerHTML = '<strong>Référence :</strong><br>' + conjugationRefs.map(function(c) { return '<span>' + c + '</span>'; }).join('<br>');
+    wrap.querySelectorAll('.game-conj-input').forEach(function(inp) {
+      inp.addEventListener('input', function() {
+        var val = inp.value.trim().toLowerCase();
+        var fb  = inp.nextElementSibling;
+        var verbKey = inp.dataset.verb;
+        var pr = inp.dataset.pr;
+        var expected = lookup[verbKey] && lookup[verbKey][pr];
+        if (!val) {
+          fb.textContent = ''; fb.className = 'game-conj-fb';
+          inp.className = 'game-conj-input';
+        } else if (expected && val === expected) {
+          fb.textContent = '✓'; fb.className = 'game-conj-fb game-conj-fb--ok';
+          inp.className = 'game-conj-input game-conj-input--ok';
+        } else {
+          fb.textContent = ''; fb.className = 'game-conj-fb';
+          inp.className = 'game-conj-input';
         }
       });
-    }
+    });
   }
 
   /* ══════════════════════════════════════════════

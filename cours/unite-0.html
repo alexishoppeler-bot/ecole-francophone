@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <link rel="icon" href="../assets/logo.png" type="image/png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ã‰cole Francophone | UnitÃ© 0 â€” Se repÃ©rer dans le monde francophone</title>
+  <title>École Francophone | Unité 0 — Se repérer dans le monde francophone</title>
   <link rel="stylesheet" href="../css/theme.css">
   <link rel="stylesheet" href="../css/layout.css">
   <link rel="stylesheet" href="cours.css">
@@ -16,8 +16,6 @@
         <div id="sidebar-slot"></div>
 
     <main class="unite-main">
-      <a class="cours-back" href="index.html">â† Cours</a>
-
       <style>
         .intro-audio-btn {
           display: inline-flex; align-items: center; gap: 12px;
@@ -33,7 +31,7 @@
         .intro-audio-btn:active { transform: translateY(0); }
         .intro-audio-btn.playing { background: linear-gradient(135deg, #ef4444, #f59e0b); box-shadow: 0 4px 20px rgba(239,68,68,.35); }
 
-        /* Ondes animÃ©es autour de l'icÃ´ne */
+        /* Ondes animées autour de l'icône */
         .intro-btn-icon-wrap { position: relative; width: 36px; height: 36px; flex-shrink: 0; }
         .intro-btn-icon-wrap span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; z-index: 1; }
         .intro-pulse { position: absolute; inset: -6px; border-radius: 50%; background: rgba(255,255,255,.25); animation: introPulse 1.6s ease-out infinite; }
@@ -42,7 +40,7 @@
         @keyframes introPulse { 0%{transform:scale(.7);opacity:.8} 100%{transform:scale(1.9);opacity:0} }
         .intro-audio-btn:not(.playing) .intro-pulse { display: none; }
 
-        /* FlÃ¨che "cliquer ici" */
+        /* Flèche "cliquer ici" */
         .intro-hint { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
         .intro-hint-arrow { font-size: 1.2rem; animation: bounceRight .7s ease-in-out infinite alternate; }
         @keyframes bounceRight { from{transform:translateX(0)} to{transform:translateX(6px)} }
@@ -56,7 +54,7 @@
       <audio id="introAudioEl" src="../assets/audio/intro-a1-0.wav" preload="auto"></audio>
 
       <div class="intro-hint">
-        <span class="intro-hint-arrow">â–¶</span>
+        <span class="intro-hint-arrow">▶</span>
         <span class="intro-hint-text">Cliquer ici pour commencer</span>
       </div>
 
@@ -65,11 +63,11 @@
           <div class="intro-pulse"></div>
           <div class="intro-pulse"></div>
           <div class="intro-pulse"></div>
-          <span id="introBtnIcon">ðŸŽ§</span>
+          <span id="introBtnIcon">🎧</span>
         </div>
         <div class="intro-btn-copy">
-          <span class="intro-btn-label" id="introBtnLabel">Ã‰couter l'introduction</span>
-          <span class="intro-btn-sub" id="introBtnSub">Niveau A1 Â· ~30 secondes</span>
+          <span class="intro-btn-label" id="introBtnLabel">Écouter l'introduction</span>
+          <span class="intro-btn-sub" id="introBtnSub">Niveau A1 · ~30 secondes</span>
         </div>
       </button>
 
@@ -85,40 +83,40 @@
             audio.pause();
             audio.currentTime = 0;
             btn.classList.remove('playing');
-            document.getElementById('introBtnIcon').textContent = 'ðŸŽ§';
-            document.getElementById('introBtnLabel').textContent = 'Ã‰couter l\'introduction';
-            document.getElementById('introBtnSub').textContent = 'Niveau A1 Â· ~30 secondes';
+            document.getElementById('introBtnIcon').textContent = '🎧';
+            document.getElementById('introBtnLabel').textContent = 'Écouter l\'introduction';
+            document.getElementById('introBtnSub').textContent = 'Niveau A1 · ~30 secondes';
             return;
           }
           btn.classList.add('playing');
-          document.getElementById('introBtnIcon').textContent = 'â¹';
-          document.getElementById('introBtnLabel').textContent = 'ArrÃªter';
+          document.getElementById('introBtnIcon').textContent = '⏹';
+          document.getElementById('introBtnLabel').textContent = 'Arrêter';
           document.getElementById('introBtnSub').textContent = 'Cliquer pour stopper';
           audio.play();
           audio.onended = function() {
             btn.classList.remove('playing');
-            document.getElementById('introBtnIcon').textContent = 'ðŸŽ§';
-            document.getElementById('introBtnLabel').textContent = 'Ã‰couter l\'introduction';
-            document.getElementById('introBtnSub').textContent = 'Niveau A1 Â· ~30 secondes';
+            document.getElementById('introBtnIcon').textContent = '🎧';
+            document.getElementById('introBtnLabel').textContent = 'Écouter l\'introduction';
+            document.getElementById('introBtnSub').textContent = 'Niveau A1 · ~30 secondes';
           };
         }
       </script>
 
       <div class="unite-hero blue">
         <div class="unite-hero-badge">
-          <span class="unite-hero-badge-label">UnitÃ©</span>
+          <span class="unite-hero-badge-label">Unité</span>
           <span class="unite-hero-badge-num">0</span>
         </div>
         <div class="unite-hero-copy">
-          <div class="unite-hero-tag">DÃ©butants Â· A1</div>
-          <h2 class="unite-hero-title">Se repÃ©rer dans le monde francophone</h2>
+          <div class="unite-hero-tag">Débutants · A1</div>
+          <h2 class="unite-hero-title">Se repérer dans le monde francophone</h2>
         </div>
-        <span class="unite-hero-icon" aria-hidden="true">ðŸŒ</span>
+        <span class="unite-hero-icon" aria-hidden="true">🌍</span>
       </div>
 
       <figure class="franco-fig">
         <img src="../assets/francophonie.png" alt="Carte du monde francophone" class="franco-img" onclick="openLightbox()" title="Cliquer pour agrandir">
-        <figcaption class="franco-caption">ðŸŒ Les pays et rÃ©gions francophones dans le monde</figcaption>
+        <figcaption class="franco-caption">🌍 Les pays et régions francophones dans le monde</figcaption>
       </figure>
       <style>
         .franco-fig { margin: 0 0 20px; text-align: center; }
@@ -170,7 +168,7 @@
       </style>
 
       <div class="franco-lightbox" id="francoLightbox" onclick="closeLightbox()">
-        <button class="franco-lightbox-close" onclick="closeLightbox()" aria-label="Fermer">âœ•</button>
+        <button class="franco-lightbox-close" onclick="closeLightbox()" aria-label="Fermer">✕</button>
         <img src="../assets/francophonie.png" alt="Carte du monde francophone agrandie" onclick="event.stopPropagation()">
       </div>
 

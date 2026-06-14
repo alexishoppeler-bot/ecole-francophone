@@ -70,7 +70,7 @@ window.EXERCISE_CONTENT_PARTS["a1"] = {
       },
       "vraiFaux": [
         {
-          "phrase": "La francophonie correspond ? l'ensemble des pays et des personnes qui utilisent le fran?ais.",
+          "phrase": "La francophonie correspond à l'ensemble des pays et des personnes qui utilisent le français.",
           "correct": true
         },
         {
@@ -82,7 +82,7 @@ window.EXERCISE_CONTENT_PARTS["a1"] = {
           "correct": true
         },
         {
-          "phrase": "? Gen?ve, on parle principalement le romanche.",
+          "phrase": "À Genève, on parle principalement le romanche.",
           "correct": false
         },
         {
@@ -90,7 +90,7 @@ window.EXERCISE_CONTENT_PARTS["a1"] = {
           "correct": true
         },
         {
-          "phrase": "La Suisse romande est un pays ind?pendant.",
+          "phrase": "La Suisse romande est un pays indépendant.",
           "correct": false
         },
         {
@@ -98,7 +98,7 @@ window.EXERCISE_CONTENT_PARTS["a1"] = {
           "correct": false
         },
         {
-          "phrase": "Le fran?ais est principalement parl? en Suisse romande.",
+          "phrase": "Le français est principalement parlé en Suisse romande.",
           "correct": true
         }
       ],
