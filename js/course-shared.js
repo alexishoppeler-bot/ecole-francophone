@@ -662,7 +662,7 @@
     var firstDialogue = dialogues[0] || null;
     var theme = (entry.themes || [entry.label])[0] || entry.label;
     var supportHtml = key === 'unite-0'
-      ? '<figure class="comm-support-figure"><img src="../assets/francophonie.png" alt="Carte du monde francophone"><figcaption>Observez l’image, puis décrivez ce que vous voyez avec des phrases simples.</figcaption></figure>'
+      ? '<figure class="comm-support-figure"><img src="../assets/francophonie.png" alt="Carte du monde francophone"><figcaption><strong>Observez la carte et répondez :</strong><ol class="comm-guided-questions"><li>Quels continents voyez-vous représentés en bleu ?</li><li>Citez deux pays francophones que vous connaissez déjà.</li><li>Trouvez la Suisse sur la carte. Dans quelle région est-elle ?</li></ol></figcaption></figure>'
       : '<div class="comm-support-card"><strong>' + escapeHtml(entry.label) + '</strong><p>' + escapeHtml(entry.summary || entry.focus || 'Observez la situation et préparez quelques phrases simples.') + '</p></div>';
 
     var reading = unitContent.textAuth
@@ -684,7 +684,7 @@
 
     var oralProduction = '<div class="unit-practice-box"><strong>Production orale</strong><p>À deux, créez un dialogue court dans une situation réelle liée à : ' + escapeHtml(theme) + '. Utilisez au moins trois expressions du mémo.</p></div>';
     var writtenProduction = '<div class="unit-practice-box"><strong>Production écrite</strong><p>Écrivez 5 à 8 phrases pour expliquer une situation concrète liée à : ' + escapeHtml(theme) + '. Ajoutez une phrase personnelle.</p></div>';
-    var memo = (chipsHtml ? '<div class="unite-chips">' + chipsHtml + '</div>' : '')
+    var memo = (chipsHtml ? '<div class="memo-controls"><button class="game-btn game-btn--secondary memo-listen-all" type="button">🔊 Écouter tout</button></div><div class="unite-chips">' + chipsHtml + '</div>' : '')
       + '<div class="unite-expression-box"><ul class="unite-expression-list unite-expression-list--cols">'
       + unitContent.examples.map(function(ex) {
         return '<li><button class="chip-listen" aria-label="Écouter" data-word="' + ex.replace(/"/g,'&quot;') + '">🔊</button>' + ex + '</li>';
@@ -768,8 +768,13 @@
     ];
 
     var smartObjectives = buildSmartObjectives(entry, unitContent, verbData);
-    var objectivesBody = '<ul class="unite-obj-list">'
-      + smartObjectives.map(function(obj) { return '<li>' + obj + '</li>'; }).join('')
+    var objCount = smartObjectives.length;
+    var objectivesBody = '<div class="obj-progress-bar-wrap" id="objProgressWrap" aria-hidden="true">'
+      + '<div class="obj-progress-bar-track"><span class="obj-progress-bar-fill" id="objProgressFill" style="width:0%"></span></div>'
+      + '<span class="obj-progress-bar-label" id="objProgressLabel">0 / ' + objCount + ' validés</span>'
+      + '</div>'
+      + '<ul class="unite-obj-list">'
+      + smartObjectives.map(function(obj, i) { return '<li data-final-objective="' + i + '">' + obj + '</li>'; }).join('')
       + '</ul>';
 
     var communicationBody = buildCommunicationCascade(entry, unitContent, chipsHtml);
@@ -784,14 +789,32 @@
     if (unitContent.grammarError) {
       grammarBody += '<div class="gram-error-box"><span class="gram-error-label">Erreur fréquente</span><div class="gram-error-text">' + unitContent.grammarError + '</div></div>';
     }
-    grammarBody += '<div class="unit-practice-box"><strong>Exercice grammaire</strong><p>Repérez la structure dans un exemple, puis transformez-la avec une autre information.</p></div>';
+    if (unitContent.grammarFillIn && unitContent.grammarFillIn.length) {
+      grammarBody += '<div class="gram-fillin-box"><strong class="gram-fillin-title">Exercice à trous — Choisissez la bonne préposition</strong>'
+        + '<div class="gram-fillin-items">'
+        + unitContent.grammarFillIn.map(function(q, qi) {
+          return '<div class="gram-fillin-item" data-answer="' + q.answer + '">'
+            + '<p class="gram-fillin-prompt">' + escapeHtml(q.prompt) + '</p>'
+            + '<div class="gram-fillin-choices">'
+            + q.choices.map(function(ch, ci) {
+              return '<label class="gram-fillin-choice"><input type="radio" name="fillin-' + qi + '" value="' + ci + '"><span>' + escapeHtml(ch) + '</span></label>';
+            }).join('')
+            + '</div></div>';
+        }).join('')
+        + '</div>'
+        + '<button class="game-btn game-btn--primary gram-fillin-submit" type="button">Corriger</button>'
+        + '<span class="gram-fillin-result"></span>'
+        + '</div>';
+    } else {
+      grammarBody += '<div class="unit-practice-box"><strong>Exercice grammaire</strong><p>Repérez la structure dans un exemple, puis transformez-la avec une autre information.</p></div>';
+    }
 
     var conjCards = verbData.verbs.map(function(v) {
       var forms = conjugateVerb(v);
       var rows = forms.map(function(f) {
         return '<div class="conj-row">'
           + '<button class="chip-listen" aria-label="Écouter" data-word="' + f.replace(/"/g, '&quot;') + '">🔊</button>'
-          + '<span>' + f + '</span>'
+          + '<span class="conj-form">' + f + '</span>'
           + '</div>';
       }).join('');
       return '<div class="conj-card">'
@@ -799,17 +822,78 @@
         + '<div class="conj-card-body">' + rows + '</div>'
         + '</div>';
     }).join('');
-    var conjugaisonBody = '<div class="conj-grid">' + conjCards + '</div>'
-      + '<div class="unit-practice-box"><strong>Exercice conjugaison</strong><p>Choisissez un verbe, écoutez les formes, puis faites trois phrases : je, nous, ils/elles.</p></div>';
+    var conjugaisonBody = '<div class="conj-controls">'
+      + '<button class="game-btn game-btn--secondary conj-toggle-reveal" type="button" data-revealed="true">🙈 Masquer les formes</button>'
+      + '</div>'
+      + '<div class="conj-grid" id="conjGrid">' + conjCards + '</div>'
+      + '<div class="unit-practice-box"><strong>Exercice conjugaison</strong><p>Masquez les formes, puis cliquez sur 🔊 pour entendre — dites la forme avant d\'écouter. Ensuite révélez pour vérifier.</p></div>';
 
-    var vocabBody = '<div class="vocab-grid">' + vocab + '</div>'
-      + '<div class="unit-practice-box"><strong>Exercice vocabulaire</strong><p>Choisissez cinq mots, écoutez-les, puis associez chaque mot à une situation réelle.</p></div>';
+    // Vocabulaire : groupes thématiques si disponibles, sinon grille normale
+    var vocabBody;
+    if (unitContent.vocabGroups && unitContent.vocabGroups.length) {
+      var vocabByWord = {};
+      unitContent.vocabulary.forEach(function(item) { vocabByWord[item.word] = item; });
+      var groupsHtml = unitContent.vocabGroups.map(function(grp) {
+        var cards = grp.words.map(function(w) {
+          var item = vocabByWord[w];
+          if (!item) return '';
+          return '<div class="vocab-card" data-vocab-word="' + escapeHtml(item.word) + '" data-vocab-def="' + escapeHtml(item.definition) + '">'
+            + '<button class="vocab-listen" aria-label="Écouter" data-word="' + item.word.replace(/"/g, '&quot;') + '">🔊</button>'
+            + '<span class="vocab-word">' + item.word + '</span>'
+            + '<span class="vocab-def vocab-def--quiz-target">' + item.definition + '</span>'
+            + '</div>';
+        }).join('');
+        return '<div class="vocab-group">'
+          + '<div class="vocab-group-label">' + escapeHtml(grp.label) + '</div>'
+          + '<div class="vocab-grid">' + cards + '</div>'
+          + '</div>';
+      }).join('');
+      vocabBody = '<div class="vocab-controls">'
+        + '<button class="game-btn game-btn--secondary vocab-quiz-toggle" type="button" data-quiz="false">🧠 Mode quiz — masquer définitions</button>'
+        + '</div>'
+        + '<div class="vocab-groups" id="vocabGroups">' + groupsHtml + '</div>'
+        + '<div class="unit-practice-box"><strong>Exercice vocabulaire</strong><p>Activez le mode quiz : masquez les définitions, regardez le mot, devinez — puis cliquez sur la carte pour révéler.</p></div>';
+    } else {
+      vocabBody = '<div class="vocab-grid">' + vocab + '</div>'
+        + '<div class="unit-practice-box"><strong>Exercice vocabulaire</strong><p>Choisissez cinq mots, écoutez-les, puis associez chaque mot à une situation réelle.</p></div>';
+    }
 
-    var phonWords = unitContent.vocabulary.slice(0, 8).map(function(item) {
-      return '<button class="phon-chip chip-listen" type="button" data-word="' + item.word.replace(/"/g, '&quot;') + '">' + item.word + '</button>';
-    }).join('');
-    var phonetiqueBody = '<div class="unit-practice-box"><strong>Écoute et répétition</strong><p>Cliquez sur les mots, écoutez, puis répétez lentement. Faites attention aux sons, au rythme et aux liaisons possibles.</p></div>'
-      + '<div class="phon-chip-grid">' + phonWords + '</div>';
+    // Phonétique : sons cibles + paires minimales si données disponibles, sinon mots cliquables
+    var phonetiqueBody;
+    if (unitContent.phonetique) {
+      var ph = unitContent.phonetique;
+      var soundsHtml = (ph.targetSounds || []).map(function(s) {
+        return '<div class="phon-sound-card">'
+          + '<div class="phon-sound-symbol">' + s.sound + '</div>'
+          + '<div class="phon-sound-label">' + escapeHtml(s.label) + '</div>'
+          + '<div class="phon-sound-examples">'
+          + s.examples.map(function(ex) {
+            return '<button class="phon-chip chip-listen" type="button" data-word="' + ex.replace(/"/g, '&quot;') + '">' + escapeHtml(ex) + '</button>';
+          }).join('')
+          + '</div></div>';
+      }).join('');
+      var pairsHtml = (ph.minimalPairs || []).map(function(pair) {
+        return '<div class="phon-pair-card">'
+          + '<div class="phon-pair-words">'
+          + '<button class="phon-pair-word chip-listen" data-word="' + pair.a.replace(/"/g, '&quot;') + '">'
+          + escapeHtml(pair.a) + '<span class="phon-ipa">' + escapeHtml(pair.ipa_a) + '</span></button>'
+          + '<span class="phon-pair-vs">≠</span>'
+          + '<button class="phon-pair-word chip-listen" data-word="' + pair.b.replace(/"/g, '&quot;') + '">'
+          + escapeHtml(pair.b) + '<span class="phon-ipa">' + escapeHtml(pair.ipa_b) + '</span></button>'
+          + '</div>'
+          + '<p class="phon-pair-note">' + escapeHtml(pair.note) + '</p>'
+          + '</div>';
+      }).join('');
+      phonetiqueBody = '<div class="unit-practice-box"><strong>Écoute et répétition</strong><p>Cliquez sur les mots pour entendre, puis répétez. Faites attention aux sons nasals et au « r » français.</p></div>'
+        + (soundsHtml ? '<h4 class="phon-section-title">Sons ciblés</h4><div class="phon-sounds-grid">' + soundsHtml + '</div>' : '')
+        + (pairsHtml ? '<h4 class="phon-section-title">Paires minimales</h4><div class="phon-pairs-grid">' + pairsHtml + '</div>' : '');
+    } else {
+      var phonWords = unitContent.vocabulary.slice(0, 8).map(function(item) {
+        return '<button class="phon-chip chip-listen" type="button" data-word="' + item.word.replace(/"/g, '&quot;') + '">' + item.word + '</button>';
+      }).join('');
+      phonetiqueBody = '<div class="unit-practice-box"><strong>Écoute et répétition</strong><p>Cliquez sur les mots, écoutez, puis répétez lentement. Faites attention aux sons, au rythme et aux liaisons possibles.</p></div>'
+        + '<div class="phon-chip-grid">' + phonWords + '</div>';
+    }
 
     // Exercice de débat (C1/C2)
     var debateBody = '';
@@ -828,28 +912,47 @@
     var gamesBody = debateBody;
     if (entry.level === 'A1') {
       var u = '?unite=' + encodeURIComponent(entry.badge);
-      var gameCards = [
-        { href: 'entrainement-a1-vrai-faux.html'    + u, icon: '✓✗',  label: 'Vrai ou Faux',  desc: 'Évaluer des affirmations sur le thème',          color: 'teal'   },
-        { href: 'entrainement-a1-apparier.html'     + u, icon: '🔗',  label: 'Associer',       desc: 'Relier chaque mot à sa définition',               color: 'blue'   },
-        { href: 'entrainement-a1-completer.html'    + u, icon: '✏️',  label: 'Compléter',      desc: 'Retrouver les mots manquants',                    color: 'purple' },
-        { href: 'entrainement-a1-ecouter.html'      + u, icon: '🔊',  label: 'Écouter',        desc: 'Comprendre un document oral',                     color: 'gold'   },
-        { href: 'entrainement-conjugaison-quiz.html'+ u, icon: '🧠',  label: 'Quiz',           desc: 'Vérifier sa compréhension de l\'unité',           color: 'red'    },
-        { href: 'entrainement-conjugaison-a1.html'  + u, icon: '🔤',  label: 'Conjugaison',    desc: 'S\'entraîner sur les verbes clés',                color: 'teal'   },
-        { href: 'entrainement-a1-mots-meles.html'   + u, icon: '🔍',  label: 'Mots mêlés',     desc: 'Retrouver les mots cachés dans la grille',        color: 'blue'   },
-        { href: 'entrainement-a1-anagrammes.html'   + u, icon: '🔀',  label: 'Anagrammes',     desc: 'Reconstituer les mots à partir des lettres',      color: 'purple' },
-        { href: 'entrainement-a1-flashcards.html'   + u, icon: '🃏',  label: 'Flashcards',     desc: 'Mémoriser le vocabulaire avec des cartes',        color: 'teal'   },
-        { href: 'entrainement-a1-dialogue.html'     + u, icon: '💬',  label: 'Dialogue',       desc: 'Simuler une situation de communication',          color: 'gold'   },
-        { href: 'entrainement-a1-construire.html'   + u, icon: '🧩',  label: 'Construire',     desc: 'Remettre les mots d\'une phrase en ordre',        color: 'red'    },
-        { href: 'entrainement-a1-validation.html'   + u, icon: '✍️',  label: 'Valider',        desc: 'Tapez le mot correspondant à la définition',      color: 'purple' }
+      var exProgress = readExerciseProgress();
+      var unitKey = entry.href.replace('.html', '');
+      var unitExProgress = exProgress[unitKey] || {};
+
+      var gameCompleted = function(gameKey) {
+        return !!(unitExProgress[gameKey] && unitExProgress[gameKey].completed);
+      };
+      var gameCard = function(c) {
+        var done = gameCompleted(c.key);
+        return '<a class="game-card game-card--' + c.color + (done ? ' game-card--done' : '') + '" href="' + c.href + '">'
+          + '<span class="game-card-icon" aria-hidden="true">' + c.icon + '</span>'
+          + '<span class="game-card-label">' + c.label + '</span>'
+          + '<span class="game-card-desc">' + c.desc + '</span>'
+          + (done ? '<span class="game-card-badge">✓ Terminé</span>' : '')
+          + '</a>';
+      };
+
+      var comprehensionCards = [
+        { key: 'vrai-faux',   href: 'entrainement-a1-vrai-faux.html'    + u, icon: '✓✗',  label: 'Vrai ou Faux',  desc: 'Évaluer des affirmations sur le thème',    color: 'teal'   },
+        { key: 'ecouter',     href: 'entrainement-a1-ecouter.html'      + u, icon: '🔊',  label: 'Écouter',        desc: 'Comprendre un document oral',               color: 'gold'   },
+        { key: 'quiz',        href: 'entrainement-conjugaison-quiz.html' + u, icon: '🧠',  label: 'Quiz',           desc: 'Vérifier sa compréhension de l\'unité',    color: 'red'    },
+        { key: 'apparier',    href: 'entrainement-a1-apparier.html'     + u, icon: '🔗',  label: 'Associer',       desc: 'Relier chaque mot à sa définition',         color: 'blue'   }
       ];
-      gamesBody += '<div class="game-hub">'
-        + gameCards.map(function(c) {
-            return '<a class="game-card game-card--' + c.color + '" href="' + c.href + '">'
-              + '<span class="game-card-icon" aria-hidden="true">' + c.icon + '</span>'
-              + '<span class="game-card-label">' + c.label + '</span>'
-              + '<span class="game-card-desc">' + c.desc + '</span>'
-              + '</a>';
-          }).join('')
+      var productionCards = [
+        { key: 'completer',   href: 'entrainement-a1-completer.html'    + u, icon: '✏️',  label: 'Compléter',      desc: 'Retrouver les mots manquants',              color: 'purple' },
+        { key: 'conjugaison', href: 'entrainement-conjugaison-a1.html'  + u, icon: '🔤',  label: 'Conjugaison',    desc: 'S\'entraîner sur les verbes clés',           color: 'teal'   },
+        { key: 'mots-meles',  href: 'entrainement-a1-mots-meles.html'   + u, icon: '🔍',  label: 'Mots mêlés',     desc: 'Retrouver les mots cachés dans la grille',  color: 'blue'   },
+        { key: 'anagrammes',  href: 'entrainement-a1-anagrammes.html'   + u, icon: '🔀',  label: 'Anagrammes',     desc: 'Reconstituer les mots à partir des lettres', color: 'purple' },
+        { key: 'flashcards',  href: 'entrainement-a1-flashcards.html'   + u, icon: '🃏',  label: 'Flashcards',     desc: 'Mémoriser le vocabulaire avec des cartes',  color: 'teal'   },
+        { key: 'dialogue',    href: 'entrainement-a1-dialogue.html'     + u, icon: '💬',  label: 'Dialogue',       desc: 'Simuler une situation de communication',    color: 'gold'   },
+        { key: 'construire',  href: 'entrainement-a1-construire.html'   + u, icon: '🧩',  label: 'Construire',     desc: 'Remettre les mots d\'une phrase en ordre',  color: 'red'    },
+        { key: 'valider',     href: 'entrainement-a1-validation.html'   + u, icon: '✍️',  label: 'Valider',        desc: 'Tapez le mot correspondant à la définition', color: 'purple' }
+      ];
+
+      gamesBody += '<div class="game-hub-section">'
+        + '<div class="game-hub-section-title">🧩 Compréhension</div>'
+        + '<div class="game-hub">' + comprehensionCards.map(gameCard).join('') + '</div>'
+        + '</div>'
+        + '<div class="game-hub-section">'
+        + '<div class="game-hub-section-title">✍️ Production &amp; entraînement</div>'
+        + '<div class="game-hub">' + productionCards.map(gameCard).join('') + '</div>'
         + '</div>';
     }
 
@@ -966,7 +1069,12 @@
       'réfléchir':   ['réfléchis','réfléchis','réfléchit','réfléchissons','réfléchissez','réfléchissent'],
       'agir':        ['agis','agis','agit','agissons','agissez','agissent'],
       'émouvoir':    ['émeus','émeus','émeut','émouvons','émouvez','émeuvent'],
-      'sous-entendre':['sous-entends','sous-entends','sous-entend','sous-entendons','sous-entendez','sous-entendent']
+      'sous-entendre':['sous-entends','sous-entends','sous-entend','sous-entendons','sous-entendez','sous-entendent'],
+      'découvrir':    ['découvre','découvres','découvre','découvrons','découvrez','découvrent'],
+      'couvrir':      ['couvre','couvres','couvre','couvrons','couvrez','couvrent'],
+      'offrir':       ['offre','offres','offre','offrons','offrez','offrent'],
+      'ouvrir':       ['ouvre','ouvres','ouvre','ouvrons','ouvrez','ouvrent'],
+      'situer':       ['situe','situes','situe','situons','situez','situent']
     };
 
     var forms;
@@ -1109,6 +1217,11 @@
       var objectiveFill = document.getElementById('finalObjectiveProgressFill');
       if (objectiveText) objectiveText.textContent = objectiveDone + ' / ' + objectiveTotal + ' validés';
       if (objectiveFill) objectiveFill.style.width = pct + '%';
+      // Sync barre de progression dans l'onglet Objectifs
+      var objLabel = document.getElementById('objProgressLabel');
+      var objFill = document.getElementById('objProgressFill');
+      if (objLabel) objLabel.textContent = objectiveDone + ' / ' + objectiveTotal + ' validés';
+      if (objFill) objFill.style.width = pct + '%';
 
       if (pct < 80) {
         result.textContent = 'Score : ' + score + ' / ' + fields.length + ' (' + pct + '%). Vous avancez : ' + objectiveDone + ' objectif(s) se remplissent déjà. Reprenez les onglets et les jeux, puis réessayez.';
@@ -1228,7 +1341,90 @@
         return;
       }
 
-      var btn = e.target.closest('.vocab-listen, .chip-listen');
+      // Conjugaison masquer/révéler
+      var conjToggle = e.target.closest('.conj-toggle-reveal');
+      if (conjToggle) {
+        var grid = document.getElementById('conjGrid');
+        var revealed = conjToggle.dataset.revealed === 'true';
+        if (revealed) {
+          conjToggle.dataset.revealed = 'false';
+          conjToggle.textContent = '👁 Révéler les formes';
+          if (grid) grid.classList.add('conj-hidden');
+        } else {
+          conjToggle.dataset.revealed = 'true';
+          conjToggle.textContent = '🙈 Masquer les formes';
+          if (grid) grid.classList.remove('conj-hidden');
+        }
+        return;
+      }
+
+      // Vocabulaire quiz mode toggle
+      var quizToggle = e.target.closest('.vocab-quiz-toggle');
+      if (quizToggle) {
+        var quiz = quizToggle.dataset.quiz === 'true';
+        var groups = document.getElementById('vocabGroups');
+        if (quiz) {
+          quizToggle.dataset.quiz = 'false';
+          quizToggle.textContent = '🧠 Mode quiz — masquer définitions';
+          if (groups) groups.classList.remove('vocab-quiz-mode');
+        } else {
+          quizToggle.dataset.quiz = 'true';
+          quizToggle.textContent = '✓ Quitter le mode quiz';
+          if (groups) groups.classList.add('vocab-quiz-mode');
+        }
+        return;
+      }
+
+      // Vocabulaire quiz mode : clic sur carte pour révéler la définition
+      var vocabCard = e.target.closest('.vocab-card');
+      if (vocabCard && document.getElementById('vocabGroups') && document.getElementById('vocabGroups').classList.contains('vocab-quiz-mode')) {
+        vocabCard.classList.toggle('vocab-card--revealed');
+        return;
+      }
+
+      // Mémo — Écouter tout
+      var listenAll = e.target.closest('.memo-listen-all');
+      if (listenAll) {
+        if (!window.speechSynthesis) return;
+        var chips = Array.from(listenAll.closest('.comm-cascade-panel') ? listenAll.closest('.comm-cascade-panel').querySelectorAll('.chip-listen[data-word]') : []);
+        if (!chips.length) return;
+        window.speechSynthesis.cancel();
+        var qi = 0;
+        var speakNext = function() {
+          if (qi >= chips.length) return;
+          var w = chips[qi++].dataset.word;
+          var u2 = new SpeechSynthesisUtterance(w);
+          var v2 = _getBestFrVoice();
+          if (v2) { u2.voice = v2; u2.lang = v2.lang; } else { u2.lang = 'fr-CH'; }
+          u2.rate = 0.85;
+          u2.onend = u2.onerror = speakNext;
+          window.speechSynthesis.speak(u2);
+        };
+        speakNext();
+        return;
+      }
+
+      // Grammaire fill-in — bouton corriger
+      var fillInBtn = e.target.closest('.gram-fillin-submit');
+      if (fillInBtn) {
+        var box = fillInBtn.closest('.gram-fillin-box');
+        if (!box) return;
+        var items = Array.from(box.querySelectorAll('.gram-fillin-item'));
+        var score = 0;
+        items.forEach(function(item) {
+          var expected = Number(item.getAttribute('data-answer'));
+          var checked = item.querySelector('input:checked');
+          item.classList.remove('is-correct', 'is-wrong');
+          if (!checked) return;
+          if (Number(checked.value) === expected) { score++; item.classList.add('is-correct'); }
+          else { item.classList.add('is-wrong'); }
+        });
+        var res = box.querySelector('.gram-fillin-result');
+        if (res) res.textContent = score + ' / ' + items.length + (score === items.length ? ' — Parfait !' : ' — Réessayez !');
+        return;
+      }
+
+      var btn = e.target.closest('.vocab-listen, .chip-listen, .phon-pair-word');
       if (!btn) return;
       var word = btn.dataset.word;
       if (!word || !window.speechSynthesis) return;
@@ -1238,7 +1434,7 @@
       if (voice) { utt.voice = voice; utt.lang = voice.lang; }
       else { utt.lang = 'fr-CH'; }
       utt.rate = 0.9;
-      var speakingClass = btn.classList.contains('chip-listen') ? 'chip-listen--speaking' : 'vocab-listen--speaking';
+      var speakingClass = btn.classList.contains('chip-listen') || btn.classList.contains('phon-pair-word') ? 'chip-listen--speaking' : 'vocab-listen--speaking';
       btn.classList.add(speakingClass);
       utt.onend = utt.onerror = function() { btn.classList.remove(speakingClass); };
       window.speechSynthesis.speak(utt);

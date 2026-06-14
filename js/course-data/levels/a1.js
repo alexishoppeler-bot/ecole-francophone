@@ -826,6 +826,20 @@ window.COURSE_DATA_PARTS.a1 = {
           "definition": "reconnu par les institutions d'un pays ou d'une région"
         }
       ],
+      "vocabGroups": [
+        {
+          "label": "Géographie",
+          "words": ["un pays", "une ville", "une capitale", "une région", "continent", "frontière", "la Suisse romande", "un canton"]
+        },
+        {
+          "label": "Langues & culture",
+          "words": ["la francophonie", "une langue officielle", "langue", "francophone", "bilingue", "plurilingue", "romanche", "alémanique", "un locuteur", "officiel"]
+        },
+        {
+          "label": "Identité & personnes",
+          "words": ["nationalité", "habitant"]
+        }
+      ],
       "examples": [
         "La Suisse est en Europe.",
         "À Genève, on parle français.",
@@ -856,6 +870,23 @@ window.COURSE_DATA_PARTS.a1 = {
       ],
       "grammarExtra": "<div class=\"gram-country-table\"><div class=\"gram-country-col\"><div class=\"gram-country-head fem\">🔵 Féminin — <em>en</em></div><ul><li>en Suisse</li><li>en Belgique</li><li>en France</li><li>en Espagne</li><li>en Italie</li><li>en Allemagne</li><li>en Chine</li><li>en Tunisie</li></ul></div><div class=\"gram-country-col\"><div class=\"gram-country-head masc\">🟠 Masculin — <em>au</em></div><ul><li>au Canada</li><li>au Maroc</li><li>au Portugal</li><li>au Japon</li><li>au Brésil</li><li>au Mexique</li><li>au Sénégal</li><li>au Cameroun</li></ul></div><div class=\"gram-country-col\"><div class=\"gram-country-head plur\">🟢 Pluriel — <em>aux</em></div><ul><li>aux États-Unis</li><li>aux Pays-Bas</li><li>aux Philippines</li></ul></div></div>",
       "grammarError": "<span class=\"gram-wrong\">Je vais au Suisse.</span> → <span class=\"gram-right\">Je vais en Suisse.</span> — La Suisse est féminin, on utilise <em>en</em>, pas <em>au</em>.",
+      "grammarFillIn": [
+        { "prompt": "Je vais ___ Canada.", "choices": ["au", "en", "à", "aux"], "answer": 0 },
+        { "prompt": "Elle habite ___ Paris.", "choices": ["à", "en", "au", "aux"], "answer": 0 },
+        { "prompt": "Nous allons ___ États-Unis.", "choices": ["aux", "au", "en", "à"], "answer": 0 }
+      ],
+      "phonetique": {
+        "targetSounds": [
+          { "sound": "[ɔ̃]", "label": "son « on »", "examples": ["francophone", "mon", "canton", "frontière"] },
+          { "sound": "[y]", "label": "son « u »", "examples": ["Suisse", "une", "plurilingue", "tu"] },
+          { "sound": "[ʁ]", "label": "son « r »", "examples": ["région", "romanche", "fréquent", "frà"] }
+        ],
+        "minimalPairs": [
+          { "a": "pays", "ipa_a": "[pei]", "b": "paix", "ipa_b": "[pɛ]", "note": "Même prononciation ! Les deux se disent [pɛ]." },
+          { "a": "langue", "ipa_a": "[lɑ̃g]", "b": "longue", "ipa_b": "[lɔ̃g]", "note": "Attention au son nasale : [ɑ̃] vs [ɔ̃]." },
+          { "a": "franc", "ipa_a": "[fʁɑ̃]", "b": "front", "ipa_b": "[fʁɔ̃]", "note": "[ɑ̃] comme dans \"blanc\", [ɔ̃] comme dans \"bon\"." }
+        ]
+      },
       "expressionsPlus": [
         {
           "text": "Je viens de…",
@@ -936,6 +967,11 @@ window.COURSE_DATA_PARTS.a1 = {
         {
           "prompt": "🔊 Phonétique — Dans quel mot entend-on le son [ɔ̃] comme dans « bon » ?",
           "choices": ["francophone", "Suisse", "pays"],
+          "answer": 0
+        },
+        {
+          "prompt": "🔄 Conjugaison — Quelle est la forme correcte de « être » avec « il » ?",
+          "choices": ["il est", "il suis", "il êtes"],
           "answer": 0
         }
       ]

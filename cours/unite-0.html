@@ -16,12 +16,6 @@
     <main class="unite-main">
       <a class="cours-back" data-keep-label="true" href="../plateformes/a1/index.html">← Choix d'unité</a>
 
-      <script>
-        function openLightbox() { document.getElementById('francoLightbox').classList.add('open'); document.body.style.overflow='hidden'; }
-        function closeLightbox() { document.getElementById('francoLightbox').classList.remove('open'); document.body.style.overflow=''; }
-        document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLightbox(); });
-      </script>
-
       <div class="unite-hero blue">
         <div class="unite-hero-badge">
           <span class="unite-hero-badge-label">Unité</span>
@@ -34,63 +28,6 @@
         <span class="unite-hero-icon" aria-hidden="true">🌍</span>
       </div>
 
-      <figure class="franco-fig">
-        <img src="../assets/francophonie.png" alt="Carte du monde francophone" class="franco-img" onclick="openLightbox()" title="Cliquer pour agrandir">
-        <figcaption class="franco-caption">🌍 Les pays et régions francophones dans le monde</figcaption>
-      </figure>
-      <style>
-        .franco-fig { margin: 0 0 20px; text-align: center; }
-        .franco-img {
-          max-width: 340px; width: 100%; border-radius: 16px;
-          box-shadow: 0 4px 24px rgba(90,171,240,.22);
-          animation: francoFloat 4s ease-in-out infinite;
-          transition: transform .3s, box-shadow .3s;
-          cursor: pointer;
-        }
-        .franco-img:hover {
-          transform: scale(1.04) translateY(-4px);
-          box-shadow: 0 10px 36px rgba(136,0,255,.28);
-        }
-        @keyframes francoFloat {
-          0%,100% { transform: translateY(0); }
-          50%      { transform: translateY(-6px); }
-        }
-        .franco-caption {
-          font-size: .78rem; color: var(--text-muted,#666);
-          margin-top: 8px; display: block;
-          animation: francoFadeIn 1s ease .3s both;
-        }
-        @keyframes francoFadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
-
-        /* Lightbox */
-        .franco-lightbox {
-          display: none; position: fixed; inset: 0; z-index: 9999;
-          background: rgba(0,0,0,.82); backdrop-filter: blur(6px);
-          align-items: center; justify-content: center; cursor: zoom-out;
-          animation: lbIn .22s ease;
-        }
-        .franco-lightbox.open { display: flex; }
-        @keyframes lbIn { from{opacity:0} to{opacity:1} }
-        .franco-lightbox img {
-          max-width: 92vw; max-height: 88vh;
-          border-radius: 18px; box-shadow: 0 12px 60px rgba(0,0,0,.6);
-          animation: lbImgIn .25s ease;
-        }
-        @keyframes lbImgIn { from{transform:scale(.88)} to{transform:scale(1)} }
-        .franco-lightbox-close {
-          position: absolute; top: 18px; right: 22px;
-          background: rgba(255,255,255,.15); border: none; color: #fff;
-          font-size: 1.4rem; width: 40px; height: 40px; border-radius: 50%;
-          cursor: pointer; display: flex; align-items: center; justify-content: center;
-          transition: background .15s;
-        }
-        .franco-lightbox-close:hover { background: rgba(255,255,255,.3); }
-      </style>
-
-      <div class="franco-lightbox" id="francoLightbox" onclick="closeLightbox()">
-        <button class="franco-lightbox-close" onclick="closeLightbox()" aria-label="Fermer">✕</button>
-        <img src="../assets/francophonie.png" alt="Carte du monde francophone agrandie" onclick="event.stopPropagation()">
-      </div>
 
 <div class="unite-sections"></div>
     </main>

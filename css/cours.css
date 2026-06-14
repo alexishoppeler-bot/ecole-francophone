@@ -3021,3 +3021,265 @@ body.focus-mode .cours-back {
     width: calc(100vw - 20px);
   }
 }
+
+/* ── Objectifs — barre de progression ── */
+.obj-progress-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.obj-progress-bar-track {
+  flex: 1;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 99px;
+  overflow: hidden;
+}
+.obj-progress-bar-fill {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #3dc8c0, #5AABF0);
+  border-radius: 99px;
+  transition: width .5s ease;
+}
+.obj-progress-bar-label {
+  font-size: .78rem;
+  color: var(--text2);
+  white-space: nowrap;
+}
+.unite-obj-list li.is-done {
+  border-color: rgba(61,200,192,.35);
+  background: rgba(61,200,192,.07);
+}
+.unite-obj-list li.is-done::before {
+  background: linear-gradient(135deg, #3dc8c0, #22c55e);
+}
+
+/* ── Communication — figcaption guidée ── */
+.comm-guided-questions {
+  margin: 8px 0 0 0;
+  padding-left: 18px;
+  font-size: .85rem;
+  color: #374151;
+  line-height: 1.6;
+}
+.comm-guided-questions li { margin-bottom: 4px; }
+
+/* ── Communication — Mémo Écouter tout ── */
+.memo-controls {
+  margin-bottom: 10px;
+}
+
+/* ── Grammaire — exercice à trous ── */
+.gram-fillin-box {
+  margin-top: 18px;
+  padding: 18px;
+  background: #f8faff;
+  border: 1.5px solid rgba(90,171,240,.2);
+  border-radius: 14px;
+}
+.gram-fillin-title {
+  display: block;
+  font-size: .9rem;
+  margin-bottom: 14px;
+  color: #21314f;
+}
+.gram-fillin-items { display: grid; gap: 14px; }
+.gram-fillin-item {
+  padding: 12px 14px;
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  transition: border-color .15s;
+}
+.gram-fillin-item.is-correct { border-color: #22c55e; background: rgba(34,197,94,.06); }
+.gram-fillin-item.is-wrong   { border-color: #ef4444; background: rgba(239,68,68,.06); }
+.gram-fillin-prompt {
+  font-size: .92rem;
+  font-weight: 600;
+  color: #21314f;
+  margin: 0 0 8px;
+}
+.gram-fillin-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.gram-fillin-choice {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: .85rem;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1.5px solid #e5e7eb;
+  background: #f9fafb;
+  transition: border-color .15s, background .15s;
+}
+.gram-fillin-choice:hover { border-color: #5AABF0; background: #f0f8ff; }
+.gram-fillin-choice input { display: none; }
+.gram-fillin-choice:has(input:checked) { border-color: #5AABF0; background: rgba(90,171,240,.12); font-weight: 700; }
+.gram-fillin-submit { margin-top: 14px; }
+.gram-fillin-result { margin-left: 12px; font-size: .88rem; font-weight: 600; color: #374151; }
+
+/* ── Conjugaison — contrôles masquer/révéler ── */
+.conj-controls { margin-bottom: 12px; }
+.conj-grid.conj-hidden .conj-form { visibility: hidden; }
+
+/* ── Vocabulaire — groupes thématiques ── */
+.vocab-controls { margin-bottom: 14px; }
+.vocab-group { margin-bottom: 22px; }
+.vocab-group-label {
+  font-size: .78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: #5AABF0;
+  margin-bottom: 10px;
+  padding-left: 2px;
+}
+
+/* Vocabulaire quiz mode */
+.vocab-groups.vocab-quiz-mode .vocab-def--quiz-target {
+  visibility: hidden;
+}
+.vocab-groups.vocab-quiz-mode .vocab-card--revealed .vocab-def--quiz-target {
+  visibility: visible;
+}
+.vocab-groups.vocab-quiz-mode .vocab-card {
+  cursor: pointer;
+}
+.vocab-groups.vocab-quiz-mode .vocab-card:hover {
+  border-color: #9B35EC;
+}
+.vocab-groups.vocab-quiz-mode .vocab-card--revealed {
+  border-color: #22c55e;
+  background: rgba(34,197,94,.05);
+}
+
+/* ── Phonétique — sons ciblés ── */
+.phon-section-title {
+  font-size: .85rem;
+  font-weight: 700;
+  color: #374151;
+  margin: 18px 0 10px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.phon-sounds-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.phon-sound-card {
+  padding: 14px;
+  background: #fff;
+  border: 1.5px solid rgba(90,171,240,.2);
+  border-radius: 12px;
+  text-align: center;
+}
+.phon-sound-symbol {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #5AABF0;
+  margin-bottom: 4px;
+  font-family: monospace;
+}
+.phon-sound-label {
+  font-size: .78rem;
+  color: var(--text2);
+  margin-bottom: 10px;
+}
+.phon-sound-examples {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* Paires minimales */
+.phon-pairs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+.phon-pair-card {
+  padding: 14px;
+  background: #fff;
+  border: 1.5px solid rgba(155,53,236,.15);
+  border-radius: 12px;
+}
+.phon-pair-words {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.phon-pair-word {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: #f8f5ff;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: .9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color .15s;
+  color: #1e1b4b;
+}
+.phon-pair-word:hover { border-color: #9B35EC; }
+.phon-ipa {
+  font-size: .7rem;
+  font-weight: 400;
+  color: #9B35EC;
+  font-family: monospace;
+}
+.phon-pair-vs {
+  font-size: 1.1rem;
+  font-weight: 900;
+  color: #e05555;
+  flex-shrink: 0;
+}
+.phon-pair-note {
+  font-size: .78rem;
+  color: var(--text2);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Jeux — groupes Compréhension / Production ── */
+.game-hub-section { margin-bottom: 28px; }
+.game-hub-section-title {
+  font-size: .8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--text2);
+  margin-bottom: 12px;
+  padding-left: 2px;
+}
+.game-card { position: relative; }
+.game-card--done { opacity: .85; }
+.game-card-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: .65rem;
+  font-weight: 800;
+  background: #22c55e;
+  color: #fff;
+  padding: 2px 7px;
+  border-radius: 99px;
+  letter-spacing: .04em;
+}
+
+@media (max-width: 640px) {
+  .phon-sounds-grid { grid-template-columns: 1fr; }
+  .phon-pairs-grid  { grid-template-columns: 1fr; }
+}

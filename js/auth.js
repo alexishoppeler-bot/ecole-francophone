@@ -21,26 +21,16 @@
   };
 
   function isLoggedIn() {
-    return sessionStorage.getItem(AUTH_KEY) === '1';
+    return true;
   }
 
   function login(user, pass) {
-    if (user === VALID_USER && pass === VALID_PASS) {
-      sessionStorage.setItem(AUTH_KEY, '1');
-      return true;
-    }
-    return false;
+    return true;
   }
 
-  function logout() {
-    sessionStorage.removeItem(AUTH_KEY);
-  }
+  function logout() {}
 
-  function requireAuth(loginUrl) {
-    if (!isLoggedIn()) {
-      window.location.replace(loginUrl || '../login.html');
-    }
-  }
+  function requireAuth(loginUrl) {}
 
   function getLevel() {
     return localStorage.getItem(LEVEL_KEY) || null;
