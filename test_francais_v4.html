@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test de niveau de français — école-francophone.ch</title>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  const firebaseConfig = {
+    apiKey:            "FIREBASE_API_KEY",
+    authDomain:        "FIREBASE_AUTH_DOMAIN",
+    projectId:         "FIREBASE_PROJECT_ID",
+    storageBucket:     "FIREBASE_STORAGE_BUCKET",
+    messagingSenderId: "FIREBASE_MESSAGING_SENDER_ID",
+    appId:             "FIREBASE_APP_ID"
+  };
+  try {
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
+    window._db              = db;
+    window._collection      = collection;
+    window._addDoc          = addDoc;
+    window._serverTimestamp = serverTimestamp;
+  } catch(e) { console.warn("Firebase non configuré:", e.message); }
+</script>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap">
+<style>
+/* ══ PALETTE EXACTE DE LA PLATEFORME école-francophone.ch ══ */
+:root {
+  --bg:       #f5f3ff;
+  --bg2:      #ede9fe;
+  --bg3:      #ddd6fe;
+  --surface:  #ffffff;
+  --surface2: #faf8ff;
+  --border:   #c4b5fd;
+  --text:     #1a1a2e;
+  --text2:    #4a4a6a;
+  --text3:    #9090b0;
+  --accent:   #1D4ED8;
+  --accent2:  #7C3AED;
+  --accent3:  #A855F7;
+  --danger:   #e05555;
+  --success:  #10b981;
+  --warning:  #f0a030;
+  --gradient: linear-gradient(135deg, #1D4ED8 0%, #7C3AED 100%);
+  --font:     'Nunito', 'Open Sans', sans-serif;
+  --r-sm: 6px; --r-md: 10px; --r-lg: 14px; --r-xl: 20px;
+  --shadow-sm: 0 1px 4px rgba(90,171,240,.10), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 16px rgba(124,58,237,.12), 0 2px 6px rgba(0,0,0,.05);
+  --shadow-lg: 0 8px 32px rgba(124,58,237,.14), 0 4px 12px rgba(0,0,0,.06);
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+
+body {
+  font-family: var(--font);
+  background:
+    radial-gradient(circle at 12% 12%, rgba(124,58,237,.22), transparent 28%),
+    radial-gradient(circle at 88% 16%, rgba(168,85,247,.14), transparent 30%),
+    linear-gradient(180deg, #f5f3ff 0%, #ede9fe 100%);
+  background-attachment: fixed;
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── HEADER (identique à la plateforme) ── */
+.hdr {
+  position: sticky;
+  top: 0;
+  height: 72px;
+  background: linear-gradient(135deg, #1e3a8a 0%, #1D4ED8 40%, #7C3AED 100%);
+  border-bottom: 1px solid rgba(167,139,250,.25);
+  box-shadow: 0 4px 32px rgba(124,58,237,.35);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 clamp(16px,2vw,28px);
+  z-index: 1000;
+}
+.hdr::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: -1px;
+  height: 2px;
+  background: linear-gradient(90deg, #1D4ED8, #7C3AED, #A855F7);
+  opacity: .8;
+}
+.hdr-logo-wrap {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none;
+  transition: opacity .18s;
+}
+.hdr-logo-wrap:hover { opacity: .85; }
+.hdr-logo { height: 48px; width: auto; object-fit: contain; flex-shrink: 0; }
+.hdr-logo-text {
+  font-family: var(--font); font-weight: 800; font-size: 20px;
+  line-height: 1; white-space: nowrap;
+}
+.hdr-logo-blue   { color: #c4b5fd; }
+.hdr-logo-purple { color: #ffffff; }
+.hdr-right {
+  font-size: .82rem; color: rgba(255,255,255,.55);
+  text-align: right; line-height: 1.4; font-weight: 700;
+  font-family: var(--font);
+}
+.hdr-right strong { color: #fff; }
+
+/* ── BARRE DE PROGRESSION ── */
+.prog-wrap { height: 4px; background: var(--bg3); }
+.prog-bar  { height: 4px; background: var(--gradient); transition: width .4s ease; border-radius: 0 999px 999px 0; }
+
+/* ── LAYOUT ── */
+.wrapper { max-width: 760px; margin: 0 auto; padding: clamp(28px,5vw,56px) 16px 80px; }
+
+/* ── CARD ── */
+.card {
+  background: var(--surface);
+  border-radius: var(--r-xl);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  padding: clamp(26px,5vw,44px);
+  margin-bottom: 20px;
+  animation: card-in .38s ease both;
+}
+@keyframes card-in { from { opacity:0; transform:translateY(10px) } to { opacity:1; transform:none } }
+@media(max-width:600px){ .card{ padding:20px 16px } }
+
+/* ── ÉCRANS ── */
+.ecran { display:none }
+.ecran.actif { display:block }
+
+/* ── INSTRUCTION ── */
+.instr {
+  background: var(--bg2);
+  border-left: 3px solid var(--accent2);
+  border-radius: 0 var(--r-lg) var(--r-lg) 0;
+  padding: 11px 16px;
+  margin-bottom: 20px;
+  font-size: .88rem;
+  color: var(--text2);
+  font-weight: 700;
+}
+
+/* ── TEXTE À LIRE ── */
+.texte-lu {
+  background: var(--bg2);
+  border-left: 3px solid var(--accent3);
+  border-radius: 0 var(--r-lg) var(--r-lg) 0;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  font-size: .94rem;
+  line-height: 1.85;
+  white-space: pre-wrap;
+  color: var(--text);
+}
+
+/* ── QUESTION LABEL ── */
+.q-label { font-size: 1rem; font-weight: 800; margin-bottom: 14px; display: block; color: var(--text); }
+
+/* ── QCM UNIQUE (cercles) ── */
+.opts-radio { display:flex; flex-direction:column; gap:9px }
+.opt-radio {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-lg);
+  cursor: pointer;
+  transition: border-color .15s, background .15s, box-shadow .15s;
+  font-size: .94rem; font-weight: 700;
+  background: var(--surface);
+  user-select: none; color: var(--text);
+}
+.opt-radio:hover { border-color: var(--accent2); background: var(--bg2); }
+.opt-radio.sel   { border-color: var(--accent2); background: rgba(124,58,237,.08); box-shadow: 0 0 0 3px rgba(124,58,237,.12); }
+.opt-jnsp { border-style: dashed; color: var(--text3); font-style: italic; font-weight: 600; }
+.opt-jnsp.sel { border-color: var(--text3); background: var(--bg2); color: var(--text2); font-style: normal; }
+.opt-radio input[type=radio] { accent-color:var(--accent2); width:17px; height:17px; flex-shrink:0 }
+
+/* ── QCM MULTIPLE (carrés) ── */
+.opts-check { display:flex; flex-direction:column; gap:9px }
+.opt-check {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-lg);
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  font-size: .94rem; font-weight: 700;
+  background: var(--surface);
+  user-select: none; color: var(--text);
+}
+.opt-check:hover { border-color: var(--accent3); background: var(--bg2); }
+.opt-check.sel   { border-color: var(--accent3); background: rgba(168,85,247,.08); }
+.opt-check input[type=checkbox] { accent-color:var(--accent3); width:17px; height:17px; flex-shrink:0 }
+
+/* ── VRAI / FAUX ── */
+.vf-grp { display:flex; gap:12px }
+.vf-btn {
+  flex: 1; padding: 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+  font-size: .95rem; font-weight: 800;
+  cursor: pointer; transition: all .15s;
+  text-align: center; font-family: var(--font); color: var(--text);
+}
+.vf-btn:hover { border-color:var(--accent2); background:var(--bg2) }
+.vf-btn.sel   { border-color:var(--accent2); background:rgba(124,58,237,.08); color:var(--accent2) }
+
+/* ── DROPDOWN INLINE ── */
+.isel { display:inline-block; vertical-align:middle; margin:0 3px }
+.isel select {
+  border: 1.5px solid var(--accent2);
+  border-radius: var(--r-sm);
+  padding: 4px 10px;
+  font-size: .92rem; font-family: var(--font); font-weight: 700;
+  background: var(--surface); color: var(--text);
+  cursor: pointer; outline: none;
+}
+.isel select:focus { box-shadow: 0 0 0 3px rgba(124,58,237,.18) }
+
+/* ── SAISIE LIBRE ── */
+.inp-libre {
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 12px 16px;
+  font-size: .95rem; font-family: var(--font); font-weight: 700;
+  outline: none; transition: border-color .15s, box-shadow .15s;
+  width: 100%; margin-top: 8px;
+  background: var(--surface); color: var(--text);
+}
+.inp-libre:focus { border-color: var(--accent2); box-shadow: 0 0 0 3px rgba(124,58,237,.14) }
+
+/* ── DÉMÊLER (drag & drop) ── */
+.demele-zone {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  min-height: 52px; padding: 12px;
+  border: 2px dashed var(--border);
+  border-radius: var(--r-lg);
+  margin-bottom: 10px; background: var(--bg2);
+  transition: border-color .2s;
+}
+.demele-zone.drag-over { border-color: var(--accent2); background: rgba(124,58,237,.08) }
+.demele-mots-dispo {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  min-height: 44px; padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  background: var(--surface);
+}
+.mot-chip {
+  background: var(--surface);
+  border: 1.5px solid var(--accent2); color: var(--accent2);
+  border-radius: var(--r-sm);
+  padding: 5px 13px; font-size: .9rem; font-weight: 800;
+  cursor: grab; user-select: none;
+  transition: transform .1s, box-shadow .1s;
+}
+.mot-chip:active { cursor:grabbing; transform:scale(1.05); box-shadow:0 4px 12px rgba(124,58,237,.3) }
+.mot-chip.dans-zone { background:var(--bg2); border-color:var(--accent3); color:var(--accent3) }
+.demele-label { font-size:.82rem; color:var(--text3); margin-bottom:4px; font-weight:700 }
+
+/* ── AUDIO ── */
+.audio-bloc {
+  background: linear-gradient(135deg, rgba(29,78,216,.07), rgba(124,58,237,.10));
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 16px 20px; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 14px;
+}
+.audio-ico { font-size: 1.5rem; flex-shrink: 0 }
+.audio-bloc audio { flex:1; height:38px }
+.audio-note { font-size:.78rem; color:var(--text2); margin-top:4px; font-weight:700 }
+
+/* ── FORMULAIRE (écran résultats) ── */
+.form-grp { margin-bottom: 16px }
+.form-grp label { display:block; font-weight:800; margin-bottom:5px; font-size:.9rem }
+.form-grp input {
+  width: 100%; padding: 12px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  font-size: 1rem; font-family: var(--font); font-weight: 700;
+  outline: none; transition: border-color .15s, box-shadow .15s;
+  background: var(--surface); color: var(--text);
+}
+.form-grp input:focus { border-color:var(--accent2); box-shadow:0 0 0 3px rgba(124,58,237,.14) }
+.form-err { color:var(--danger); font-size:.82rem; margin-top:3px; display:none }
+
+/* ── BOUTONS ── */
+.btn {
+  display: inline-block; padding: 14px 32px;
+  border-radius: var(--r-xl); font-size: 1rem; font-weight: 900;
+  cursor: pointer; border: none;
+  transition: opacity .15s, transform .12s, box-shadow .15s;
+  font-family: var(--font); letter-spacing: .01em;
+}
+.btn:hover  { opacity:.9; transform:translateY(-2px) }
+.btn:active { transform:translateY(0) }
+.btn-grad {
+  background: var(--gradient); color: #fff;
+  width:100%; text-align:center; margin-top:16px;
+  box-shadow: 0 8px 24px rgba(124,58,237,.28);
+}
+.btn-ghost {
+  background: transparent; color: var(--accent2);
+  border: 1.5px solid rgba(124,58,237,.45);
+  width:100%; text-align:center; margin-top:10px;
+}
+
+/* ── AVERTISSEMENT ── */
+.avert {
+  background: rgba(240,160,48,.10);
+  border: 1.5px solid var(--warning);
+  border-radius: var(--r-lg); padding: 16px 20px;
+  margin-bottom: 24px; font-size: .94rem; line-height: 1.75;
+  color: var(--text);
+}
+
+/* ── TITRES ── */
+h2 { font-size: 1.55rem; font-weight: 900; margin-bottom: 6px; color: var(--text); font-family: var(--font); }
+.sous-t { color: var(--text2); font-size: .92rem; margin-bottom: 24px; font-weight: 700; }
+h3 {
+  font-size: .76rem; font-weight: 900; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--accent2);
+  margin-bottom: 14px; padding-bottom: 8px;
+  border-bottom: 2px solid var(--bg3);
+}
+
+/* ── BADGE RÉSULTAT ── */
+.res-wrap { text-align:center; padding:28px 0 20px }
+.res-badge {
+  display: inline-flex; align-items:center; justify-content:center;
+  width: 110px; height: 110px; border-radius: 50%;
+  border: 4px solid transparent;
+  background: linear-gradient(var(--surface),var(--surface)) padding-box, var(--gradient) border-box;
+  font-size: 2.6rem; font-weight: 900;
+  margin-bottom: 16px; color: var(--accent2);
+}
+.res-titre { font-size:1.45rem; font-weight:900; margin-bottom:8px; color:var(--text) }
+.res-score { font-size:1rem; color:var(--text2); margin-bottom:6px; font-weight:700 }
+.res-desc  { color:var(--text2); max-width:440px; margin:0 auto 28px; font-size:.97rem; font-weight:700 }
+
+/* ── SÉPARATEUR ── */
+.sep { height:1px; background:var(--bg3); margin:22px 0 }
+
+/* ── NOTE SAISIE ── */
+.note-saisie { font-size:.78rem; color:var(--text3); margin-top:6px; font-style:italic; font-weight:700 }
+
+/* ══ ANALYSE RÉSULTATS ══ */
+.res-section-title {
+  font-size:.72rem; font-weight:900; text-transform:uppercase; letter-spacing:.07em;
+  color:var(--accent2); margin:0 0 12px;
+}
+.res-analyse-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:24px; margin:20px 0;
+}
+@media(max-width:560px){ .res-analyse-grid{ grid-template-columns:1fr } }
+
+/* Barres CECRL */
+.res-niv-row { margin-bottom:10px }
+.res-niv-label {
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:.8rem; font-weight:800; margin-bottom:4px; color:var(--text);
+}
+.res-niv-label span { color:var(--text3); font-weight:700 }
+.res-niv-track {
+  height:8px; border-radius:999px; background:var(--bg3); overflow:hidden;
+}
+.res-niv-fill {
+  height:100%; border-radius:999px;
+  transition:width .5s cubic-bezier(.4,0,.2,1);
+}
+
+/* Points forts / à renforcer */
+.res-pf-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:20px 0 0;
+}
+@media(max-width:480px){ .res-pf-grid{ grid-template-columns:1fr } }
+.res-pf-card {
+  border-radius:var(--r-lg); padding:16px;
+  border:1.5px solid var(--bg3);
+}
+.res-pf-card--fort  { border-color:#a7f3d0; background:#f0fdf4 }
+.res-pf-card--faible{ border-color:#fed7aa; background:#fff7ed }
+.res-pf-card-title {
+  font-size:.82rem; font-weight:900; margin:0 0 10px;
+  display:flex; align-items:center; gap:6px;
+}
+.res-pf-card--fort  .res-pf-card-title { color:#059669 }
+.res-pf-card--faible .res-pf-card-title { color:#d97706 }
+.res-pf-item {
+  display:flex; align-items:center; gap:8px;
+  font-size:.83rem; font-weight:700; color:var(--text);
+  padding:4px 0;
+}
+.res-pf-item-pct {
+  margin-left:auto; font-size:.78rem; font-weight:800; color:var(--text2);
+}
+.res-pf-empty { font-size:.82rem; color:var(--text3); font-weight:700 }
+
+/* Radar SVG */
+#radar-svg svg { display:block; max-width:100%; height:auto }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width:6px }
+::-webkit-scrollbar-track { background:var(--bg2) }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <a href="index.html" class="hdr-logo-wrap">
+    <img class="hdr-logo" src="assets/logo.png" alt="École Francophone">
+    <span class="hdr-logo-text">
+      <span class="hdr-logo-blue">learning</span>&nbsp;<span class="hdr-logo-purple">progress</span>
+    </span>
+  </a>
+  <div class="hdr-right" id="hdr-info"></div>
+</header>
+<div class="prog-wrap"><div class="prog-bar" id="prog-bar" style="width:0%"></div></div>
+
+<div class="wrapper">
+
+  <!-- ══ ÉCRAN 1 : ACCUEIL ══ -->
+  <div id="e-accueil" class="ecran actif">
+    <div class="card">
+      <h2>Test de niveau de français</h2>
+      <p class="sous-t">Évaluez votre niveau du Pré-A1 au C1 — environ 15 minutes</p>
+
+      <div class="avert">
+        <span style="font-size:1.1rem">🎧</span> <strong>Avant de commencer</strong><br>
+        Ce test contient des exercices avec des sons à écouter.<br>
+        Préparez vos <strong>écouteurs</strong> ou vérifiez que le son de votre appareil fonctionne.
+      </div>
+
+      <p style="font-size:.95rem;color:var(--text2);margin-bottom:28px">
+        Répondez à <strong>30 questions</strong> dans l'ordre. Vous ne pouvez pas revenir en arrière.<br>
+        Vos coordonnées vous seront demandées à la fin pour recevoir votre résultat.
+      </p>
+
+      <button class="btn btn-grad" onclick="demarrer()">Commencer le test →</button>
+    </div>
+  </div>
+
+  <!-- ══ ÉCRAN 2 : QUESTION ══ -->
+  <div id="e-test" class="ecran">
+    <div class="card" id="zone-q"></div>
+    <button class="btn btn-grad" id="btn-suiv" onclick="suivant()">Suivant →</button>
+  </div>
+
+  <!-- ══ ÉCRAN 3 : RÉSULTAT + ANALYSE ══ -->
+  <div id="e-res" class="ecran">
+
+    <!-- Carte 1 : Niveau + Analyse détaillée -->
+    <div class="card">
+      <div class="res-wrap">
+        <div class="res-badge" id="res-badge">—</div>
+        <div class="res-titre">Votre niveau estimé : <span id="res-niv">—</span></div>
+        <div class="res-score" id="res-score"></div>
+        <p class="res-desc" id="res-desc"></p>
+      </div>
+
+      <div class="sep"></div>
+      <h3 style="margin-bottom:4px">Analyse détaillée</h3>
+
+      <div class="res-analyse-grid">
+        <div>
+          <p class="res-section-title">Profil de compétences</p>
+          <div id="radar-svg"></div>
+        </div>
+        <div>
+          <p class="res-section-title">Résultats par niveau CECRL</p>
+          <div id="res-niveaux"></div>
+        </div>
+      </div>
+
+      <div class="sep"></div>
+
+      <div class="res-pf-grid">
+        <div id="res-forts"></div>
+        <div id="res-faibles"></div>
+      </div>
+    </div>
+
+    <!-- Carte 2 : Formulaire e-mail -->
+    <div class="card" style="margin-top:16px">
+      <h3>Recevoir mon résultat par e-mail</h3>
+      <p class="sous-t" style="margin-bottom:20px">Facultatif — vos données sont utilisées uniquement pour vous envoyer le résultat.</p>
+
+      <div class="form-grp">
+        <label for="inp-prenom">Prénom</label>
+        <input type="text" id="inp-prenom" placeholder="Votre prénom">
+      </div>
+      <div class="form-grp">
+        <label for="inp-nom">Nom</label>
+        <input type="text" id="inp-nom" placeholder="Votre nom">
+      </div>
+      <div class="form-grp">
+        <label for="inp-email">Adresse e-mail *</label>
+        <input type="email" id="inp-email" placeholder="votre@email.com">
+        <div class="form-err" id="err-email">Veuillez entrer une adresse e-mail valide.</div>
+      </div>
+
+      <button class="btn btn-grad" onclick="sauver()">Enregistrer mes résultats →</button>
+      <button class="btn btn-ghost" onclick="sauver(true)">Passer — continuer sans enregistrer</button>
+
+      <p style="font-size:.78rem;color:var(--text3);margin-top:16px;text-align:center" id="save-msg"></p>
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- ══════════════════════════════════════════════
+     CONFIGURATION AUDIOS
+     ⚠️ Remplacer chaque valeur par l'URL GitHub
+══════════════════════════════════════════════ -->
+<script>
+/*
+  ══════════════════════════════════════════════════════════════
+  SCRIPTS DES AUDIOS À ENREGISTRER
+  ══════════════════════════════════════════════════════════════
+
+  B2_1 — Q22 « Que va faire la personne au téléphone ? »
+  ──────────────────────────────────────────────────────
+  [Son de téléphone, voix féminine, ton poli mais ferme]
+  « Allô, bonjour. Je vous appelle au sujet d'un achat effectué la
+    semaine dernière sur votre site. J'ai reçu un pantalon, mais la
+    couleur ne correspond pas du tout à ce qui était affiché en ligne.
+    Je ne souhaite pas faire d'échange — je préfère simplement être
+    remboursée. Pouvez-vous m'indiquer la marche à suivre, s'il vous
+    plaît ? »
+  → Bonne réponse : "Se faire rembourser."
+
+  C1_1 — Q26 « La personne qui parle... »
+  ────────────────────────────────────────
+  [Voix masculine, ton légèrement tendu, réunion professionnelle]
+  « Bon, écoutez… ça fait maintenant quarante minutes que nous
+    attendons les chiffres du service marketing. Quarante minutes !
+    On avait convenu d'un délai de vingt-quatre heures, et là on est
+    bloqués. Je comprends qu'il y ait des imprévus, mais à un moment,
+    il faut avancer. On ne peut pas rester comme ça indéfiniment. »
+  → Bonne réponse : "s'impatiente."
+
+  C2_1 — Q30 « Quel avantage les nouveaux outils numériques ont-ils
+              sur les méthodes traditionnelles ? »
+  ──────────────────────────────────────────────────────────────────
+  [Voix féminine posée, registre soutenu, conférence ou podcast]
+  « Ce qui distingue fondamentalement ces nouveaux outils, c'est leur
+    capacité à s'adapter au profil de chaque utilisateur. Là où les
+    méthodes traditionnelles proposaient une approche unique pour tous,
+    ces plateformes analysent les comportements en temps réel et
+    ajustent le contenu, le rythme et les exercices en fonction des
+    besoins spécifiques de chaque apprenant. C'est là leur véritable
+    valeur ajoutée. »
+  → Bonne réponse : "La personnalisation selon le profil de chaque utilisateur."
+  ══════════════════════════════════════════════════════════════
+*/
+const AU = {
+  A1_1: "AUDIO_URL_A1_1",
+  A2_1: "AUDIO_URL_A2_1",
+  B1_1: "AUDIO_URL_B1_1",
+  B2_1: "assets/audio/test-audio-B2_1.mp3",
+  C1_1: "assets/audio/test-audio-C1_1.mp3",
+  C2_1: "assets/audio/test-audio-C2_1.mp3",
+};
+
+/* ══════════════════════════════════════════════
+   DESCRIPTIONS NIVEAUX
+══════════════════════════════════════════════ */
+const DESC = {
+  "Pre-A1": "Vous débutez en français. Continuez — chaque mot compte !",
+  A1: "Vous comprenez et utilisez des expressions très familières du quotidien.",
+  A2: "Vous communiquez sur des sujets simples de la vie courante.",
+  B1: "Vous vous débrouillez dans la plupart des situations courantes.",
+  B2: "Vous comprenez des sujets complexes et vous exprimez avec aisance.",
+  C1: "Vous maîtrisez la langue avec flexibilité et précision."
+};
+
+/* ══ COMPÉTENCES ET NIVEAUX ══ */
+const COMP = [
+  { key:"grammaire",   label:"Grammaire",   icon:"📐",
+    ids:["Q01","Q02","Q04","Q06","Q07","Q08","Q10","Q15","Q16","Q18","Q21","Q27"] },
+  { key:"conjugaison", label:"Conjugaison", icon:"🔄",
+    ids:["Q03","Q05","Q12","Q14","Q19","Q20","Q28","Q29"] },
+  { key:"oral",        label:"Oral",        icon:"🎧",
+    ids:["Q22","Q26","Q30"] },
+  { key:"ecrit",       label:"Écrit",       icon:"📖",
+    ids:["Q13","Q17","Q25"] },
+  { key:"vocabulaire", label:"Vocabulaire", icon:"📚",
+    ids:["Q09","Q11","Q23","Q24"] }
+];
+
+const COMP_COLORS = {
+  grammaire:  "#1D4ED8",
+  conjugaison:"#7C3AED",
+  oral:       "#0ea5e9",
+  ecrit:      "#10b981",
+  vocabulaire:"#f59e0b"
+};
+
+const PAR_NIVEAU = {
+  "Pré-A1": ["Q01","Q02"],
+  "A1":     ["Q03","Q04","Q05","Q06"],
+  "A2":     ["Q07","Q08","Q09","Q10","Q11","Q12"],
+  "B1":     ["Q13","Q14","Q15","Q16","Q17","Q18"],
+  "B2":     ["Q19","Q20","Q21","Q22"],
+  "C1":     ["Q23","Q24","Q25","Q26","Q27","Q28","Q29","Q30"]
+};
+
+const NIV_COLORS = {
+  "Pré-A1": "#9090b0",
+  "A1":     "#7C3AED",
+  "A2":     "#0ea5e9",
+  "B1":     "#f59e0b",
+  "B2":     "#A855F7",
+  "C1":     "#f43f5e"
+};
+
+/* ══════════════════════════════════════════════
+   BANQUE DE 30 QUESTIONS (à remplacer avec
+   les captures d'écran des tests existants)
+
+   Types supportés :
+     qcm_u   → QCM réponse unique (cercles)
+     qcm_m   → QCM réponses multiples (carrés)
+     vf      → Vrai ou Faux
+     trous   → texte à trous avec dropdowns
+     demele  → drag & drop pour remettre en ordre
+     libre   → saisie libre (niveaux hauts)
+
+   Chaque question a :
+     id, type, niveau (A1..C2)
+     instr     → instruction affichée
+     texte     → (optionnel) texte à lire avant
+     audio     → (optionnel) clé dans AU{}
+     q         → question (si applicable)
+     opts      → options (qcm_u, qcm_m)
+     ok        → bonne(s) réponse(s)
+     segments  → (trous) tableau de segments
+     mots      → (demele) mots à remettre en ordre
+     correct   → (demele) phrase correcte
+══════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   BANQUE DE 30 QUESTIONS — contenu original
+   inspiré des points grammaticaux observés dans
+   des tests de référence, adapté Suisse romande
+══════════════════════════════════════════════ */
+const QUESTIONS = [
+
+  /* ───── Q1-6 : Pré-A1 / A1 ───── */
+  {
+    id:"Q01", niveau:"Pré-A1", type:"qcm_u",
+    instr:"Sélectionnez le mot adéquat pour compléter la phrase.",
+    q:"Bonjour ! Vous ___ suisse ?",
+    opts:["es","être","êtes","est","Je ne sais pas"],
+    ok:"êtes"
+  },
+  {
+    id:"Q02", niveau:"Pré-A1", type:"qcm_u",
+    instr:"Sélectionnez le mot adéquat pour compléter la phrase.",
+    q:"___ vous habitez ?",
+    opts:["Qu'est-ce que","Où","Quel","Quoi","Je ne sais pas"],
+    ok:"Où"
+  },
+  {
+    id:"Q03", niveau:"A1", type:"qcm_u",
+    instr:"Sélectionnez le mot adéquat pour compléter la phrase.",
+    q:"Le matin, je ___ à sept heures et demie.",
+    opts:["me lève","me lever","se lève","me lèves","Je ne sais pas"],
+    ok:"me lève"
+  },
+  {
+    id:"Q04", niveau:"A1", type:"qcm_u",
+    instr:"Sélectionnez le mot adéquat pour compléter la phrase.",
+    q:"J'habite ___ Lausanne, ___ Suisse.",
+    opts:["au, en","en, en","à, en","en, à","Je ne sais pas"],
+    ok:"à, en"
+  },
+  {
+    id:"Q05", niveau:"A1", type:"qcm_u",
+    instr:"Sélectionnez le mot adéquat pour compléter la phrase.",
+    q:"Hier, Marie ___ en avance pour son premier jour de travail.",
+    opts:["est arrivée","a arrivée","arrivait","arrive","Je ne sais pas"],
+    ok:"est arrivée"
+  },
+  {
+    id:"Q06", niveau:"A1", type:"qcm_u",
+    instr:"Sélectionnez le mot adéquat pour compléter la phrase.",
+    q:"Au marché, j'achète ___ pain, ___ fromage et ___ eau minérale.",
+    opts:["du, du, de l'","un, un, une","de, de, de","le, le, l'","Je ne sais pas"],
+    ok:"du, du, de l'"
+  },
+
+  /* ───── Q7-12 : A1 / A2 ───── */
+  {
+    id:"Q07", niveau:"A2", type:"qcm_u",
+    instr:"Sélectionnez le mot adéquat pour compléter la phrase.",
+    q:"La boulangerie du centre-ville est ___ que celle de mon quartier.",
+    opts:["meilleure","plus bonne","mieux","la mieux","Je ne sais pas"],
+    ok:"meilleure"
+  },
+  {
+    id:"Q08", niveau:"A2", type:"qcm_u",
+    instr:"Sélectionnez le mot adéquat pour compléter la phrase.",
+    q:"Pour aller à la gare, vous tournez ___ après la pharmacie.",
+    opts:["tout droit","à la droite","à droite","droit","Je ne sais pas"],
+    ok:"à droite"
+  },
+  {
+    id:"Q09", niveau:"A2", type:"qcm_u",
+    instr:"Sélectionnez le mot adéquat pour compléter la phrase.",
+    q:"Votre chef vous annonce que vous devrez suivre une ___ obligatoire de deux jours pour apprendre à utiliser le nouveau logiciel.",
+    opts:["formation","évaluation","présentation","réunion","Je ne sais pas"],
+    ok:"formation"
+  },
+  {
+    id:"Q10", niveau:"A2", type:"qcm_u",
+    instr:"Sélectionnez le mot adéquat pour compléter la phrase.",
+    q:"Marc ne fait ___ de sport depuis son accident ; il reste à la maison.",
+    opts:["jamais","toujours","souvent","parfois","Je ne sais pas"],
+    ok:"jamais"
+  },
+  {
+    id:"Q11", niveau:"A2", type:"qcm_u",
+    instr:"Lisez le début du récit, puis complétez.",
+    texte:"« D'abord, j'ai raté mon bus. ___, j'ai dû attendre vingt minutes sous la pluie. À la fin, je suis arrivé en retard à l'entretien. »",
+    q:"Quel mot convient pour relier les deux événements ?",
+    opts:["Ensuite","Pourtant","Surtout","Au contraire","Je ne sais pas"],
+    ok:"Ensuite"
+  },
+  {
+    id:"Q12", niveau:"A2", type:"qcm_u",
+    instr:"Sélectionnez le mot adéquat pour compléter la phrase.",
+    q:"Pour proposer une sortie à un ami : « On ___ aller se balader au bord du lac, si tu veux ? »",
+    opts:["pourrait","pouvait","peut","pouvons","Je ne sais pas"],
+    ok:"pourrait"
+  },
+
+  /* ───── Q13-18 : A2 / B1 (avec textes courts) ───── */
+  {
+    id:"Q13", niveau:"B1", type:"qcm_u",
+    instr:"Lisez le message, puis répondez.",
+    texte:"Salut Marion,\n\nJ'espère que tu vas bien ! Pour ce soir, j'ai une idée : on pourrait faire une raclette à la maison. Est-ce que tu peux passer au Coop en rentrant du travail ? Il faudrait 400 g de fromage à raclette, des petites pommes de terre, un paquet de charcuterie et de la moutarde. N'oublie pas le vin blanc — c'est indispensable !\n\nJe m'occupe du dessert. À tout à l'heure !\nNathalie",
+    q:"Quel est l'objectif principal de ce message ?",
+    opts:["Demander de faire des courses pour le repas du soir.","Proposer d'aller au restaurant ensemble.","Expliquer comment préparer une raclette.","Annuler un dîner prévu.","Je ne sais pas"],
+    ok:"Demander de faire des courses pour le repas du soir."
+  },
+  {
+    id:"Q14", niveau:"B1", type:"qcm_u",
+    instr:"Sélectionnez le mot adéquat pour compléter la phrase.",
+    q:"Quand j'habitais à Fribourg, je ___ le bus tous les matins.",
+    opts:["ai pris","prenais","prendrais","avais pris","Je ne sais pas"],
+    ok:"prenais"
+  },
+  {
+    id:"Q15", niveau:"B1", type:"qcm_u",
+    instr:"Sélectionnez le mot adéquat pour compléter la phrase.",
+    q:"Tu connais bien ce collègue ? Oui, je ___ connais depuis cinq ans.",
+    opts:["lui","le","leur","la","Je ne sais pas"],
+    ok:"le"
+  },
+  {
+    id:"Q16", niveau:"B1", type:"qcm_u",
+    instr:"Sélectionnez le mot adéquat pour compléter la phrase.",
+    q:"As-tu téléphoné à Madame Perret ? Non, je ___ téléphonerai cet après-midi.",
+    opts:["la","le","leur","lui","Je ne sais pas"],
+    ok:"lui"
+  },
+  {
+    id:"Q17", niveau:"B1", type:"qcm_u",
+    instr:"Lisez l'annonce, puis répondez.",
+    texte:"Appartement 3 pièces à louer, centre-ville, 2e étage sans ascenseur.\nCuisine équipée, balcon, cave et place de parc inclus.\nCHF 1 450.–/mois, charges comprises. Disponible dès le 1er mars.\nContact : 079 123 45 67 (appels uniquement, pas de SMS).",
+    q:"Qu'est-ce qui est inclus dans le loyer ?",
+    opts:["La cave et la place de parc.","Le mobilier et l'électricité.","L'internet et le téléphone.","Le service de ménage.","Je ne sais pas"],
+    ok:"La cave et la place de parc."
+  },
+  {
+    id:"Q18", niveau:"B1", type:"qcm_u",
+    instr:"Sélectionnez le mot adéquat pour compléter la phrase.",
+    q:"Le téléphone de mon collègue est toujours chargé, ___ n'a plus de batterie.",
+    opts:["le mien","le sien","le leur","le tien","Je ne sais pas"],
+    ok:"le mien"
+  },
+
+  /* ───── Q19-22 : B1 / B2 (avec audio + texte) ───── */
+  {
+    id:"Q19", niveau:"B2", type:"qcm_u",
+    instr:"Sélectionnez le mot adéquat pour compléter la phrase.",
+    q:"La direction exige que vous ___ votre rapport avant vendredi midi.",
+    opts:["rendiez","rendez","rendrez","rendriez","Je ne sais pas"],
+    ok:"rendiez"
+  },
+  {
+    id:"Q20", niveau:"B2", type:"qcm_u",
+    instr:"Sélectionnez le mot adéquat pour compléter la phrase.",
+    q:"Si je pouvais, je ___ une semaine de vacances la semaine prochaine.",
+    opts:["prendrai","prendrais","prenais","vais prendre","Je ne sais pas"],
+    ok:"prendrais"
+  },
+  {
+    id:"Q21", niveau:"B2", type:"qcm_u",
+    instr:"Sélectionnez le mot adéquat pour compléter la phrase.",
+    q:"C'est exactement le poste ___ je rêvais depuis des années.",
+    opts:["que","qui","dont","où","Je ne sais pas"],
+    ok:"dont"
+  },
+  {
+    id:"Q22", niveau:"B2", audio:"B2_1", type:"qcm_u",
+    instr:"Écoutez l'extrait, puis répondez. Vous pouvez écouter plusieurs fois.",
+    q:"Que souhaite faire la personne qui téléphone ?",
+    opts:["Faire un échange.","Garder son article.","Se faire rembourser.","Annuler sa commande.","Je ne sais pas"],
+    ok:"Se faire rembourser."
+  },
+
+  /* ───── Q23-27 : B2 / C1 (registres, connecteurs, audio) ───── */
+  {
+    id:"Q23", niveau:"C1", type:"qcm_u",
+    instr:"Lisez la phrase, puis répondez.",
+    texte:"« Il serait souhaitable que les participants transmettent leurs contributions avant la réunion. »",
+    q:"Cette phrase appartient à un registre :",
+    opts:["soutenu.","familier.","standard.","argotique.","Je ne sais pas"],
+    ok:"soutenu."
+  },
+  {
+    id:"Q24", niveau:"C1", type:"qcm_u",
+    instr:"Sélectionnez le mot adéquat pour compléter la phrase.",
+    q:"En analysant un article, le professeur explique que le ___ choisi par le journaliste oriente l'interprétation du lecteur : certains aspects sont mis en avant, d'autres sont ignorés.",
+    opts:["cadrage","bilan","sondage","résumé","Je ne sais pas"],
+    ok:"cadrage"
+  },
+  {
+    id:"Q25", niveau:"C1", type:"qcm_u",
+    instr:"Lisez le texte, puis répondez.",
+    texte:"« Le télétravail a considérablement transformé la relation entre les employés et leur entreprise. Si certains salariés se déclarent plus productifs depuis qu'ils travaillent depuis chez eux, d'autres se plaignent d'un isolement croissant et d'une difficulté à séparer vie professionnelle et vie privée. Les managers, quant à eux, doivent repenser leurs méthodes d'encadrement pour maintenir la cohésion des équipes à distance. »",
+    q:"D'après ce texte, quel est l'un des défis du télétravail pour les managers ?",
+    opts:[
+      "Maintenir la cohésion des équipes à distance.",
+      "Améliorer la productivité individuelle des employés.",
+      "Réduire les coûts liés aux locaux de l'entreprise.",
+      "Encourager les employés à travailler davantage.",
+      "Je ne sais pas"
+    ],
+    ok:"Maintenir la cohésion des équipes à distance."
+  },
+  {
+    id:"Q26", niveau:"C1", audio:"C1_1", type:"qcm_u",
+    instr:"Écoutez l'extrait, puis répondez. Vous pouvez écouter plusieurs fois.",
+    q:"Quelle est l'attitude de la personne qui prend la parole ?",
+    opts:["Elle s'énerve violemment.","Elle se félicite d'un résultat.","Elle s'impatiente face aux retards.","Elle accepte la situation avec résignation.","Je ne sais pas"],
+    ok:"Elle s'impatiente face aux retards."
+  },
+  {
+    id:"Q27", niveau:"C1", type:"qcm_u",
+    instr:"Sélectionnez le mot adéquat pour compléter la phrase.",
+    q:"Elle a décidé de postuler pour ce poste, ___ elle ne remplisse pas tous les critères requis.",
+    opts:["quoiqu'","pourvu qu'","pour peu qu'","à condition qu'","Je ne sais pas"],
+    ok:"quoiqu'"
+  },
+
+  /* ───── Q28-30 : C1 uniquement ───── */
+  {
+    id:"Q28", niveau:"C1", type:"qcm_u",
+    instr:"Sélectionnez le mot adéquat pour compléter la phrase.",
+    q:"La directrice aurait préféré que l'équipe ___ une autre solution à ce problème.",
+    opts:["ait proposé","avait proposé","aurait proposé","proposait","Je ne sais pas"],
+    ok:"ait proposé"
+  },
+  {
+    id:"Q29", niveau:"C1", type:"qcm_u",
+    instr:"Sélectionnez le mot adéquat pour compléter la phrase.",
+    q:"Si nous avions lu les instructions attentivement, nous ___ cette erreur coûteuse.",
+    opts:["aurions évité","avions évité","aurions éviter","éviterions","Je ne sais pas"],
+    ok:"aurions évité"
+  },
+  {
+    id:"Q30", niveau:"C1", audio:"C2_1", type:"qcm_u",
+    instr:"Écoutez l'extrait, puis répondez. Vous pouvez écouter plusieurs fois.",
+    q:"Selon l'intervenante, quel est le principal avantage des nouveaux outils numériques par rapport aux méthodes traditionnelles ?",
+    opts:[
+      "La personnalisation selon le profil de chaque utilisateur.",
+      "La diversité des domaines couverts par ces plateformes.",
+      "Le faible coût d'accès pour les apprenants.",
+      "La rapidité de mise en œuvre pour les formateurs.",
+      "Je ne sais pas"
+    ],
+    ok:"La personnalisation selon le profil de chaque utilisateur."
+  }
+
+]; // fin QUESTIONS
+
+/* ══════════════════════════════════════════════
+   LOGIQUE DU TEST
+══════════════════════════════════════════════ */
+const TOTAL = QUESTIONS.length; // 30
+let qIdx = 0;
+let repDetail = [];
+let dragSrc = null;
+let zoneOrdre = []; // mots dans la zone de réponse pour demele
+
+/* ── DÉMARRER ── */
+let tempsDebut = null;
+function demarrer() {
+  tempsDebut = Date.now();
+  affEcran("e-test");
+  affQuestion();
+}
+
+/* ── AFFICHER UNE QUESTION ── */
+function affQuestion() {
+  const q = QUESTIONS[qIdx];
+  const num = qIdx + 1;
+  const pct = Math.round((qIdx / TOTAL) * 100);
+
+  document.getElementById("prog-bar").style.width = pct + "%";
+  document.getElementById("hdr-info").innerHTML =
+    `Question <strong>${num}</strong> / ${TOTAL}&nbsp;&nbsp;<span style="color:rgba(255,255,255,.4)">${pct}%</span>`;
+
+  const zone = document.getElementById("zone-q");
+  zone.innerHTML = "";
+  zoneOrdre = [];
+
+  let html = `<h3>Question ${num} sur ${TOTAL}</h3>`;
+  html += `<div class="instr">${q.instr}</div>`;
+
+  // Audio AVANT les options
+  if (q.audio) {
+    const url = AU[q.audio] || "#";
+    html += `<div class="audio-bloc">
+      <span class="audio-ico">🎧</span>
+      <div style="flex:1">
+        <audio controls src="${url}" style="width:100%"></audio>
+        <div class="audio-note">Vous pouvez écouter plusieurs fois avant de répondre.</div>
+      </div>
+    </div>`;
+  }
+
+  // Texte à lire
+  if (q.texte) {
+    html += `<div class="texte-lu">${q.texte.replace(/\n/g,"<br>")}</div>`;
+  }
+
+  // Corps selon le type
+  switch(q.type) {
+    case "qcm_u":
+      html += `<span class="q-label">${q.q}</span><div class="opts-radio">`;
+      q.opts.forEach((o, i) => {
+        const cls = (o === "Je ne sais pas") ? "opt-radio opt-jnsp" : "opt-radio";
+        html += `<label class="${cls}" id="opt${i}">
+          <input type="radio" name="qcm" value="${o}" onchange="selRadio(${i})"> ${o}
+        </label>`;
+      });
+      html += `</div>`;
+      break;
+
+    case "qcm_m":
+      html += `<span class="q-label">${q.q}</span>
+        <p class="note-saisie">Plusieurs réponses possibles.</p>
+        <div class="opts-check">`;
+      q.opts.forEach((o, i) =>
+        html += `<label class="opt-check" id="opt${i}">
+          <input type="checkbox" value="${o}" onchange="selCheck(${i},this)"> ${o}
+        </label>`
+      );
+      html += `</div>`;
+      break;
+
+    case "vf":
+      html += `<span class="q-label">${q.q}</span>
+        <div class="vf-grp">
+          <button class="vf-btn" id="vf_Vrai" onclick="selVF('Vrai')">Vrai</button>
+          <button class="vf-btn" id="vf_Faux" onclick="selVF('Faux')">Faux</button>
+        </div>`;
+      break;
+
+    case "trous":
+      html += `<p style="line-height:2.4;font-size:.95rem" id="para-trous">`;
+      q.segments.forEach(seg => {
+        if (seg.t !== undefined) {
+          html += seg.t.replace(/\n/g,"<br>");
+        } else {
+          html += `<span class="isel"><select id="${seg.id}">
+            <option value="">—</option>
+            ${seg.opts.map(o => `<option value="${o}">${o}</option>`).join("")}
+          </select></span>`;
+        }
+      });
+      html += `</p>`;
+      break;
+
+    case "demele":
+      const melange = [...q.mots].sort(() => Math.random() - .5);
+      html += `
+        <p class="demele-label">↓ Faites glisser les mots ici pour construire la phrase :</p>
+        <div class="demele-zone" id="dm-zone"
+          ondragover="event.preventDefault();this.classList.add('drag-over')"
+          ondragleave="this.classList.remove('drag-over')"
+          ondrop="dropInZone(event)">
+        </div>
+        <p class="demele-label" style="margin-top:8px">Mots disponibles :</p>
+        <div class="demele-mots-dispo" id="dm-dispo"
+          ondragover="event.preventDefault()"
+          ondrop="dropInDispo(event)">
+        ${melange.map(m =>
+          `<span class="mot-chip" draggable="true"
+            ondragstart="dragStart(event,'${m}')"
+            ondragend="dragEnd(event)">${m}</span>`
+        ).join("")}
+        </div>`;
+      break;
+
+    case "libre":
+      html += `<p style="font-size:.96rem;margin-bottom:10px">${q.q}</p>
+        <input class="inp-libre" type="text" id="libre-inp" placeholder="Votre réponse…">
+        <p class="note-saisie">Respectez les accents et la casse.</p>`;
+      break;
+  }
+
+  zone.innerHTML = html;
+}
+
+/* ── DRAG & DROP (démêler) ── */
+function dragStart(e, mot) {
+  dragSrc = e.target;
+  e.dataTransfer.setData("text", mot);
+  e.target.style.opacity = ".4";
+}
+function dragEnd(e) { e.target.style.opacity = "1"; }
+
+function dropInZone(e) {
+  e.preventDefault();
+  const zone = document.getElementById("dm-zone");
+  zone.classList.remove("drag-over");
+  if (!dragSrc) return;
+  const mot = e.dataTransfer.getData("text");
+
+  // Déplacer depuis dispo → zone
+  if (dragSrc.parentElement.id === "dm-dispo") {
+    dragSrc.classList.add("dans-zone");
+    dragSrc.setAttribute("ondragstart", `dragStart(event,'${mot}')`);
+    // Re-configurer drop pour retour
+    dragSrc.setAttribute("ondrop", ""); 
+    zone.appendChild(dragSrc);
+    zoneOrdre = getMotsZone();
+  }
+}
+
+function dropInDispo(e) {
+  e.preventDefault();
+  if (!dragSrc) return;
+  const dispo = document.getElementById("dm-dispo");
+  if (dragSrc.parentElement.id === "dm-zone") {
+    dragSrc.classList.remove("dans-zone");
+    dispo.appendChild(dragSrc);
+    zoneOrdre = getMotsZone();
+  }
+}
+
+function getMotsZone() {
+  const zone = document.getElementById("dm-zone");
+  if (!zone) return [];
+  return Array.from(zone.querySelectorAll(".mot-chip")).map(c => c.textContent.trim());
+}
+
+/* ── SÉLECTIONS QCM ── */
+function selRadio(i) {
+  document.querySelectorAll(".opt-radio").forEach(l => l.classList.remove("sel"));
+  document.getElementById("opt" + i).classList.add("sel");
+}
+function selCheck(i, el) {
+  document.getElementById("opt" + i).classList.toggle("sel", el.checked);
+}
+function selVF(val) {
+  document.querySelectorAll(".vf-btn").forEach(b => b.classList.remove("sel"));
+  document.getElementById("vf_" + val).classList.add("sel");
+}
+
+/* ── LIRE LA RÉPONSE ── */
+function lireRep(q) {
+  switch(q.type) {
+    case "qcm_u": {
+      const s = document.querySelector('input[name="qcm"]:checked');
+      return s ? s.value : "";
+    }
+    case "qcm_m":
+      return Array.from(document.querySelectorAll('.opts-check input:checked')).map(c => c.value);
+    case "vf": {
+      const s = document.querySelector(".vf-btn.sel");
+      return s ? s.textContent.trim() : "";
+    }
+    case "trous": {
+      const vals = {};
+      q.segments.filter(s => s.id).forEach(s => {
+        const el = document.getElementById(s.id);
+        vals[s.id] = el ? el.value : "";
+      });
+      return vals;
+    }
+    case "demele":
+      return getMotsZone().join(" ");
+    case "libre": {
+      const el = document.getElementById("libre-inp");
+      return el ? el.value.trim() : "";
+    }
+  }
+  return "";
+}
+
+/* ── ÉVALUER ── */
+function evaluer(q, rep) {
+  switch(q.type) {
+    case "qcm_u": return rep === q.ok;
+    case "qcm_m": {
+      if (!Array.isArray(rep)) return false;
+      const ok = new Set(q.ok);
+      return rep.length === ok.size && rep.every(r => ok.has(r));
+    }
+    case "vf": return rep === q.ok;
+    case "trous": {
+      return q.segments.filter(s => s.id).every(s => rep[s.id] === s.ok);
+    }
+    case "demele":
+      return rep.trim().toLowerCase() === q.correct.trim().toLowerCase();
+    case "libre":
+      return rep.trim().toLowerCase() === (q.okLibre || "").toLowerCase();
+  }
+  return false;
+}
+
+/* ── SUIVANT ── */
+function suivant() {
+  const q = QUESTIONS[qIdx];
+  const rep = lireRep(q);
+  const ok  = evaluer(q, rep);
+
+  const repTxt = typeof rep === "object" ? JSON.stringify(rep) : rep;
+  repDetail.push({
+    question_id:        q.id,
+    niveau:             q.niveau,
+    type:               q.type,
+    reponse_utilisateur: repTxt,
+    reponse_correcte:   typeof q.ok === "object" ? JSON.stringify(q.ok) : (q.ok || q.correct || ""),
+    je_ne_sais_pas:     repTxt === "Je ne sais pas",
+    correct: ok
+  });
+
+  qIdx++;
+  if (qIdx < TOTAL) {
+    affQuestion();
+    window.scrollTo(0, 0);
+  } else {
+    affResultat();
+  }
+}
+
+/* ── ÉCHELLE DE NOTATION (école-francophone.ch) ──
+   0-6   bonnes (0-20%)  → Pré-A1
+   7-12  bonnes (21-40%) → A1
+   13-18 bonnes (41-60%) → A2
+   19-22 bonnes (61-75%) → B1
+   23-27 bonnes (76-90%) → B2
+   28-30 bonnes (91-100%)→ C1
+*/
+function niveauDepuisScore(bonnes) {
+  if (bonnes <= 6)  return "Pre-A1";
+  if (bonnes <= 12) return "A1";
+  if (bonnes <= 18) return "A2";
+  if (bonnes <= 22) return "B1";
+  if (bonnes <= 27) return "B2";
+  return "C1";
+}
+
+/* ── RADAR SVG ── */
+function buildRadar(scores) {
+  const cx = 160, cy = 155, R = 108, n = COMP.length;
+  const step = (2 * Math.PI) / n;
+  const startAngle = -Math.PI / 2;
+
+  function pt(r, i) {
+    const a = startAngle + i * step;
+    return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+  }
+  function poly(r) {
+    return Array.from({length:n}, (_,i) => pt(r,i).map(v=>v.toFixed(1)).join(",")).join(" ");
+  }
+
+  const grids = [0.25, 0.5, 0.75, 1].map(f =>
+    `<polygon points="${poly(R*f)}" fill="none" stroke="#ddd6fe" stroke-width="${f===1?1.5:.8}"/>`
+  ).join("");
+
+  const axes = Array.from({length:n}, (_,i) => {
+    const [x,y] = pt(R,i);
+    return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#e0d8f8" stroke-width="1"/>`;
+  }).join("");
+
+  const userPts = COMP.map((c,i) => {
+    const s = scores[c.key] ?? 0;
+    return pt(R * s, i);
+  });
+  const userPoly = userPts.map(p => p.map(v=>v.toFixed(1)).join(",")).join(" ");
+  const userLine = `<polygon points="${userPoly}" fill="rgba(124,58,237,.18)" stroke="#7C3AED" stroke-width="2" stroke-linejoin="round"/>`;
+  const dots = userPts.map(([x,y]) =>
+    `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4" fill="#7C3AED" stroke="#fff" stroke-width="1.5"/>`
+  ).join("");
+
+  const labels = COMP.map((c,i) => {
+    const LR = R + 28;
+    const [lx,ly] = pt(LR,i);
+    const a = startAngle + i * step;
+    const anchor = Math.abs(Math.cos(a)) < 0.1 ? "middle" : (Math.cos(a) > 0 ? "start" : "end");
+    const dy = Math.sin(a) < -0.5 ? "-.2em" : (Math.sin(a) > 0.5 ? "1em" : ".35em");
+    return `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${anchor}" dy="${dy}" `
+      + `font-size="11" font-weight="800" fill="#4a4a6a" font-family="Nunito,sans-serif">${c.label}</text>`;
+  }).join("");
+
+  const pctLabels = [25,50,75,100].map(p =>
+    `<text x="${(cx+2).toFixed(1)}" y="${(cy - R*p/100 - 3).toFixed(1)}" font-size="8" fill="#b0a8cc" text-anchor="middle" font-family="Nunito,sans-serif">${p}%</text>`
+  ).join("");
+
+  return `<svg viewBox="0 0 320 310" xmlns="http://www.w3.org/2000/svg" aria-label="Graphique radar des compétences">
+    ${grids}${axes}${userLine}${dots}${labels}${pctLabels}
+  </svg>`;
+}
+
+/* ── ANALYSE COMPLÈTE ── */
+function affAnalyse() {
+  // Scores par compétence
+  const compScores = {};
+  COMP.forEach(c => {
+    const qs = repDetail.filter(r => c.ids.includes(r.question_id));
+    compScores[c.key] = qs.length ? qs.filter(r => r.correct).length / qs.length : 0;
+  });
+
+  // Radar
+  document.getElementById("radar-svg").innerHTML = buildRadar(compScores);
+
+  // Barres CECRL
+  const nivHtml = Object.entries(PAR_NIVEAU).map(([niv, ids]) => {
+    const qs = repDetail.filter(r => ids.includes(r.question_id));
+    const pct = qs.length ? Math.round(qs.filter(r => r.correct).length / qs.length * 100) : 0;
+    const color = NIV_COLORS[niv] || "#9090b0";
+    return `<div class="res-niv-row">
+      <div class="res-niv-label">${niv} <span>${pct}%</span></div>
+      <div class="res-niv-track">
+        <div class="res-niv-fill" style="width:${pct}%;background:${color}"></div>
+      </div>
+    </div>`;
+  }).join("");
+  document.getElementById("res-niveaux").innerHTML = nivHtml;
+
+  // Points forts (≥70%) et à renforcer (<50%)
+  const sorted = COMP.map(c => ({...c, pct: Math.round(compScores[c.key] * 100)}))
+    .sort((a,b) => b.pct - a.pct);
+  const forts   = sorted.filter(c => c.pct >= 70);
+  const faibles = sorted.filter(c => c.pct < 50);
+
+  function pfCard(title, icon, items, cls, emptyMsg) {
+    const itemsHtml = items.length
+      ? items.map(c => `<div class="res-pf-item">${c.icon} ${c.label}<span class="res-pf-item-pct">${c.pct}%</span></div>`).join("")
+      : `<p class="res-pf-empty">${emptyMsg}</p>`;
+    return `<div class="res-pf-card ${cls}">
+      <div class="res-pf-card-title">${icon} ${title}</div>
+      ${itemsHtml}
+    </div>`;
+  }
+
+  document.getElementById("res-forts").innerHTML = pfCard(
+    "Points forts", "✅", forts, "res-pf-card--fort",
+    "Continuez à pratiquer toutes les compétences !"
+  );
+  document.getElementById("res-faibles").innerHTML = pfCard(
+    "À renforcer", "📌", faibles, "res-pf-card--faible",
+    "Excellent — aucune compétence faible !"
+  );
+}
+
+/* ── RÉSULTAT ── */
+function affResultat() {
+  const bonnes = repDetail.filter(r => r.correct).length;
+  const pct = Math.round(bonnes / TOTAL * 100);
+  const niv = niveauDepuisScore(bonnes);
+
+  const dureeSec = tempsDebut ? Math.round((Date.now() - tempsDebut) / 1000) : 0;
+  const min = Math.floor(dureeSec / 60);
+  const sec = dureeSec % 60;
+  const dureeTxt = `${min} min ${sec.toString().padStart(2,"0")} s`;
+
+  document.getElementById("prog-bar").style.width = "100%";
+  document.getElementById("hdr-info").innerHTML = "Test terminé";
+  document.getElementById("res-badge").textContent = niv === "Pre-A1" ? "—" : niv;
+  document.getElementById("res-niv").textContent   = niv === "Pre-A1" ? "Pré-A1" : niv;
+  document.getElementById("res-score").textContent = `${bonnes} bonne${bonnes > 1?"s":""} réponse${bonnes > 1?"s":""} sur ${TOTAL} (${pct}%) — durée : ${dureeTxt}`;
+  document.getElementById("res-desc").textContent  = DESC[niv] || "";
+
+  affEcran("e-res");
+  affAnalyse();
+  window.scrollTo(0, 0);
+
+  _sauverFirebase(niv, pct, "", "", "", dureeSec);
+}
+
+/* ── FIREBASE ── */
+async function sauver(skip = false) {
+  const bonnes = repDetail.filter(r => r.correct).length;
+  const pct    = Math.round(bonnes / TOTAL * 100);
+  const niv    = niveauDepuisScore(bonnes);
+  const dureeSec = tempsDebut ? Math.round((Date.now() - tempsDebut) / 1000) : 0;
+
+  if (skip) {
+    document.getElementById("save-msg").textContent = "Résultats non enregistrés.";
+    return;
+  }
+
+  const email = document.getElementById("inp-email").value.trim();
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    document.getElementById("err-email").style.display = "block";
+    return;
+  }
+  document.getElementById("err-email").style.display = "none";
+
+  const prenom = document.getElementById("inp-prenom").value.trim();
+  const nom    = document.getElementById("inp-nom").value.trim();
+
+  await _sauverFirebase(niv, pct, prenom, nom, email, dureeSec);
+  document.getElementById("save-msg").textContent = "✓ Vos résultats ont été enregistrés. Merci !";
+  document.getElementById("save-msg").style.color = "var(--success)";
+}
+
+async function _sauverFirebase(niv, pct, prenom, nom, email, dureeSec) {
+  try {
+    const db = window._db;
+    if (!db) return;
+    await window._addDoc(window._collection(db, "resultats_test"), {
+      prenom, nom, email,
+      date:            window._serverTimestamp(),
+      niveau_final:    niv,
+      score_pct:       pct,
+      duree_secondes:  dureeSec || 0,
+      reponses_detail: repDetail
+    });
+  } catch(e) { console.warn("Firebase:", e.message); }
+}
+
+/* ── UTILITAIRE ── */
+function affEcran(id) {
+  document.querySelectorAll(".ecran").forEach(e => e.classList.remove("actif"));
+  document.getElementById(id).classList.add("actif");
+}
+</script>
+
+</body>
+</html>

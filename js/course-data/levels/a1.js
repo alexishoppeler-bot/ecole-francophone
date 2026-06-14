@@ -927,11 +927,11 @@ window.COURSE_DATA_PARTS.a1 = {
       ],
       "textAuth": {
         "source": "Panneau d'information — Genève Tourisme",
-        "text": "Genève est une ville internationale située en Suisse romande, au bord du lac Léman. C'est le siège de nombreuses organisations internationales comme la Croix-Rouge et l'ONU. La langue officielle est le français. La ville accueille chaque année des milliers de visiteurs et de travailleurs du monde entier.",
+        "text": "Genève est une ville internationale située en Suisse romande, au bord du lac Léman. La langue officielle de Genève est le français. La ville est connue dans le monde entier parce qu'elle accueille de nombreuses organisations internationales, comme la Croix-Rouge et l'ONU. Chaque année, des visiteurs, des étudiants et des travailleurs viennent à Genève. Pour une personne qui apprend le français, Genève est donc un bon exemple de ville francophone et internationale.",
         "questions": [
           {
-            "question": "Dans quelle partie de la Suisse se trouve Genève ?",
-            "answer": "En Suisse romande."
+            "question": "Où se trouve Genève ?",
+            "answer": "Genève se trouve en Suisse romande, au bord du lac Léman."
           },
           {
             "question": "Quelle est la langue officielle à Genève ?",
@@ -940,6 +940,96 @@ window.COURSE_DATA_PARTS.a1 = {
           {
             "question": "Citez une organisation internationale présente à Genève.",
             "answer": "La Croix-Rouge ou l'ONU."
+          },
+          {
+            "question": "Qui vient à Genève chaque année ?",
+            "answer": "Des visiteurs, des étudiants et des travailleurs viennent à Genève."
+          },
+          {
+            "question": "Pourquoi Genève est-elle un exemple de ville francophone ?",
+            "answer": "Parce que Genève est en Suisse romande et que la langue officielle est le français."
+          }
+        ],
+        "mcq": [
+          {
+            "prompt": "Dans quelle région de Suisse se trouve Genève ?",
+            "choices": ["En Suisse alémanique", "En Suisse romande", "Au Tessin", "Dans les Grisons"],
+            "answer": 1,
+            "explanation": "Le texte dit que Genève est située en Suisse romande."
+          },
+          {
+            "prompt": "Quelle est la langue officielle à Genève ?",
+            "choices": ["L'allemand", "L'italien", "Le français", "L'anglais"],
+            "answer": 2,
+            "explanation": "La phrase clé est : « La langue officielle de Genève est le français. »"
+          },
+          {
+            "prompt": "Quelle organisation internationale est citée dans le texte ?",
+            "choices": ["L'Union européenne", "L'OTAN", "La Croix-Rouge", "Le G20"],
+            "answer": 2,
+            "explanation": "Le texte cite la Croix-Rouge et l'ONU."
+          },
+          {
+            "prompt": "Près de quel lieu naturel se trouve Genève ?",
+            "choices": ["Au bord du Rhin", "Au bord du lac Léman", "Au bord du lac de Constance", "En montagne"],
+            "answer": 1,
+            "explanation": "Le texte indique : « au bord du lac Léman »."
+          },
+          {
+            "prompt": "Qui vient à Genève chaque année selon le texte ?",
+            "choices": ["Seulement des touristes", "Des visiteurs, des étudiants et des travailleurs", "Seulement des diplomates", "Seulement des habitants de Suisse"],
+            "answer": 1,
+            "explanation": "Le texte mentionne des visiteurs, des étudiants et des travailleurs."
+          },
+          {
+            "prompt": "Pourquoi Genève est-elle un bon exemple pour cette unité ?",
+            "choices": ["Parce qu'on y parle français et que la ville est internationale", "Parce qu'elle est la capitale de la France", "Parce qu'on y parle seulement anglais", "Parce qu'elle est en Suisse alémanique"],
+            "answer": 0,
+            "explanation": "Genève est francophone et internationale : cela correspond au thème de la francophonie."
+          }
+        ]
+      },
+      "listeningMcq": {
+        "title": "Au bureau d'information",
+        "context": "Écoutez la conversation, puis répondez aux questions.",
+        "script": [
+          { "who": "Marie", "text": "Bonjour, bureau d'information de Lausanne, je vous écoute." },
+          { "who": "Karim", "text": "Bonjour madame. Je viens d'arriver en Suisse. Je viens d'Algérie." },
+          { "who": "Marie", "text": "Bienvenue ! Vous habitez dans quelle ville ?" },
+          { "who": "Karim", "text": "J'habite à Fribourg. C'est en Suisse romande ?" },
+          { "who": "Marie", "text": "Oui, Fribourg est une ville bilingue. On parle français et allemand." },
+          { "who": "Karim", "text": "Intéressant ! Et combien de langues officielles y a-t-il en Suisse ?" },
+          { "who": "Marie", "text": "La Suisse a quatre langues officielles : le français, l'allemand, l'italien et le romanche." },
+          { "who": "Karim", "text": "Et la capitale de la Suisse, c'est Genève ?" },
+          { "who": "Marie", "text": "Non, la capitale de la Suisse s'appelle Berne. Genève est une grande ville internationale." },
+          { "who": "Karim", "text": "Je voudrais apprendre le français. Il y a des cours à Fribourg ?" },
+          { "who": "Marie", "text": "Oui, il y a plusieurs écoles de langues à Fribourg. Bonne installation en Suisse !" }
+        ],
+        "mcq": [
+          {
+            "prompt": "D'où vient Karim ?",
+            "choices": ["Du Maroc", "D'Algérie", "De France", "Du Sénégal"],
+            "answer": 1
+          },
+          {
+            "prompt": "Dans quelle ville habite Karim ?",
+            "choices": ["Lausanne", "Genève", "Fribourg", "Berne"],
+            "answer": 2
+          },
+          {
+            "prompt": "Quelles langues parle-t-on à Fribourg ?",
+            "choices": ["Français seulement", "Français et allemand", "Allemand et italien", "Français et romanche"],
+            "answer": 1
+          },
+          {
+            "prompt": "Quelle est la capitale de la Suisse ?",
+            "choices": ["Genève", "Lausanne", "Zurich", "Berne"],
+            "answer": 3
+          },
+          {
+            "prompt": "Que veut apprendre Karim ?",
+            "choices": ["L'allemand", "L'anglais", "Le français", "L'espagnol"],
+            "answer": 2
           }
         ]
       },

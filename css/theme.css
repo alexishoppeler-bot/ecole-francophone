@@ -42,33 +42,33 @@
   --text3:       #9090b0;
 
   /* Couleurs logo école-francophone.ch */
-  --accent:      #1D4ED8;
-  --accent2:     #7C3AED;
-  --accent3:     #A855F7;
+  --accent:      #1778CC;
+  --accent2:     #8800FF;
+  --accent3:     #B040FF;
   --danger:      #e05555;
   --success:     #10b981;
   --warning:     #f0a030;
 
   /* Couleurs par niveau CECRL */
-  --level-a1:        #7C3AED;
+  --level-a1:        #8800FF;
   --level-a1-light:  #ede9fe;
-  --level-a1-text:   #5B21B6;
-  --level-a2:        #0ea5e9;
+  --level-a1-text:   #6000bb;
+  --level-a2:        #5AABF0;
   --level-a2-light:  #e0f2fe;
-  --level-a2-text:   #0369a1;
+  --level-a2-text:   #1778CC;
   --level-b1:        #f59e0b;
   --level-b1-light:  #fef3c7;
   --level-b1-text:   #b45309;
-  --level-b2:        #A855F7;
+  --level-b2:        #B040FF;
   --level-b2-light:  #f3e8ff;
   --level-b2-text:   #7e22ce;
   --level-c1c2:      #f43f5e;
   --level-c1c2-light:#ffe4e6;
   --level-c1c2-text: #be123c;
 
-  --gradient:    linear-gradient(135deg, #1D4ED8 0%, #7C3AED 100%);
-  --gradient2:   linear-gradient(135deg, #7C3AED 0%, #1D4ED8 100%);
-  --gradient3:   linear-gradient(135deg, #A855F7 0%, #1D4ED8 100%);
+  --gradient:    linear-gradient(135deg, #5AABF0 0%, #8800FF 100%);
+  --gradient2:   linear-gradient(135deg, #8800FF 0%, #5AABF0 100%);
+  --gradient3:   linear-gradient(135deg, #B040FF 0%, #5AABF0 100%);
 
   /* Typographie Nunito (arrondie, comme le logo) */
   --font-head:   'Nunito', 'Open Sans', sans-serif;
@@ -81,11 +81,11 @@
   --r-xl:  20px;
 
   /* Ombres */
-  --shadow-sm: 0 1px 4px rgba(90,171,240,0.10), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 16px rgba(155,53,236,0.12), 0 2px 6px rgba(0,0,0,0.05);
-  --shadow-lg: 0 8px 32px rgba(155,53,236,0.14), 0 4px 12px rgba(0,0,0,0.06);
-  --shadow-accent: 0 4px 16px rgba(90,171,240,0.22);
-  --shadow-green:  0 4px 16px rgba(155,53,236,0.15);
+  --shadow-sm: 0 1px 4px rgba(90,171,240,0.12), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 16px rgba(136,0,255,0.13), 0 2px 6px rgba(0,0,0,0.05);
+  --shadow-lg: 0 8px 32px rgba(136,0,255,0.16), 0 4px 12px rgba(0,0,0,0.07);
+  --shadow-accent: 0 4px 20px rgba(23,120,204,0.30);
+  --shadow-green:  0 4px 16px rgba(136,0,255,0.15);
 
   /* Sidebar */
   --sidebar-w: 300px;

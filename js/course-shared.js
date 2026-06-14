@@ -476,21 +476,30 @@
     var done = cards.filter(function(card) {
       return unitProgress[card.id] && unitProgress[card.id].status === 'completed';
     }).length;
+    var pct = Math.round(done / cards.length * 100);
     return '<div class="unit-training-progress">'
       + '<div class="unit-training-head"><div><span class="unit-progress-kicker">Entraînements</span><strong>' + done + ' / ' + cards.length + ' jeux terminés</strong></div>'
+      + '<div class="unit-training-ring" style="--training-pct:' + pct + '%"><span>' + pct + '%</span></div>'
       + '<a class="game-btn game-btn--secondary" href="entrainement-a1.html?unite=' + encodeURIComponent(entry.badge) + '">Tous les jeux</a></div>'
       + '<div class="unit-training-grid">'
-      + cards.map(function(card) {
+      + cards.map(function(card, index) {
         var item = unitProgress[card.id] || {};
         var status = item.status || 'idle';
         var label = status === 'completed' ? 'Terminé' : status === 'started' ? 'En cours' : 'À faire';
         var score = item.score !== null && item.score !== undefined && item.total ? '<span class="unit-training-score">' + item.score + '/' + item.total + '</span>' : '';
-        return '<a class="unit-training-card unit-training-card--' + status + '" href="' + card.href + '">'
+        var cardPct = status === 'completed' ? 100 : status === 'started' ? 35 : 0;
+        if (item.score !== null && item.score !== undefined && item.total) {
+          cardPct = Math.round(item.score / item.total * 100);
+        }
+        return '<article class="unit-training-card unit-training-card--' + status + '" style="--training-i:' + index + '">'
           + '<span class="unit-training-icon">' + card.icon + '</span>'
           + '<span class="unit-training-label">' + card.label + '</span>'
           + '<span class="unit-training-status">' + label + '</span>'
           + score
-          + '</a>';
+          + '<span class="unit-training-mini-progress" aria-label="Progression ' + cardPct + '%"><span style="width:' + cardPct + '%"></span></span>'
+          + '<span class="unit-training-percent">' + cardPct + '%</span>'
+          + '<a class="unit-training-open" href="' + card.href + '">Ouvrir</a>'
+          + '</article>';
       }).join('')
       + '</div>'
       + '</div>';
@@ -661,8 +670,33 @@
     var dialogues = (DIALOGUES && DIALOGUES[key]) || [];
     var firstDialogue = dialogues[0] || null;
     var theme = (entry.themes || [entry.label])[0] || entry.label;
+    var standardQuestionSearches = [
+      { label: 'Qui ?', hint: 'personnes', query: 'question qui français image' },
+      { label: 'Quoi ?', hint: 'objets / actions', query: 'question quoi français image' },
+      { label: 'Où ?', hint: 'lieux', query: 'question où français image' },
+      { label: 'Quand ?', hint: 'temps / dates', query: 'question quand français image' },
+      { label: 'Comment ?', hint: 'manière', query: 'question comment français image' },
+      { label: 'Pourquoi ?', hint: 'raison', query: 'question pourquoi français image' },
+      { label: 'Combien ?', hint: 'nombre / prix', query: 'question combien français image' },
+      { label: 'Quel / Quelle ?', hint: 'choix', query: 'question quel quelle français image' },
+      { label: 'Est-ce que ?', hint: 'oui / non', query: 'question est-ce que français image' },
+      { label: 'Les questions A1', hint: 'révision générale', query: 'questions standards français A1 image' }
+    ];
     var supportHtml = key === 'unite-0'
-      ? '<figure class="comm-support-figure"><img src="../assets/francophonie.png" alt="Carte du monde francophone"><figcaption><strong>Observez la carte et répondez :</strong><ol class="comm-guided-questions"><li>Quels continents voyez-vous représentés en bleu ?</li><li>Citez deux pays francophones que vous connaissez déjà.</li><li>Trouvez la Suisse sur la carte. Dans quelle région est-elle ?</li></ol></figcaption></figure>'
+      ? '<div class="comm-support-card comm-image-search-support"><strong>Supports visuels à chercher</strong><p>Ouvrez Google Images, copiez une image, revenez ici, cliquez sur le cadre correspondant puis collez avec Ctrl+V.</p><div class="comm-image-search-grid">'
+        + standardQuestionSearches.map(function(item) {
+          var searchUrl = 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(item.query);
+          return '<div class="comm-image-search-card" tabindex="0" data-image-slot="' + encodeURIComponent(item.label) + '">'
+            + '<span class="comm-image-search-frame" aria-hidden="true"></span>'
+            + '<span class="comm-image-search-label">' + escapeHtml(item.label) + '</span>'
+            + '<span class="comm-image-search-hint">' + escapeHtml(item.hint) + '</span>'
+            + '<span class="comm-image-search-actions">'
+              + '<a href="' + searchUrl + '" target="_blank" rel="noopener">Google Images</a>'
+              + '<button type="button" data-clear-image>Effacer</button>'
+            + '</span>'
+          + '</div>';
+        }).join('')
+        + '</div></div>'
       : '<div class="comm-support-card"><strong>' + escapeHtml(entry.label) + '</strong><p>' + escapeHtml(entry.summary || entry.focus || 'Observez la situation et préparez quelques phrases simples.') + '</p></div>';
 
     var reading = unitContent.textAuth
@@ -673,6 +707,27 @@
         + '</div>'
       : '<div class="comm-mini-text"><strong>' + escapeHtml(entry.label) + '</strong><p>' + escapeHtml(entry.summary || entry.focus || '') + '</p><p>Je lis le texte, je repère les mots importants, puis je réponds avec une phrase courte.</p></div>';
 
+    var readingMcqHtml = '';
+    if (unitContent.textAuth && (unitContent.textAuth.mcq || []).length) {
+      readingMcqHtml = '<form class="comp-mcq-form" data-comp-form="ecrite">'
+        + '<h5 class="comp-mcq-title">Questions de compréhension</h5>'
+        + unitContent.textAuth.mcq.map(function(item, index) {
+          return '<fieldset class="course-check-item" data-answer="' + item.answer + '" data-explain="' + escapeHtml(item.explanation || '') + '">'
+            + '<legend>' + (index + 1) + '. ' + escapeHtml(item.prompt) + '</legend>'
+            + item.choices.map(function(choice, ci) {
+              return '<label class="course-check-choice"><input type="radio" name="comp-ecrite-' + index + '" value="' + ci + '"><span>' + escapeHtml(choice) + '</span></label>';
+            }).join('')
+            + '<p class="comp-question-feedback"></p>'
+            + '</fieldset>';
+        }).join('')
+        + '<div class="course-check-actions">'
+        + '<button type="submit" class="game-btn game-btn--primary">Corriger</button>'
+        + '<button type="button" class="game-btn game-btn--secondary" data-comp-reset="ecrite">Réinitialiser</button>'
+        + '<span class="course-check-result"></span>'
+        + '</div>'
+        + '</form>';
+    }
+
     var oralText = firstDialogue
       ? '<div class="comm-dialogue-box"><strong>' + escapeHtml(firstDialogue.title || 'Dialogue') + '</strong><p>' + escapeHtml(firstDialogue.context || '') + '</p>'
         + '<ol>' + (firstDialogue.steps || []).map(function(step) {
@@ -681,6 +736,51 @@
           return '';
         }).join('') + '</ol></div>'
       : '<div class="comm-dialogue-box"><strong>Dialogue modèle</strong><ol><li>Bonjour, je voudrais parler de ' + escapeHtml(theme) + '.</li><li>D’accord. Qu’est-ce qui est important ?</li><li>Je pense que ' + escapeHtml(entry.focus || entry.summary || theme) + '.</li></ol></div>';
+
+    var listeningHtml = '';
+    if (unitContent.listeningMcq) {
+      var lm = unitContent.listeningMcq;
+      listeningHtml = '<div class="comp-tts-box">'
+        + '<div class="comp-tts-header">'
+        + '<strong>' + escapeHtml(lm.title || 'Dialogue') + '</strong>'
+        + (lm.context ? '<p class="comp-tts-context">' + escapeHtml(lm.context) + '</p>' : '')
+        + '</div>'
+        + '<div class="comp-tts-controls">'
+        + '<button class="game-btn game-btn--primary comp-tts-play" data-comp-play="orale" type="button">▶ Écouter</button>'
+        + '<button class="game-btn game-btn--secondary comp-tts-stop" data-comp-stop="orale" type="button" disabled>■ Arrêter</button>'
+        + '<span class="comp-tts-rates">'
+        + '<button class="comp-rate-btn" data-comp-rate="orale" data-rate="0.7" type="button">Lent</button>'
+        + '<button class="comp-rate-btn comp-rate-btn--active" data-comp-rate="orale" data-rate="0.9" type="button">Normal</button>'
+        + '<button class="comp-rate-btn" data-comp-rate="orale" data-rate="1.2" type="button">Rapide</button>'
+        + '</span>'
+        + '</div>'
+        + '<ol class="comp-dialogue">'
+        + (lm.script || []).map(function(line, i) {
+          return '<li class="comp-dline" data-comp-i="' + i + '">'
+            + (line.who ? '<span class="comp-who">' + escapeHtml(line.who) + '</span>' : '')
+            + '<span class="comp-txt">' + escapeHtml(line.text) + '</span>'
+            + '</li>';
+        }).join('')
+        + '</ol>'
+        + '</div>'
+        + ((lm.mcq || []).length ? '<form class="comp-mcq-form" data-comp-form="orale">'
+          + '<h5 class="comp-mcq-title">Questions de compréhension</h5>'
+          + lm.mcq.map(function(item, index) {
+            return '<fieldset class="course-check-item" data-answer="' + item.answer + '" data-explain="' + escapeHtml(item.explanation || '') + '">'
+              + '<legend>' + (index + 1) + '. ' + escapeHtml(item.prompt) + '</legend>'
+              + item.choices.map(function(choice, ci) {
+                return '<label class="course-check-choice"><input type="radio" name="comp-orale-' + index + '" value="' + ci + '"><span>' + escapeHtml(choice) + '</span></label>';
+              }).join('')
+              + '<p class="comp-question-feedback"></p>'
+              + '</fieldset>';
+          }).join('')
+          + '<div class="course-check-actions">'
+          + '<button type="submit" class="game-btn game-btn--primary">Corriger</button>'
+          + '<button type="button" class="game-btn game-btn--secondary" data-comp-reset="orale">Réinitialiser</button>'
+          + '<span class="course-check-result"></span>'
+          + '</div>'
+          + '</form>' : '');
+    }
 
     var oralProduction = '<div class="unit-practice-box"><strong>Production orale</strong><p>À deux, créez un dialogue court dans une situation réelle liée à : ' + escapeHtml(theme) + '. Utilisez au moins trois expressions du mémo.</p></div>';
     var writtenProduction = '<div class="unit-practice-box"><strong>Production écrite</strong><p>Écrivez 5 à 8 phrases pour expliquer une situation concrète liée à : ' + escapeHtml(theme) + '. Ajoutez une phrase personnelle.</p></div>';
@@ -691,9 +791,18 @@
       }).join('')
       + '</ul></div>';
 
+    var readingTextOnly = unitContent.textAuth
+      ? '<div class="textauth-box"><p class="textauth-source">' + escapeHtml(unitContent.textAuth.source || '') + '</p><blockquote class="textauth-text">' + unitContent.textAuth.text + '</blockquote></div>'
+      : '';
+
+    var comprehensionHtml = '';
+    if (readingMcqHtml) comprehensionHtml += '<h4>Compréhension écrite</h4>' + readingTextOnly + readingMcqHtml;
+    if (listeningHtml) comprehensionHtml += '<h4>Compréhension orale</h4>' + listeningHtml;
+    if (!comprehensionHtml) comprehensionHtml = reading + '<h4>Compréhension orale</h4>' + oralText;
+
     var panels = [
       ['support', '1. Support', supportHtml],
-      ['comprehension', '2. Compréhension', '<h4>Compréhension écrite</h4>' + reading + '<h4>Compréhension orale</h4>' + oralText],
+      ['comprehension', '2. Compréhension', comprehensionHtml],
       ['oral', '3. Production orale', oralProduction],
       ['ecrit', '4. Production écrite', writtenProduction],
       ['memo', '5. Mémo', memo]
@@ -959,11 +1068,17 @@
     var progressLabel = getStatusLabel(currentStatus, entry.level);
     var trainingProgressBody = buildTrainingProgress(entry);
     var finalTestBody = buildFinalTest(entry, unitContent, verbData, smartObjectives);
-    var progressionBody = '<div class="unit-progress-card" data-current-status="' + currentStatus + '">'
-      + '<div><span class="unit-progress-kicker">Statut actuel</span><strong id="unitProgressStatus">' + progressLabel + '</strong></div>'
-      + '<div class="unit-progress-actions">'
+    var progressionBody = '<div class="unit-progress-animated-grid">'
+      + '<div class="unit-progress-animated-card unit-progress-animated-card--status" data-current-status="' + currentStatus + '" style="--progress-i:0">'
+      + '<span class="unit-progress-kicker">Statut actuel</span><strong id="unitProgressStatus">' + progressLabel + '</strong><p>Votre parcours dans cette unité.</p>'
       + '<button class="game-btn game-btn--secondary" type="button" data-progress-action="started">Marquer en cours</button>'
       + '</div>'
+      + '<a class="unit-progress-animated-card unit-progress-animated-card--games" href="entrainement-a1.html?unite=' + encodeURIComponent(entry.badge) + '" style="--progress-i:1">'
+      + '<span class="unit-progress-kicker">Jeux</span><strong>Cartes animées</strong><p>Ouvrir tous les entraînements de l’unité.</p>'
+      + '</a>'
+      + '<a class="unit-progress-animated-card unit-progress-animated-card--final" href="#finalUnitTest" style="--progress-i:2">'
+      + '<span class="unit-progress-kicker">Validation</span><strong>Test final</strong><p>Répondez aux questions pour remplir les objectifs.</p>'
+      + '</a>'
       + '</div>'
       + trainingProgressBody
       + finalTestBody
@@ -1274,6 +1389,88 @@
 
     sectionsWrap.innerHTML = buildUnitMarkup(entry);
 
+    function imageSlotStorageKey(slot) {
+      return 'ef_support_image_' + pageId + '_' + (slot.dataset.imageSlot || '');
+    }
+
+    function setImageSlot(slot, dataUrl) {
+      if (!slot || !dataUrl) return;
+      var frame = slot.querySelector('.comm-image-search-frame');
+      if (!frame) return;
+      frame.innerHTML = '<img src="' + dataUrl + '" alt="">';
+      slot.classList.add('has-image');
+      try { localStorage.setItem(imageSlotStorageKey(slot), dataUrl); } catch(e) {}
+    }
+
+    function restoreImageSlots() {
+      sectionsWrap.querySelectorAll('[data-image-slot]').forEach(function(slot) {
+        try {
+          var dataUrl = localStorage.getItem(imageSlotStorageKey(slot));
+          if (dataUrl) setImageSlot(slot, dataUrl);
+        } catch(e) {}
+      });
+    }
+
+    function openSupportImagePreview(src, label) {
+      if (!src) return;
+      var old = document.getElementById('supportImagePreview');
+      if (old) old.remove();
+      var overlay = document.createElement('div');
+      overlay.id = 'supportImagePreview';
+      overlay.className = 'support-image-preview';
+      overlay.innerHTML = '<button class="support-image-preview-close" type="button" aria-label="Fermer">Fermer</button>'
+        + '<figure><img src="' + src + '" alt=""><figcaption>' + escapeHtml(label || 'Support visuel') + '</figcaption></figure>';
+      document.body.appendChild(overlay);
+      function close() {
+        overlay.remove();
+        document.removeEventListener('keydown', onKeydown);
+      }
+      function onKeydown(event) {
+        if (event.key === 'Escape') close();
+      }
+      overlay.addEventListener('click', function(event) {
+        if (event.target === overlay || event.target.closest('.support-image-preview-close')) close();
+      });
+      document.addEventListener('keydown', onKeydown);
+    }
+
+    var activeImageSlot = null;
+    function selectImageSlot(slot) {
+      if (!slot) return;
+      sectionsWrap.querySelectorAll('[data-image-slot]').forEach(function(item) {
+        item.classList.toggle('is-selected', item === slot);
+      });
+      activeImageSlot = slot;
+      slot.focus();
+    }
+
+    function imageFileFromClipboard(event) {
+      var items = event.clipboardData && event.clipboardData.items;
+      if (!items) return null;
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].type && items[i].type.indexOf('image/') === 0) {
+          return items[i].getAsFile();
+        }
+      }
+      return null;
+    }
+
+    document.addEventListener('paste', function(event) {
+      if (!activeImageSlot || !sectionsWrap.contains(activeImageSlot)) return;
+      var file = imageFileFromClipboard(event);
+      if (!file) return;
+      event.preventDefault();
+      var reader = new FileReader();
+      reader.onload = function() {
+        setImageSlot(activeImageSlot, reader.result);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    restoreImageSlots();
+
+    var _compTtsState = { playing: false, idx: 0, rate: 0.9, box: null };
+
     var _cachedVoice = undefined;
     function _getBestFrVoice() {
       if (_cachedVoice !== undefined) return _cachedVoice;
@@ -1299,6 +1496,30 @@
     }
 
     sectionsWrap.addEventListener('click', function(e) {
+      var clearImageBtn = e.target.closest('[data-clear-image]');
+      if (clearImageBtn) {
+        var clearSlot = clearImageBtn.closest('[data-image-slot]');
+        var clearFrame = clearSlot && clearSlot.querySelector('.comm-image-search-frame');
+        if (clearFrame) clearFrame.innerHTML = '';
+        if (clearSlot) {
+          clearSlot.classList.remove('has-image');
+          try { localStorage.removeItem(imageSlotStorageKey(clearSlot)); } catch(err) {}
+          selectImageSlot(clearSlot);
+        }
+        return;
+      }
+
+      var imageSlot = e.target.closest('[data-image-slot]');
+      if (imageSlot && !e.target.closest('a')) {
+        var pastedImage = e.target.closest('.comm-image-search-frame img');
+        if (pastedImage) {
+          openSupportImagePreview(pastedImage.src, decodeURIComponent(imageSlot.dataset.imageSlot || 'Support visuel'));
+          return;
+        }
+        selectImageSlot(imageSlot);
+        return;
+      }
+
       var commTab = e.target.closest('[data-comm-tab]');
       if (commTab) {
         var commTarget = commTab.dataset.commTab;
@@ -1404,6 +1625,122 @@
         return;
       }
 
+      // Compréhension MCQ — réinitialiser
+      var compReset = e.target.closest('[data-comp-reset]');
+      if (compReset) {
+        var resetForm = compReset.closest('.comp-mcq-form');
+        if (resetForm) {
+          Array.from(resetForm.querySelectorAll('.course-check-item')).forEach(function(field) {
+            field.classList.remove('is-correct', 'is-wrong');
+          });
+          resetForm.reset();
+          var resetResult = resetForm.querySelector('.course-check-result');
+          if (resetResult) resetResult.textContent = '';
+        }
+        return;
+      }
+
+      // Compréhension TTS — play/pause
+      var compPlay = e.target.closest('[data-comp-play]');
+      if (compPlay) {
+        if (!window.speechSynthesis) return;
+        var ttsBox = compPlay.closest('.comp-tts-box');
+        if (!ttsBox) return;
+        if (_compTtsState.playing && _compTtsState.box === ttsBox) {
+          window.speechSynthesis.cancel();
+          _compTtsState.playing = false;
+          compPlay.textContent = '▶ Écouter';
+          var stopBtnToggle = ttsBox.querySelector('[data-comp-stop]');
+          if (stopBtnToggle) stopBtnToggle.disabled = true;
+          return;
+        }
+        var ttsLines = Array.from(ttsBox.querySelectorAll('[data-comp-i]'));
+        _compTtsState.playing = true;
+        _compTtsState.idx = 0;
+        _compTtsState.box = ttsBox;
+        compPlay.textContent = '⏸ Pause';
+        var stopBtnPlay = ttsBox.querySelector('[data-comp-stop]');
+        if (stopBtnPlay) stopBtnPlay.disabled = false;
+        function playNextCompLine() {
+          if (!_compTtsState.playing || _compTtsState.idx >= ttsLines.length) {
+            _compTtsState.playing = false;
+            compPlay.textContent = '▶ Écouter';
+            if (stopBtnPlay) stopBtnPlay.disabled = true;
+            ttsLines.forEach(function(li) { li.classList.remove('comp-dline--active'); });
+            return;
+          }
+          ttsLines.forEach(function(li) { li.classList.remove('comp-dline--active'); });
+          var li = ttsLines[_compTtsState.idx];
+          if (li) li.classList.add('comp-dline--active');
+          var txt = li ? (li.querySelector('.comp-txt') || {}).textContent || '' : '';
+          _compTtsState.idx++;
+          var utt = new SpeechSynthesisUtterance(txt);
+          var v = _getBestFrVoice();
+          if (v) { utt.voice = v; utt.lang = v.lang; } else { utt.lang = 'fr-FR'; }
+          utt.rate = _compTtsState.rate;
+          utt.onend = utt.onerror = playNextCompLine;
+          window.speechSynthesis.speak(utt);
+        }
+        window.speechSynthesis.cancel();
+        playNextCompLine();
+        return;
+      }
+
+      // Compréhension TTS — arrêter
+      var compStop = e.target.closest('[data-comp-stop]');
+      if (compStop) {
+        if (window.speechSynthesis) window.speechSynthesis.cancel();
+        _compTtsState.playing = false;
+        _compTtsState.idx = 0;
+        var stopBox = compStop.closest('.comp-tts-box');
+        if (stopBox) {
+          stopBox.querySelectorAll('[data-comp-i]').forEach(function(li) { li.classList.remove('comp-dline--active'); });
+          var playBtnAfterStop = stopBox.querySelector('[data-comp-play]');
+          if (playBtnAfterStop) playBtnAfterStop.textContent = '▶ Écouter';
+          compStop.disabled = true;
+        }
+        return;
+      }
+
+      // Compréhension TTS — vitesse
+      var compRateBtn = e.target.closest('[data-comp-rate]');
+      if (compRateBtn) {
+        _compTtsState.rate = parseFloat(compRateBtn.dataset.rate) || 0.9;
+        var rateControls = compRateBtn.closest('.comp-tts-controls');
+        if (rateControls) rateControls.querySelectorAll('[data-comp-rate]').forEach(function(btn) {
+          btn.classList.toggle('comp-rate-btn--active', btn === compRateBtn);
+        });
+        return;
+      }
+
+      // Compréhension — écouter une réplique
+      var compLineBtn = e.target.closest('[data-comp-line]');
+      if (compLineBtn) {
+        var lineIdx = parseInt(compLineBtn.dataset.compLine, 10);
+        var lineBox = compLineBtn.closest('.comp-tts-box');
+        if (!lineBox || !window.speechSynthesis) return;
+        var allLines = Array.from(lineBox.querySelectorAll('[data-comp-i]'));
+        var targetLi = allLines[lineIdx];
+        if (!targetLi) return;
+        var lineTxt = (targetLi.querySelector('.comp-txt') || {}).textContent || '';
+        window.speechSynthesis.cancel();
+        _compTtsState.playing = false;
+        _compTtsState.idx = 0;
+        var playBtnLine = lineBox.querySelector('[data-comp-play]');
+        if (playBtnLine) playBtnLine.textContent = '▶ Écouter';
+        var stopBtnLine = lineBox.querySelector('[data-comp-stop]');
+        if (stopBtnLine) stopBtnLine.disabled = true;
+        allLines.forEach(function(li) { li.classList.remove('comp-dline--active'); });
+        targetLi.classList.add('comp-dline--active');
+        var lineUtt = new SpeechSynthesisUtterance(lineTxt);
+        var lv = _getBestFrVoice();
+        if (lv) { lineUtt.voice = lv; lineUtt.lang = lv.lang; } else { lineUtt.lang = 'fr-FR'; }
+        lineUtt.rate = _compTtsState.rate;
+        lineUtt.onend = lineUtt.onerror = function() { targetLi.classList.remove('comp-dline--active'); };
+        window.speechSynthesis.speak(lineUtt);
+        return;
+      }
+
       // Grammaire fill-in — bouton corriger
       var fillInBtn = e.target.closest('.gram-fillin-submit');
       if (fillInBtn) {
@@ -1438,6 +1775,47 @@
       btn.classList.add(speakingClass);
       utt.onend = utt.onerror = function() { btn.classList.remove(speakingClass); };
       window.speechSynthesis.speak(utt);
+    });
+
+    sectionsWrap.addEventListener('submit', function(e) {
+      var form = e.target.closest('.comp-mcq-form');
+      if (!form) return;
+      e.preventDefault();
+      var fields = Array.from(form.querySelectorAll('.course-check-item'));
+      var score = 0;
+      var answered = 0;
+      fields.forEach(function(field) {
+        var expected = Number(field.getAttribute('data-answer'));
+        var checked = field.querySelector('input:checked');
+        var feedback = field.querySelector('.comp-question-feedback');
+        var correctChoice = field.querySelector('input[value="' + expected + '"]');
+        var correctText = correctChoice && correctChoice.closest('label') ? correctChoice.closest('label').textContent.trim() : '';
+        var explain = field.getAttribute('data-explain') || '';
+        field.classList.remove('is-correct', 'is-wrong');
+        if (feedback) feedback.textContent = '';
+        if (!checked) {
+          if (feedback) feedback.textContent = 'Réponse attendue : ' + correctText + '.';
+          return;
+        }
+        answered++;
+        if (Number(checked.value) === expected) {
+          score++;
+          field.classList.add('is-correct');
+          if (feedback) feedback.textContent = 'Correct : ' + (explain || correctText);
+        }
+        else {
+          field.classList.add('is-wrong');
+          if (feedback) feedback.textContent = 'À revoir. Réponse correcte : ' + correctText + (explain ? ' — ' + explain : '') + '.';
+        }
+      });
+      var result = form.querySelector('.course-check-result');
+      if (!result) return;
+      if (answered !== fields.length) {
+        result.textContent = 'Répondez aux ' + fields.length + ' questions pour obtenir un score.';
+        return;
+      }
+      var pct = Math.round(score / fields.length * 100);
+      result.textContent = 'Score : ' + score + ' / ' + fields.length + ' (' + pct + ' %)' + (pct >= 80 ? ' — Excellent !' : pct >= 60 ? ' — Bien !' : ' — Réessayez !');
     });
 
     bindAssessment();
@@ -1643,55 +2021,444 @@
       return 'Je n’ai pas trouvé de correspondance précise, mais on peut y arriver. Essaie avec un mot-clé comme “logement”, “emploi”, “conjugaison être”, “grammaire”, “phonétique” ou “A1”.';
     }
 
+    function platformStats() {
+      var vocabCount = 0;
+      var grammarCount = 0;
+      var verbs = {};
+      knowledge.forEach(function(item) {
+        vocabCount += (item.vocab || []).length;
+        grammarCount += (item.content.grammarRules || []).length;
+        (item.verbs.verbs || []).forEach(function(verb) { verbs[verb] = true; });
+      });
+      return {
+        units: knowledge.length,
+        vocab: vocabCount,
+        grammar: grammarCount,
+        verbs: Object.keys(verbs).length
+      };
+    }
+
+    function currentKnowledgeItem() {
+      return knowledge.find(function(item) { return item.entry.href.replace('.html', '') === pageId; }) || knowledge[0];
+    }
+
+    function sampleList(items, count) {
+      return (items || []).filter(Boolean).slice(0, count || 5);
+    }
+
+    function currentUnitProgress(entry) {
+      var unitKey = entry.href.replace('.html', '');
+      var unitProgress = readExerciseProgress()[unitKey] || {};
+      var cards = getTrainingCards(entry);
+      var done = cards.filter(function(card) {
+        return unitProgress[card.id] && unitProgress[card.id].status === 'completed';
+      }).length;
+      var started = cards.filter(function(card) {
+        return unitProgress[card.id] && unitProgress[card.id].status === 'started';
+      }).length;
+      return { cards: cards, done: done, started: started };
+    }
+
+    function botMemoryKey() {
+      return 'ef:emmanuelle:memory:v1';
+    }
+
+    function readBotMemory() {
+      try { return JSON.parse(localStorage.getItem(botMemoryKey()) || '{}'); } catch(e) { return {}; }
+    }
+
+    function writeBotMemory(memory) {
+      try { localStorage.setItem(botMemoryKey(), JSON.stringify(memory)); } catch(e) {}
+    }
+
+    function rememberBotAction(action, entry) {
+      var memory = readBotMemory();
+      memory.lastAction = action;
+      memory.lastPage = entry.href.replace('.html', '');
+      memory.lastUnitLabel = entry.level + ' · ' + entry.label;
+      memory.counts = memory.counts || {};
+      memory.counts[action] = (memory.counts[action] || 0) + 1;
+      if (action === 'vocab') {
+        memory.lastFocus = 'vocabulaire';
+        memory.difficult = sampleList((getUnitContent(entry).vocabulary || []).map(function(item) { return item.word; }), 4);
+      }
+      if (action === 'grammar') memory.lastFocus = 'grammaire';
+      if (action === 'verbs') memory.lastFocus = 'conjugaison';
+      writeBotMemory(memory);
+    }
+
+    function nextCourseEntry() {
+      var progress = readProgress();
+      var page = orderedPages.find(function(key) {
+        return !progress[key] || progress[key].status !== 'completed';
+      });
+      return page ? entryByPage[page] : currentKnowledgeItem().entry;
+    }
+
+    function findKnowledgeByTheme(theme) {
+      var q = normalize(theme);
+      return knowledge.filter(function(item) {
+        return item.text.indexOf(q) !== -1;
+      }).slice(0, 5);
+    }
+
+    function answerAuto(action) {
+      var current = currentKnowledgeItem();
+      var entry = current.entry;
+      var content = current.content || {};
+      var stats = platformStats();
+      var progressInfo = currentUnitProgress(entry);
+      var examples = sampleList(content.examples && content.examples.length ? content.examples : entry.expressions || [], 6);
+      var memory = readBotMemory();
+      var nextEntry = nextCourseEntry();
+
+      if (action === 'start') {
+        return '<strong>Emmanuelle</strong><p>Je connais les contenus chargés du site : ' + stats.units + ' unités, ' + stats.vocab + ' mots de vocabulaire, ' + stats.grammar + ' points de grammaire et ' + stats.verbs + ' verbes.</p>'
+          + (memory.lastUnitLabel ? '<p><strong>Mémoire :</strong> la dernière fois, vous étiez sur ' + escapeHtml(memory.lastUnitLabel) + (memory.lastFocus ? ' avec un focus ' + escapeHtml(memory.lastFocus) : '') + '.</p>' : '')
+          + '<p>Je peux guider sans zone de texte : cliquez sur une question, puis je propose une réponse, un exemple et une prochaine action.</p>';
+      }
+
+      if (action === 'current') {
+        var currentHint = progressInfo.done
+          ? 'Vous avez déjà commencé les entraînements : continuez avec le prochain jeu non terminé.'
+          : 'Vous êtes au début : commencez par comprendre le support avant les jeux.';
+        return '<strong>Unité actuelle : ' + escapeHtml(entry.level + ' · ' + entry.label) + '</strong><p>' + escapeHtml(entry.summary || entry.focus || '') + '</p><ul>'
+          + '<li><strong>Objectif :</strong> ' + escapeHtml(entry.focus || 'travailler la communication') + '</li>'
+          + '<li><strong>Contexte :</strong> ' + escapeHtml(entry.swissContext || 'situation pratique') + '</li>'
+          + '<li><strong>À faire :</strong> ' + escapeHtml(entry.task || 'réviser puis pratiquer') + '</li>'
+          + '</ul><p><strong>Diagnostic :</strong> ' + currentHint + '</p><p>' + linkTo(entry, 'tab-objectifs') + '</p>';
+      }
+
+      if (action === 'vocab') {
+        var vocab = (content.vocabulary || current.vocab || []).slice(0, 8);
+        if (!vocab.length) return '<strong>Vocabulaire</strong><p>Cette unité n’a pas encore de liste dédiée. Ouvrez le mémo et les exemples.</p>';
+        return '<strong>Vocabulaire utile</strong><ul>' + vocab.map(function(item) {
+          return '<li><strong>' + escapeHtml(item.word) + '</strong> : ' + escapeHtml(item.definition) + '</li>';
+        }).join('') + '</ul><p><strong>Mini-tâche :</strong> choisissez 3 mots et faites une phrase avec chacun.</p><p>' + linkTo(entry, 'tab-vocabulaire') + '</p>';
+      }
+
+      if (action === 'grammar') {
+        var rules = (content.grammarRules || []).slice(0, 4);
+        if (!rules.length) return '<strong>Grammaire</strong><p>Commencez par observer les exemples de l’unité puis faites les exercices.</p>';
+        return '<strong>' + escapeHtml(content.grammarTitle || 'Grammaire') + '</strong><ul>' + rules.map(function(rule) {
+          return '<li>' + stripHtml(rule) + '</li>';
+        }).join('') + '</ul>' + (content.grammarError ? '<p><strong>Attention :</strong> ' + stripHtml(content.grammarError) + '</p>' : '') + '<p>' + linkTo(entry, 'tab-grammaire') + '</p>';
+      }
+
+      if (action === 'verbs') {
+        var verbs = (current.verbs.verbs || []).slice(0, 5);
+        if (!verbs.length) return '<strong>Conjugaison</strong><p>Aucun verbe spécifique n’est associé à cette unité.</p>';
+        return '<strong>Conjugaisons utiles</strong><ul>' + verbs.map(function(verb) {
+          return '<li><strong>' + escapeHtml(verb) + '</strong> : ' + escapeHtml(conjugateVerb(verb).join(', ')) + '</li>';
+        }).join('') + '</ul><p>' + linkTo(entry, 'tab-conjugaison') + '</p>';
+      }
+
+      if (action === 'phrases') {
+        return '<strong>Phrases modèles</strong><ul>' + examples.map(function(phrase) {
+          return '<li>' + escapeHtml(phrase) + '</li>';
+        }).join('') + '</ul><p><strong>Méthode :</strong> répétez, remplacez un mot, puis dites une phrase personnelle.</p>';
+      }
+
+      if (action === 'understand') {
+        return '<strong>Comment comprendre cette unité ?</strong><ol><li>Regardez le support et dites ce que vous voyez.</li><li>Repérez les mots fréquents : ' + escapeHtml((entry.themes || []).slice(0, 4).join(', ') || entry.label) + '.</li><li>Lisez ou écoutez une fois sans répondre.</li><li>Répondez ensuite avec des phrases courtes.</li></ol><p>' + linkTo(entry, 'tab-communication') + '</p>';
+      }
+
+      if (action === 'produce') {
+        return '<strong>Que puis-je dire ou écrire ?</strong><p>Préparez une réponse en 3 étapes : situation, information principale, phrase personnelle.</p><ul>' + examples.slice(0, 3).map(function(phrase) {
+          return '<li>' + escapeHtml(phrase) + '</li>';
+        }).join('') + '</ul><p><strong>Défi :</strong> faites 5 phrases, puis relisez à voix haute.</p>';
+      }
+
+      if (action === 'games') {
+        var cards = getTrainingCards(entry).slice(0, 6);
+        if (!cards.length) return '<strong>Jeux</strong><p>Les entraînements automatiques sont surtout disponibles dans le parcours A1.</p>';
+        var suggested = progressInfo.cards.find(function(card) {
+          var unitProgress = readExerciseProgress()[entry.href.replace('.html', '')] || {};
+          return !unitProgress[card.id] || unitProgress[card.id].status !== 'completed';
+        }) || cards[0];
+        return '<strong>Jeux conseillés</strong><ul>' + cards.map(function(card) {
+          return '<li><a href="' + card.href + '">' + card.icon + ' ' + escapeHtml(card.label) + '</a></li>';
+        }).join('') + '</ul><p>Progression de cette unité : ' + progressInfo.done + ' terminé(s), ' + progressInfo.started + ' en cours.</p><p><strong>Je choisirais maintenant :</strong> <a href="' + suggested.href + '">' + escapeHtml(suggested.label) + '</a>.</p>';
+      }
+
+      if (action === 'progress') {
+        var progress = readProgress();
+        var completed = orderedPages.filter(function(page) { return progress[page] && progress[page].status === 'completed'; }).length;
+        var started = orderedPages.filter(function(page) { return progress[page] && progress[page].status === 'started'; }).length;
+        var nextGame = progressInfo.cards.find(function(card) {
+          var unitProgress = readExerciseProgress()[entry.href.replace('.html', '')] || {};
+          return !unitProgress[card.id] || unitProgress[card.id].status !== 'completed';
+        });
+        return '<strong>Progression</strong><p>Unités terminées : ' + completed + ' / ' + orderedPages.length + '. En cours : ' + started + '.</p><p>Dans cette unité : ' + progressInfo.done + ' / ' + progressInfo.cards.length + ' jeux terminés.</p>'
+          + (nextGame ? '<p><strong>Prochaine action :</strong> ouvrir <a href="' + nextGame.href + '">' + escapeHtml(nextGame.label) + '</a>.</p>' : '<p><strong>Prochaine action :</strong> faire le test final de l’unité.</p>');
+      }
+
+      if (action === 'diagnostic') {
+        var unitState = getProgressState(entry.href.replace('.html', ''));
+        var diag = 'Commencez par Communication, puis faites un jeu.';
+        if (unitState === 'completed') diag = 'Cette unité est terminée : passez à la suite.';
+        else if (progressInfo.done >= 3) diag = 'Bonne base : faites le test final ou complétez les jeux restants.';
+        else if (progressInfo.started || progressInfo.done) diag = 'Vous avez commencé : terminez un jeu court avant de changer d’unité.';
+        return '<strong>Diagnostic automatique</strong><p>' + diag + '</p><p><strong>Unité conseillée :</strong> <a href="' + nextEntry.href + '">' + escapeHtml(nextEntry.level + ' · ' + nextEntry.label) + '</a>.</p>';
+      }
+
+      if (action === 'five') {
+        var quickVocab = sampleList(content.vocabulary || current.vocab || [], 3);
+        var unitProgressForFive = readExerciseProgress()[entry.href.replace('.html', '')] || {};
+        var nextQuickGame = progressInfo.cards.find(function(card) {
+          return !unitProgressForFive[card.id] || unitProgressForFive[card.id].status !== 'completed';
+        }) || progressInfo.cards[0];
+        var focusOrder = ['vocabulaire', 'grammaire', 'production', 'jeu', 'ecoute'];
+        var lastFive = memory.lastFiveFocus || '';
+        var focusIndex = Math.max(0, focusOrder.indexOf(lastFive) + 1) % focusOrder.length;
+        if (memory.lastFocus === 'vocabulaire') focusIndex = 1;
+        if (memory.lastFocus === 'grammaire') focusIndex = 2;
+        if (progressInfo.done === 0 && progressInfo.started === 0) focusIndex = 0;
+        var focus = focusOrder[focusIndex];
+        memory.lastFiveFocus = focus;
+        writeBotMemory(memory);
+        var plans = {
+          vocabulaire: '<ol><li>Réviser 3 mots : ' + escapeHtml(quickVocab.map(function(v) { return v.word; }).join(', ') || (entry.themes || []).join(', ')) + '.</li><li>Choisir 1 mot difficile.</li><li>Dire une phrase avec ce mot.</li><li>Comparer avec une phrase modèle.</li><li>' + (nextQuickGame ? 'Faire <a href="' + nextQuickGame.href + '">' + escapeHtml(nextQuickGame.label) + '</a>.' : 'Faire un exercice court.') + '</li></ol>',
+          grammaire: '<ol><li>Observer la règle : ' + escapeHtml(content.grammarTitle || 'repère de langue') + '.</li><li>Lire un exemple.</li><li>Transformer l’exemple avec une autre ville ou un autre pays.</li><li>Dire la phrase à voix haute.</li><li>Ouvrir ' + linkTo(entry, 'tab-grammaire') + '.</li></ol>',
+          production: '<ol><li>Lire l’objectif : ' + escapeHtml(entry.focus || entry.summary || entry.label) + '.</li><li>Préparer 3 phrases courtes.</li><li>Utiliser cette phrase : ' + escapeHtml(examples[0] || 'Je fais une phrase simple.') + '</li><li>Changer un mot.</li><li>Relire à voix haute.</li></ol>',
+          jeu: '<ol><li>Regarder votre progression : ' + progressInfo.done + ' / ' + progressInfo.cards.length + ' jeux terminés.</li><li>Choisir un jeu non terminé.</li><li>' + (nextQuickGame ? 'Ouvrir <a href="' + nextQuickGame.href + '">' + escapeHtml(nextQuickGame.label) + '</a>.' : 'Faire le test final.') + '</li><li>Noter une erreur.</li><li>Revenir demander “Révision rapide”.</li></ol>',
+          ecoute: '<ol><li>Ouvrir Communication.</li><li>Lire une phrase lentement.</li><li>Écouter ou prononcer 3 mots.</li><li>Répéter la meilleure phrase.</li><li>Faire une réponse courte à l’oral.</li></ol>'
+        };
+        return '<strong>Parcours 5 minutes · ' + escapeHtml(focus) + '</strong>' + plans[focus];
+      }
+
+      if (action === 'memory') {
+        return '<strong>Mémoire locale</strong>' + (memory.lastUnitLabel
+          ? '<p>Dernière unité : ' + escapeHtml(memory.lastUnitLabel) + '.</p><p>Dernier focus : ' + escapeHtml(memory.lastFocus || memory.lastAction || 'parcours') + '.</p>' + ((memory.difficult || []).length ? '<p>Mots à revoir : ' + escapeHtml(memory.difficult.join(', ')) + '.</p>' : '')
+          : '<p>Je n’ai pas encore assez d’historique. Cliquez sur vocabulaire, grammaire ou jeux et je mémoriserai le dernier focus.</p>');
+      }
+
+      if (action === 'search') {
+        return '<strong>Recherche interne sans écrire</strong><p>Choisissez un thème : je cherche dans les unités, le vocabulaire et les règles.</p><div class="course-chatbot-menu">'
+          + '<button type="button" data-bot-action="search_geo">Pays / villes</button>'
+          + '<button type="button" data-bot-action="search_work">Travail</button>'
+          + '<button type="button" data-bot-action="search_home">Logement</button>'
+          + '<button type="button" data-bot-action="search_health">Santé</button>'
+          + '<button type="button" data-bot-action="search_admin">Administration</button>'
+          + '</div>';
+      }
+
+      if (action.indexOf('search_') === 0) {
+        var labels = {
+          search_geo: 'pays ville langue origine suisse',
+          search_work: 'travail métier emploi projet',
+          search_home: 'logement maison appartement voisin',
+          search_health: 'santé médecin rendez-vous urgence',
+          search_admin: 'administration commune formulaire canton'
+        };
+        var hits = findKnowledgeByTheme(labels[action] || '');
+        return '<strong>Résultats de recherche</strong>' + (hits.length
+          ? '<ul>' + hits.map(function(hit) {
+              return '<li>' + linkTo(hit.entry, 'tab-objectifs') + '<br><small>' + escapeHtml(hit.entry.summary || hit.entry.focus || '') + '</small></li>';
+            }).join('') + '</ul>'
+          : '<p>Je n’ai pas trouvé de résultat précis pour ce thème.</p>');
+      }
+
+      if (action === 'levels') {
+        return '<strong>Parcours disponibles</strong><ul>' + sections.map(function(section) {
+          return '<li><strong>' + escapeHtml(section.title) + '</strong> : ' + escapeHtml(section.description || '') + '</li>';
+        }).join('') + '</ul>';
+      }
+
+      if (action === 'review') {
+        var reviewVocab = sampleList(content.vocabulary || current.vocab || [], 4);
+        return '<strong>Révision rapide</strong><ol><li>Relisez l’objectif : ' + escapeHtml(entry.focus || entry.summary || entry.label) + '.</li><li>Révisez ces mots : ' + escapeHtml(reviewVocab.map(function(v) { return v.word; }).join(', ') || (entry.themes || []).join(', ')) + '.</li><li>Dites une phrase modèle.</li><li>Faites un jeu non terminé.</li></ol>';
+      }
+
+      return answerAuto('start');
+    }
+
+    function botFollowupsHtml(action) {
+      var sets = {
+        start: [
+          ['diagnostic', 'Diagnostic automatique'],
+          ['five', 'J’ai 5 minutes'],
+          ['search', 'Chercher dans le site'],
+          ['current', 'Que dois-je faire ici ?'],
+          ['memory', 'Ce que je dois revoir']
+        ],
+        current: [
+          ['understand', 'Comment comprendre ?'],
+          ['produce', 'Que dire / écrire ?'],
+          ['games', 'Quel jeu faire ?'],
+          ['progress', 'Où j’en suis ?']
+        ],
+        understand: [
+          ['vocab', 'Quels mots repérer ?'],
+          ['phrases', 'Voir des phrases'],
+          ['games', 'Je vérifie avec un jeu'],
+          ['produce', 'Je réponds comment ?']
+        ],
+        produce: [
+          ['phrases', 'Phrases modèles'],
+          ['vocab', 'Mots utiles'],
+          ['grammar', 'Règle utile'],
+          ['review', 'Révision rapide']
+        ],
+        vocab: [
+          ['phrases', 'Utiliser ces mots'],
+          ['games', 'Jeu de vocabulaire'],
+          ['review', 'Réviser encore'],
+          ['grammar', 'Lien avec la règle']
+        ],
+        grammar: [
+          ['phrases', 'Exemples de phrases'],
+          ['verbs', 'Verbes liés'],
+          ['produce', 'Faire une phrase'],
+          ['games', 'S’entraîner']
+        ],
+        verbs: [
+          ['phrases', 'Phrases avec verbes'],
+          ['grammar', 'Voir la règle'],
+          ['games', 'Jeu conjugaison'],
+          ['review', 'Révision rapide']
+        ],
+        games: [
+          ['progress', 'Voir ma progression'],
+          ['review', 'Préparer le jeu'],
+          ['vocab', 'Revoir les mots'],
+          ['current', 'Retour unité']
+        ],
+        progress: [
+          ['games', 'Prochain jeu'],
+          ['five', 'J’ai 5 minutes'],
+          ['review', 'Révision rapide'],
+          ['current', 'Objectif actuel'],
+          ['levels', 'Niveaux']
+        ],
+        diagnostic: [
+          ['five', 'J’ai 5 minutes'],
+          ['games', 'Quel jeu faire ?'],
+          ['current', 'Voir l’objectif'],
+          ['search', 'Chercher un thème']
+        ],
+        five: [
+          ['games', 'Lancer un jeu'],
+          ['vocab', 'Voir les mots'],
+          ['phrases', 'Phrase modèle'],
+          ['memory', 'Mémoriser ma révision']
+        ],
+        search: [
+          ['search_geo', 'Pays / villes'],
+          ['search_work', 'Travail'],
+          ['search_home', 'Logement'],
+          ['search_admin', 'Administration']
+        ],
+        memory: [
+          ['review', 'Révision rapide'],
+          ['five', 'J’ai 5 minutes'],
+          ['vocab', 'Revoir les mots'],
+          ['progress', 'Progression']
+        ]
+      };
+      var followups = sets[action] || [
+        ['current', 'Que dois-je faire ici ?'],
+        ['understand', 'Comment comprendre ?'],
+        ['produce', 'Que dire / écrire ?'],
+        ['vocab', 'Quels mots réviser ?'],
+        ['progress', 'Où j’en suis ?']
+      ];
+      return '<div class="course-chatbot-followups"><span>Questions possibles</span>'
+        + followups.map(function(item) {
+          return '<button type="button" data-bot-action="' + item[0] + '">' + item[1] + '</button>';
+        }).join('')
+        + '</div>';
+    }
+
     var wrap = document.createElement('section');
     wrap.className = 'course-chatbot';
     wrap.id = 'courseChatbot';
     wrap.innerHTML = [
-      '<button class="course-chatbot-toggle" type="button" aria-expanded="false" aria-controls="courseChatbotPanel">💬</button>',
-      '<div class="course-chatbot-panel" id="courseChatbotPanel" hidden>',
+      '<button class="course-chatbot-toggle" type="button" aria-expanded="true" aria-controls="courseChatbotPanel">💬</button>',
+      '<div class="course-chatbot-panel" id="courseChatbotPanel">',
       '  <div class="course-chatbot-head">',
-      '    <strong>Assistant École Francophone</strong>',
-      '    <span>Sympa, local, basé sur les unités</span>',
+      '    <img class="course-chatbot-avatar" src="../assets/emanuelle.jpg" alt="Emmanuelle">',
+      '    <span class="course-chatbot-title"><strong>Emmanuelle</strong><span>Assistante IA · réponses par boutons</span></span>',
       '  </div>',
       '  <div class="course-chatbot-log" aria-live="polite">',
-      '    <div class="course-chatbot-msg bot">Bonjour. Je peux t’aider avec le vocabulaire, la grammaire, la conjugaison, la phonétique, les jeux ou la progression. Que veux-tu travailler ?</div>',
+      '    <div class="course-chatbot-msg bot">' + answerAuto('start') + botFollowupsHtml('start') + '</div>',
       '  </div>',
-      '  <form class="course-chatbot-form">',
-      '    <input type="text" autocomplete="off" placeholder="Ex. conjugaison être, logement, grammaire A2...">',
-      '    <button type="submit">Envoyer</button>',
-      '  </form>',
+      '  <div class="course-chatbot-choices" aria-label="Questions automatiques">',
+      '    <button type="button" data-bot-action="diagnostic">Diagnostic</button>',
+      '    <button type="button" data-bot-action="five">J’ai 5 minutes</button>',
+      '    <button type="button" data-bot-action="search">Chercher</button>',
+      '    <button type="button" data-bot-action="current">Que dois-je faire ici ?</button>',
+      '    <button type="button" data-bot-action="understand">Comment comprendre ?</button>',
+      '    <button type="button" data-bot-action="produce">Que dire / écrire ?</button>',
+      '    <button type="button" data-bot-action="vocab">Quels mots réviser ?</button>',
+      '    <button type="button" data-bot-action="grammar">Quelle règle ?</button>',
+      '    <button type="button" data-bot-action="verbs">Quels verbes ?</button>',
+      '    <button type="button" data-bot-action="phrases">Phrases modèles</button>',
+      '    <button type="button" data-bot-action="games">Quel jeu faire ?</button>',
+      '    <button type="button" data-bot-action="progress">Où j’en suis ?</button>',
+      '    <button type="button" data-bot-action="review">Révision rapide</button>',
+      '    <button type="button" data-bot-action="memory">Mémoire</button>',
+      '    <button type="button" data-bot-action="levels">Niveaux</button>',
+      '  </div>',
       '</div>'
     ].join('');
     document.body.appendChild(wrap);
 
     var toggle = wrap.querySelector('.course-chatbot-toggle');
     var panel = wrap.querySelector('.course-chatbot-panel');
-    var form = wrap.querySelector('.course-chatbot-form');
-    var input = form.querySelector('input');
+    var choices = wrap.querySelector('.course-chatbot-choices');
     var log = wrap.querySelector('.course-chatbot-log');
 
-    function addMessage(kind, html) {
+    function addMessage(kind, html, action) {
       var msg = document.createElement('div');
       msg.className = 'course-chatbot-msg ' + kind;
-      msg.innerHTML = html;
+      msg.innerHTML = kind === 'bot' ? html + botFollowupsHtml(action) : html;
       log.appendChild(msg);
       log.scrollTop = log.scrollHeight;
+      return msg;
+    }
+
+    function addTyping() {
+      var msg = document.createElement('div');
+      msg.className = 'course-chatbot-msg bot course-chatbot-typing';
+      msg.innerHTML = '<span></span><span></span><span></span>';
+      log.appendChild(msg);
+      log.scrollTop = log.scrollHeight;
+      return msg;
+    }
+
+    function runBotAction(btn) {
+      if (!btn) return;
+      var action = btn.dataset.botAction;
+      rememberBotAction(action, currentKnowledgeItem().entry);
+      addMessage('user', escapeHtml(btn.textContent.trim()));
+      var typing = addTyping();
+      window.setTimeout(function() {
+        typing.remove();
+        addMessage('bot', answerAuto(action), action);
+      }, 360);
     }
 
     toggle.addEventListener('click', function() {
       var open = panel.hasAttribute('hidden');
       panel.hidden = !open;
       toggle.setAttribute('aria-expanded', String(open));
-      if (open) input.focus();
+      if (open) {
+        var firstChoice = choices.querySelector('button');
+        if (firstChoice) firstChoice.focus();
+      }
     });
 
-    form.addEventListener('submit', function(event) {
-      event.preventDefault();
-      var question = input.value.trim();
-      if (!question) return;
-      addMessage('user', escapeHtml(question));
-      input.value = '';
-      addMessage('bot', answerQuestion(question));
+    choices.addEventListener('click', function(event) {
+      var btn = event.target.closest('[data-bot-action]');
+      if (!btn) return;
+      runBotAction(btn);
+    });
+
+    log.addEventListener('click', function(event) {
+      var btn = event.target.closest('[data-bot-action]');
+      if (!btn) return;
+      runBotAction(btn);
     });
   }
 
