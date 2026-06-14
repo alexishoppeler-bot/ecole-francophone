@@ -742,8 +742,11 @@
       var lm = unitContent.listeningMcq;
       listeningHtml = '<div class="comp-tts-box">'
         + '<div class="comp-tts-header">'
-        + '<strong>' + escapeHtml(lm.title || 'Dialogue') + '</strong>'
+        + '<div class="comp-tts-header-icon" aria-hidden="true">🔊</div>'
+        + '<div class="comp-tts-header-text">'
+        + '<strong>' + escapeHtml(lm.title || 'Texte audio') + '</strong>'
         + (lm.context ? '<p class="comp-tts-context">' + escapeHtml(lm.context) + '</p>' : '')
+        + '</div>'
         + '</div>'
         + '<div class="comp-tts-controls">'
         + '<button class="game-btn game-btn--primary comp-tts-play" data-comp-play="orale" type="button">▶ Écouter</button>'

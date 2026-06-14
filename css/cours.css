@@ -955,10 +955,17 @@
 }
 
 .comm-cascade-panel h4 {
-  margin: 0 0 10px;
+  margin: 0 0 14px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid rgba(90, 171, 240, 0.15);
   color: #21314f;
-  font-size: .95rem;
+  font-size: .93rem;
   font-weight: 900;
+  letter-spacing: .01em;
+}
+
+.comm-cascade-panel h4 ~ h4 {
+  margin-top: 24px;
 }
 
 .comm-cascade-panel h4 + .textauth-box,
@@ -1164,13 +1171,29 @@
 /* Compréhension MCQ */
 .comp-mcq-form {
   display: grid;
-  gap: 12px;
+  gap: 14px;
+  margin-top: 8px;
 }
 
 .comp-mcq-form .course-check-item {
   display: grid;
-  gap: 6px;
+  gap: 0;
   min-inline-size: 0;
+  border: 1.5px solid rgba(90, 171, 240, 0.16);
+  border-radius: 12px;
+  padding: 14px 16px 10px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 2px 8px rgba(33, 49, 79, 0.04);
+  transition: border-color .2s, background .2s;
+}
+
+.comp-mcq-form .course-check-item legend {
+  font-size: .92rem;
+  font-weight: 900;
+  color: #21314f;
+  padding: 0;
+  margin-bottom: 10px;
+  line-height: 1.4;
 }
 
 .comp-mcq-form .course-check-choice {
@@ -1178,15 +1201,23 @@
   grid-template-columns: 18px 1fr;
   align-items: center;
   gap: 10px;
-  padding: 8px 12px;
+  padding: 7px 10px;
   border-radius: 8px;
-  background: rgba(90, 171, 240, 0.04);
+  border: 1.5px solid transparent;
+  background: rgba(90, 171, 240, 0.03);
   cursor: pointer;
-  transition: background .14s;
+  transition: background .14s, border-color .14s;
+  margin-bottom: 4px;
 }
 
 .comp-mcq-form .course-check-choice:hover {
   background: rgba(90, 171, 240, 0.10);
+  border-color: rgba(90, 171, 240, 0.25);
+}
+
+.comp-mcq-form .course-check-choice:has(input:checked) {
+  background: rgba(90, 171, 240, 0.12);
+  border-color: rgba(90, 171, 240, 0.40);
 }
 
 .comp-mcq-form .course-check-choice input {
@@ -1195,6 +1226,7 @@
   margin: 0;
   cursor: pointer;
   justify-self: center;
+  accent-color: #5AABF0;
 }
 
 .comp-mcq-form .course-check-choice span {
@@ -1204,52 +1236,97 @@
 }
 
 .comp-mcq-title {
-  margin: 14px 0 10px;
+  margin: 16px 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1.5px solid rgba(90, 171, 240, 0.15);
   color: #21314f;
-  font-size: .9rem;
+  font-size: .92rem;
   font-weight: 900;
+  letter-spacing: .01em;
 }
 
 .comp-question-feedback {
-  min-height: 20px;
-  margin: 2px 0 0;
+  min-height: 18px;
+  margin: 6px 2px 2px;
+  padding: 4px 8px;
+  border-radius: 6px;
   color: #465675;
-  font-size: .82rem;
-  font-weight: 800;
+  font-size: .81rem;
+  font-weight: 700;
   line-height: 1.45;
+}
+
+.comp-mcq-form .course-check-item.is-correct {
+  border-color: rgba(36, 214, 126, 0.35);
+  background: rgba(36, 214, 126, 0.06);
 }
 
 .comp-mcq-form .course-check-item.is-correct .comp-question-feedback {
   color: #15803d;
+  background: rgba(36, 214, 126, 0.12);
+}
+
+.comp-mcq-form .course-check-item.is-wrong {
+  border-color: rgba(232, 75, 108, 0.30);
+  background: rgba(232, 75, 108, 0.05);
 }
 
 .comp-mcq-form .course-check-item.is-wrong .comp-question-feedback {
   color: #b45309;
+  background: rgba(232, 75, 108, 0.08);
 }
 
 /* Compréhension TTS */
 .comp-tts-box {
   display: grid;
-  gap: 14px;
-  padding: 16px 18px;
-  border: 1px solid rgba(90, 171, 240, 0.18);
+  gap: 16px;
+  padding: 18px 20px;
+  border: 1.5px solid rgba(90, 171, 240, 0.20);
+  border-left: 4px solid #5AABF0;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.88);
-  box-shadow: 0 6px 20px rgba(33, 49, 79, 0.06);
+  background: linear-gradient(135deg, rgba(90,171,240,.05) 0%, rgba(255,255,255,.92) 70%);
+  box-shadow: 0 4px 16px rgba(33, 49, 79, 0.07);
+}
+
+.comp-tts-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.comp-tts-header-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #5AABF0, #9B35EC);
+  color: #fff;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 8px rgba(90, 171, 240, 0.30);
+}
+
+.comp-tts-header-text {
+  flex: 1;
+  min-width: 0;
 }
 
 .comp-tts-header strong {
   display: block;
   color: #21314f;
-  font-size: .98rem;
+  font-size: 1rem;
   font-weight: 900;
+  line-height: 1.3;
 }
 
 .comp-tts-context {
   margin: 4px 0 0;
-  color: #465675;
-  font-size: .87rem;
+  color: #5a6a8a;
+  font-size: .86rem;
   line-height: 1.5;
+  font-style: italic;
 }
 
 .comp-tts-controls {
@@ -1261,26 +1338,33 @@
 
 .comp-tts-rates {
   display: flex;
-  gap: 6px;
-  margin-left: 4px;
+  gap: 0;
+  margin-left: 6px;
+  border: 1.5px solid rgba(90, 171, 240, 0.25);
+  border-radius: 99px;
+  overflow: hidden;
 }
 
 .comp-rate-btn {
-  padding: 4px 10px;
-  border: 1.5px solid rgba(90, 171, 240, 0.30);
-  border-radius: 99px;
+  padding: 5px 12px;
+  border: none;
+  border-left: 1.5px solid rgba(90, 171, 240, 0.20);
+  border-radius: 0;
   background: transparent;
   color: #465675;
   font-size: .78rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background .14s, color .14s, border-color .14s;
+  transition: background .14s, color .14s;
+}
+
+.comp-rate-btn:first-child {
+  border-left: none;
 }
 
 .comp-rate-btn:hover,
 .comp-rate-btn--active {
-  border-color: #5AABF0;
-  background: rgba(90, 171, 240, 0.12);
+  background: rgba(90, 171, 240, 0.14);
   color: #1778CC;
 }
 
@@ -2003,9 +2087,18 @@
 }
 
 .course-check-result {
-  font-size: 14px;
-  font-weight: 700;
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 99px;
+  background: rgba(90, 171, 240, 0.10);
+  border: 1.5px solid rgba(90, 171, 240, 0.22);
+  font-size: .86rem;
+  font-weight: 800;
   color: #21314f;
+}
+
+.course-check-result:empty {
+  display: none;
 }
 
 .course-actions,
