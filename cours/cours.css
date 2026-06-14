@@ -1849,6 +1849,9 @@ body.focus-mode .cours-back {
 
 /* Appariement */
 .game-pair-container { animation: fadeInUp .25s ease; }
+.game-serie-header { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.game-serie-badge  { background: var(--accent2); color: #fff; font-size: .78rem; font-weight: 700; padding: 3px 10px; border-radius: 50px; white-space: nowrap; }
+.game-serie-title  { font-weight: 600; color: var(--text1); font-size: 1.05rem; }
 .game-pair-instruction { color: var(--text2); margin-bottom: 18px; font-size: .93rem; }
 .game-pair-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .game-pair-col  { display: flex; flex-direction: column; gap: 10px; }

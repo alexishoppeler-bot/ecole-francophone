@@ -278,18 +278,34 @@
      APPARIER — entrainement-a1-apparier.html
   ══════════════════════════════════════════════ */
   function renderApparier() {
-    var pairs = exUnit && exUnit.apparier && exUnit.apparier.length
+    var raw = exUnit && exUnit.apparier && exUnit.apparier.length
       ? exUnit.apparier.slice()
       : vocabulary.slice();
-    if (pairs.length < 3) {
+    if (!raw.length) {
       wrap.innerHTML = '<div class="game-empty"><p>Pas assez de vocabulaire pour ce jeu.</p><a href="entrainement-a1.html?unite=' + esc(badge) + '">← Retour</a></div>';
       return;
     }
-    pairs = shuffle(pairs);
-    var matched = 0;
-    var selected = null;
 
-    function render() {
+    // grouped format: array of { serie, instruction, pairs[] }
+    var isGrouped = raw[0] && Array.isArray(raw[0].pairs);
+    var groups = isGrouped ? raw : [{ serie: null, instruction: 'Cliquez un mot, puis sa définition.', pairs: raw }];
+
+    var serieIdx   = 0;
+    var totalPairs = groups.reduce(function(s, g) { return s + g.pairs.length; }, 0);
+
+    function renderSerie() {
+      var group   = groups[serieIdx];
+      var pairs   = shuffle(group.pairs.slice());
+      var matched = 0;
+      var selected = null;
+
+      var header = isGrouped
+        ? '<div class="game-serie-header">'
+          + '<span class="game-serie-badge">Série ' + (serieIdx + 1) + ' / ' + groups.length + '</span>'
+          + '<span class="game-serie-title">' + esc(group.serie) + '</span>'
+          + '</div>'
+        : '';
+
       var words = pairs.map(function(p, i) {
         return '<button class="game-pair-item game-pair-word" data-idx="' + i + '">' + esc(p.word) + '</button>';
       }).join('');
@@ -299,12 +315,13 @@
         }).join('');
 
       wrap.innerHTML = '<div class="game-pair-container">'
-        + '<p class="game-pair-instruction">Cliquez un mot, puis sa définition.</p>'
+        + header
+        + '<p class="game-pair-instruction">' + esc(group.instruction) + '</p>'
         + '<div class="game-pair-grid">'
         + '<div class="game-pair-col">' + words + '</div>'
         + '<div class="game-pair-col">' + defs  + '</div>'
         + '</div>'
-        + '<p class="game-pair-score" aria-live="polite">0 / ' + pairs.length + ' paires trouvées</p>'
+        + '<p class="game-pair-score" aria-live="polite">0 / ' + pairs.length + ' paires trouvées</p>'
         + '</div>';
 
       wrap.addEventListener('click', function handler(e) {
@@ -325,21 +342,33 @@
             defBtn.classList.add('game-pair--ok');
             matched++;
             var scoreEl = wrap.querySelector('.game-pair-score');
-            if (scoreEl) scoreEl.textContent = matched + ' / ' + pairs.length + ' paires trouvées';
+            if (scoreEl) scoreEl.textContent = matched + ' / ' + pairs.length + ' paires trouvées';
             if (matched === pairs.length) {
               setTimeout(function() {
                 wrap.removeEventListener('click', handler);
-                wrap.innerHTML = '<div class="game-score-screen">'
-                  + '<div class="game-score-emoji">🏆</div>'
-                  + '<div class="game-score-num">' + pairs.length + '<span>/' + pairs.length + '</span></div>'
-                  + '<div class="game-score-label">Toutes les paires trouvées !</div>'
-                  + '<div class="game-score-actions">'
-                  + '<button class="game-btn game-btn--secondary" id="gReplay">🔄 Rejouer</button>'
-                  + hubBtn()
-                  + (entry ? '<a class="game-btn game-btn--primary" href="' + entry.href + '">📖 Leçon</a>' : '')
-                  + '</div></div>';
-                var rb = wrap.querySelector('#gReplay');
-                if (rb) rb.addEventListener('click', function() { matched = 0; selected = null; render(); });
+                var isLast = serieIdx >= groups.length - 1;
+                if (!isLast) {
+                  wrap.innerHTML = '<div class="game-score-screen">'
+                    + '<div class="game-score-emoji">✅</div>'
+                    + '<div class="game-score-label">Série ' + (serieIdx + 1) + ' terminée !</div>'
+                    + '<div class="game-score-actions">'
+                    + '<button class="game-btn game-btn--primary" id="gNext">Série suivante →</button>'
+                    + '</div></div>';
+                  var nb = wrap.querySelector('#gNext');
+                  if (nb) nb.addEventListener('click', function() { serieIdx++; renderSerie(); });
+                } else {
+                  wrap.innerHTML = '<div class="game-score-screen">'
+                    + '<div class="game-score-emoji">🏆</div>'
+                    + '<div class="game-score-num">' + totalPairs + '<span>/' + totalPairs + '</span></div>'
+                    + '<div class="game-score-label">Toutes les séries terminées !</div>'
+                    + '<div class="game-score-actions">'
+                    + '<button class="game-btn game-btn--secondary" id="gReplay">🔄 Recommencer</button>'
+                    + hubBtn()
+                    + (entry ? '<a class="game-btn game-btn--primary" href="' + entry.href + '">📖 Leçon</a>' : '')
+                    + '</div></div>';
+                  var rb = wrap.querySelector('#gReplay');
+                  if (rb) rb.addEventListener('click', function() { serieIdx = 0; renderSerie(); });
+                }
               }, 600);
             }
           } else {
@@ -355,7 +384,7 @@
         }
       });
     }
-    render();
+    renderSerie();
   }
 
   /* ══════════════════════════════════════════════

@@ -173,38 +173,68 @@ window.EXERCISE_CONTENT_PARTS["a1"] = {
         }
       ],
       "apparier": [
-        { "word": "la francophonie",    "definition": "ensemble des pays et des personnes qui utilisent le français" },
-        { "word": "une capitale",       "definition": "ville principale d'un pays" },
-        { "word": "un locuteur",        "definition": "personne qui parle une langue" },
-        { "word": "la Suisse romande",  "definition": "partie francophone de la Suisse" },
-        { "word": "une frontière",      "definition": "limite entre deux pays" },
-        { "word": "un canton",          "definition": "division administrative suisse" },
-        { "word": "bilingue",           "definition": "qui parle deux langues" },
-        { "word": "francophone",        "definition": "qui parle français" },
-        { "word": "un habitant",        "definition": "personne qui vit dans un lieu" },
-        { "word": "une région",         "definition": "partie d'un pays" },
-        { "word": "Suisse",             "definition": "en Suisse" },
-        { "word": "Canada",             "definition": "au Canada" },
-        { "word": "États-Unis",         "definition": "aux États-Unis" },
-        { "word": "Maroc",              "definition": "au Maroc" },
-        { "word": "Belgique",           "definition": "en Belgique" },
-        { "word": "France",             "definition": "en France" },
-        { "word": "Japon",              "definition": "au Japon" },
-        { "word": "Pays-Bas",           "definition": "aux Pays-Bas" },
-        { "word": "Genève",             "definition": "ville internationale" },
-        { "word": "Berne",              "definition": "capitale de la Suisse" },
-        { "word": "Fribourg",           "definition": "ville bilingue" },
-        { "word": "Lausanne",           "definition": "ville du canton de Vaud" },
-        { "word": "Neuchâtel",          "definition": "ville romande" },
-        { "word": "le français",        "definition": "langue officielle à Genève" },
-        { "word": "le romanche",        "definition": "langue nationale parlée dans les Grisons" },
-        { "word": "l'allemand",         "definition": "langue parlée en Suisse alémanique" },
-        { "word": "le portugais",       "definition": "langue parlée par de nombreux habitants en Suisse" },
-        { "word": "Je viens de…",       "definition": "la Suisse" },
-        { "word": "J'habite à…",        "definition": "Lausanne" },
-        { "word": "Je parle…",          "definition": "français et italien" },
-        { "word": "La capitale est…",   "definition": "Berne" },
-        { "word": "On parle français en…", "definition": "Suisse romande" }
+        {
+          "serie": "Vocabulaire",
+          "instruction": "Associez chaque mot à sa définition.",
+          "pairs": [
+            { "word": "la francophonie",   "definition": "ensemble des pays et des personnes qui utilisent le français" },
+            { "word": "une capitale",      "definition": "ville principale d'un pays" },
+            { "word": "un locuteur",       "definition": "personne qui parle une langue" },
+            { "word": "la Suisse romande", "definition": "partie francophone de la Suisse" },
+            { "word": "une frontière",     "definition": "limite entre deux pays" },
+            { "word": "un canton",         "definition": "division administrative suisse" },
+            { "word": "bilingue",          "definition": "qui parle deux langues" },
+            { "word": "francophone",       "definition": "qui parle français" },
+            { "word": "un habitant",       "definition": "personne qui vit dans un lieu" },
+            { "word": "une région",        "definition": "partie d'un pays" }
+          ]
+        },
+        {
+          "serie": "Pays et prépositions",
+          "instruction": "Associez chaque pays avec la bonne préposition (en / au / aux).",
+          "pairs": [
+            { "word": "Suisse",      "definition": "en Suisse" },
+            { "word": "Canada",      "definition": "au Canada" },
+            { "word": "États-Unis",  "definition": "aux États-Unis" },
+            { "word": "Maroc",       "definition": "au Maroc" },
+            { "word": "Belgique",    "definition": "en Belgique" },
+            { "word": "France",      "definition": "en France" },
+            { "word": "Japon",       "definition": "au Japon" },
+            { "word": "Pays-Bas",    "definition": "aux Pays-Bas" }
+          ]
+        },
+        {
+          "serie": "Villes",
+          "instruction": "Associez chaque ville à sa description.",
+          "pairs": [
+            { "word": "Genève",    "definition": "ville internationale" },
+            { "word": "Berne",     "definition": "capitale de la Suisse" },
+            { "word": "Fribourg",  "definition": "ville bilingue" },
+            { "word": "Lausanne",  "definition": "ville du canton de Vaud" },
+            { "word": "Neuchâtel", "definition": "ville romande" }
+          ]
+        },
+        {
+          "serie": "Langues",
+          "instruction": "Associez chaque langue à sa description.",
+          "pairs": [
+            { "word": "le français",  "definition": "langue officielle à Genève" },
+            { "word": "le romanche",  "definition": "langue nationale parlée dans les Grisons" },
+            { "word": "l'allemand",   "definition": "langue parlée en Suisse alémanique" },
+            { "word": "le portugais", "definition": "langue parlée par de nombreux habitants en Suisse" }
+          ]
+        },
+        {
+          "serie": "Phrases",
+          "instruction": "Associez chaque début de phrase à la bonne fin.",
+          "pairs": [
+            { "word": "Je viens de…",          "definition": "la Suisse" },
+            { "word": "J'habite à…",           "definition": "Lausanne" },
+            { "word": "Je parle…",             "definition": "français et italien" },
+            { "word": "La capitale est…",      "definition": "Berne" },
+            { "word": "On parle français en…", "definition": "Suisse romande" }
+          ]
+        }
       ],
       "completer": [
         {
