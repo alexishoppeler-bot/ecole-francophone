@@ -370,7 +370,8 @@
     wrap.className = 'platform-chatbot';
     wrap.id = 'platformChatbot';
     wrap.innerHTML = [
-      '<div class="platform-chatbot-panel">',
+      '<button class="platform-chatbot-toggle" type="button" aria-expanded="false" aria-controls="platformChatbotPanel">💬</button>',
+      '<div class="platform-chatbot-panel" id="platformChatbotPanel" hidden>',
       '  <div class="platform-chatbot-head">',
       '    <img class="platform-chatbot-avatar" src="../../assets/emanuelle.jpg" alt="Emmanuelle">',
       '    <span class="platform-chatbot-title"><strong>Emmanuelle</strong><span>Réponses par boutons · ' + escapeHtml(level.label) + '</span></span>',
@@ -396,6 +397,8 @@
     ].join('');
     document.body.appendChild(wrap);
 
+    var toggle = wrap.querySelector('.platform-chatbot-toggle');
+    var panel = wrap.querySelector('.platform-chatbot-panel');
     var log = wrap.querySelector('.platform-chatbot-log');
     var choices = wrap.querySelector('.platform-chatbot-choices');
 
@@ -433,6 +436,16 @@
       var btn = event.target.closest('[data-platform-bot]');
       if (!btn) return;
       runPlatformAction(btn);
+    });
+
+    toggle.addEventListener('click', function() {
+      var open = panel.hasAttribute('hidden');
+      panel.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      if (open) {
+        var firstChoice = choices.querySelector('button');
+        if (firstChoice) firstChoice.focus();
+      }
     });
 
     log.addEventListener('click', function(event) {

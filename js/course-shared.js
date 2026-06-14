@@ -754,12 +754,9 @@
         + '<button class="comp-rate-btn" data-comp-rate="orale" data-rate="1.2" type="button">Rapide</button>'
         + '</span>'
         + '</div>'
-        + '<ol class="comp-dialogue">'
+        + '<ol class="comp-dialogue comp-dialogue--audio-only" aria-hidden="true">'
         + (lm.script || []).map(function(line, i) {
-          return '<li class="comp-dline" data-comp-i="' + i + '">'
-            + (line.who ? '<span class="comp-who">' + escapeHtml(line.who) + '</span>' : '')
-            + '<span class="comp-txt">' + escapeHtml(line.text) + '</span>'
-            + '</li>';
+          return '<li data-comp-i="' + i + '"><span class="comp-txt">' + escapeHtml(line.text) + '</span></li>';
         }).join('')
         + '</ol>'
         + '</div>'
@@ -2374,8 +2371,8 @@
     wrap.className = 'course-chatbot';
     wrap.id = 'courseChatbot';
     wrap.innerHTML = [
-      '<button class="course-chatbot-toggle" type="button" aria-expanded="true" aria-controls="courseChatbotPanel">💬</button>',
-      '<div class="course-chatbot-panel" id="courseChatbotPanel">',
+      '<button class="course-chatbot-toggle" type="button" aria-expanded="false" aria-controls="courseChatbotPanel">💬</button>',
+      '<div class="course-chatbot-panel" id="courseChatbotPanel" hidden>',
       '  <div class="course-chatbot-head">',
       '    <img class="course-chatbot-avatar" src="../assets/emanuelle.jpg" alt="Emmanuelle">',
       '    <span class="course-chatbot-title"><strong>Emmanuelle</strong><span>Assistante IA · réponses par boutons</span></span>',

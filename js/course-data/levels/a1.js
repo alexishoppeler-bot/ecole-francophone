@@ -990,45 +990,41 @@ window.COURSE_DATA_PARTS.a1 = {
         ]
       },
       "listeningMcq": {
-        "title": "Au bureau d'information",
-        "context": "Écoutez la conversation, puis répondez aux questions.",
+        "title": "La Suisse romande",
+        "context": "Écoutez le texte, puis répondez aux questions.",
         "script": [
-          { "who": "Marie", "text": "Bonjour, bureau d'information de Lausanne, je vous écoute." },
-          { "who": "Karim", "text": "Bonjour madame. Je viens d'arriver en Suisse. Je viens d'Algérie." },
-          { "who": "Marie", "text": "Bienvenue ! Vous habitez dans quelle ville ?" },
-          { "who": "Karim", "text": "J'habite à Fribourg. C'est en Suisse romande ?" },
-          { "who": "Marie", "text": "Oui, Fribourg est une ville bilingue. On parle français et allemand." },
-          { "who": "Karim", "text": "Intéressant ! Et combien de langues officielles y a-t-il en Suisse ?" },
-          { "who": "Marie", "text": "La Suisse a quatre langues officielles : le français, l'allemand, l'italien et le romanche." },
-          { "who": "Karim", "text": "Et la capitale de la Suisse, c'est Genève ?" },
-          { "who": "Marie", "text": "Non, la capitale de la Suisse s'appelle Berne. Genève est une grande ville internationale." },
-          { "who": "Karim", "text": "Je voudrais apprendre le français. Il y a des cours à Fribourg ?" },
-          { "who": "Marie", "text": "Oui, il y a plusieurs écoles de langues à Fribourg. Bonne installation en Suisse !" }
+          { "text": "Je m'appelle Lea. Je travaille comme guide touristique a Lausanne, en Suisse romande." },
+          { "text": "Lausanne est une belle ville situee au bord du lac Leman." },
+          { "text": "La Suisse a quatre langues officielles : le francais, l'allemand, l'italien et le romanche." },
+          { "text": "En Suisse romande, on parle francais. C'est la region ouest de la Suisse." },
+          { "text": "La capitale de la Suisse s'appelle Berne. Ce n'est pas la plus grande ville." },
+          { "text": "Geneve est une grande ville internationale. Elle est connue dans le monde entier." },
+          { "text": "Si vous voulez apprendre le francais, la Suisse romande est un excellent choix !" }
         ],
         "mcq": [
           {
-            "prompt": "D'où vient Karim ?",
-            "choices": ["Du Maroc", "D'Algérie", "De France", "Du Sénégal"],
+            "prompt": "Quel est le metier de Lea ?",
+            "choices": ["Professeure", "Guide touristique", "Journaliste", "Traductrice"],
             "answer": 1
           },
           {
-            "prompt": "Dans quelle ville habite Karim ?",
-            "choices": ["Lausanne", "Genève", "Fribourg", "Berne"],
+            "prompt": "Au bord de quel lac se trouve Lausanne ?",
+            "choices": ["Le lac de Constance", "Le lac de Neuchatel", "Le lac Leman", "Le lac Majeur"],
             "answer": 2
           },
           {
-            "prompt": "Quelles langues parle-t-on à Fribourg ?",
-            "choices": ["Français seulement", "Français et allemand", "Allemand et italien", "Français et romanche"],
-            "answer": 1
+            "prompt": "Combien de langues officielles y a-t-il en Suisse ?",
+            "choices": ["Deux", "Trois", "Quatre", "Cinq"],
+            "answer": 2
           },
           {
             "prompt": "Quelle est la capitale de la Suisse ?",
-            "choices": ["Genève", "Lausanne", "Zurich", "Berne"],
+            "choices": ["Geneve", "Lausanne", "Zurich", "Berne"],
             "answer": 3
           },
           {
-            "prompt": "Que veut apprendre Karim ?",
-            "choices": ["L'allemand", "L'anglais", "Le français", "L'espagnol"],
+            "prompt": "Pourquoi Geneve est-elle connue ?",
+            "choices": ["C'est la capitale", "C'est la ville la plus grande", "C'est une ville internationale", "C'est une ville universitaire"],
             "answer": 2
           }
         ]
