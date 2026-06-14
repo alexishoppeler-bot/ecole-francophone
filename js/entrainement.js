@@ -309,9 +309,10 @@
       var words = pairs.map(function(p, i) {
         return '<button class="game-pair-item game-pair-word" data-idx="' + i + '">' + esc(p.word) + '</button>';
       }).join('');
-      var defs = shuffle(pairs.map(function(p, i) { return { def: p.definition, idx: i }; }))
-        .map(function(d) {
-          return '<button class="game-pair-item game-pair-def" data-match="' + d.idx + '">' + esc(d.def) + '</button>';
+      // data-match stores the definition VALUE so duplicate definitions work (e.g. multiple "en")
+      var defs = shuffle(pairs.map(function(p) { return p.definition; }))
+        .map(function(def) {
+          return '<button class="game-pair-item game-pair-def" data-match="' + esc(def) + '">' + esc(def) + '</button>';
         }).join('');
 
       wrap.innerHTML = '<div class="game-pair-container">'
@@ -334,8 +335,7 @@
           wordBtn.classList.add('game-pair--selected');
         } else if (defBtn && selected) {
           var wIdx = parseInt(selected.dataset.idx, 10);
-          var dIdx = parseInt(defBtn.dataset.match, 10);
-          if (wIdx === dIdx) {
+          if (pairs[wIdx].definition === defBtn.dataset.match) {
             selected.disabled = defBtn.disabled = true;
             selected.classList.remove('game-pair--selected');
             selected.classList.add('game-pair--ok');

@@ -191,16 +191,16 @@ window.EXERCISE_CONTENT_PARTS["a1"] = {
         },
         {
           "serie": "Pays et prépositions",
-          "instruction": "Associez chaque pays avec la bonne préposition (en / au / aux).",
+          "instruction": "Associez chaque pays avec la bonne préposition.",
           "pairs": [
-            { "word": "Suisse",      "definition": "en Suisse" },
-            { "word": "Canada",      "definition": "au Canada" },
-            { "word": "États-Unis",  "definition": "aux États-Unis" },
-            { "word": "Maroc",       "definition": "au Maroc" },
-            { "word": "Belgique",    "definition": "en Belgique" },
-            { "word": "France",      "definition": "en France" },
-            { "word": "Japon",       "definition": "au Japon" },
-            { "word": "Pays-Bas",    "definition": "aux Pays-Bas" }
+            { "word": "Suisse",      "definition": "en" },
+            { "word": "Canada",      "definition": "au" },
+            { "word": "États-Unis",  "definition": "aux" },
+            { "word": "Maroc",       "definition": "au" },
+            { "word": "Belgique",    "definition": "en" },
+            { "word": "France",      "definition": "en" },
+            { "word": "Japon",       "definition": "au" },
+            { "word": "Pays-Bas",    "definition": "aux" }
           ]
         },
         {
