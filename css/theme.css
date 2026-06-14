@@ -31,44 +31,44 @@
 :root {
   color-scheme: light;
   /* Palette École Francophone */
-  --bg:          #f7f5ff;
-  --bg2:         #ede9ff;
-  --bg3:         #e2dbff;
+  --bg:          #f5f3ff;
+  --bg2:         #ede9fe;
+  --bg3:         #ddd6fe;
   --surface:     #ffffff;
-  --surface2:    #faf9ff;
-  --border:      #ddd6ff;
+  --surface2:    #faf8ff;
+  --border:      #c4b5fd;
   --text:        #1a1a2e;
   --text2:       #4a4a6a;
   --text3:       #9090b0;
 
   /* Couleurs logo école-francophone.ch */
-  --accent:      #5AABF0;
-  --accent2:     #9B35EC;
-  --accent3:     #c060ff;
+  --accent:      #1D4ED8;
+  --accent2:     #7C3AED;
+  --accent3:     #A855F7;
   --danger:      #e05555;
-  --success:     #5AABF0;
+  --success:     #10b981;
   --warning:     #f0a030;
 
   /* Couleurs par niveau CECRL */
-  --level-a1:        #5AABF0;
-  --level-a1-light:  #e8f4fd;
-  --level-a1-text:   #1d7ec4;
-  --level-a2:        #3db8b0;
-  --level-a2-light:  #e0f5f3;
-  --level-a2-text:   #1e8a85;
-  --level-b1:        #b8a055;
-  --level-b1-light:  #f5f0e0;
-  --level-b1-text:   #7a6830;
-  --level-b2:        #9B35EC;
-  --level-b2-light:  #f2e8fc;
-  --level-b2-text:   #7422be;
-  --level-c1c2:      #e84b6c;
-  --level-c1c2-light:#fce8ec;
-  --level-c1c2-text: #c0274a;
+  --level-a1:        #7C3AED;
+  --level-a1-light:  #ede9fe;
+  --level-a1-text:   #5B21B6;
+  --level-a2:        #0ea5e9;
+  --level-a2-light:  #e0f2fe;
+  --level-a2-text:   #0369a1;
+  --level-b1:        #f59e0b;
+  --level-b1-light:  #fef3c7;
+  --level-b1-text:   #b45309;
+  --level-b2:        #A855F7;
+  --level-b2-light:  #f3e8ff;
+  --level-b2-text:   #7e22ce;
+  --level-c1c2:      #f43f5e;
+  --level-c1c2-light:#ffe4e6;
+  --level-c1c2-text: #be123c;
 
-  --gradient:    linear-gradient(135deg, #5AABF0 0%, #9B35EC 100%);
-  --gradient2:   linear-gradient(135deg, #9B35EC 0%, #5AABF0 100%);
-  --gradient3:   linear-gradient(135deg, #c060ff 0%, #5AABF0 100%);
+  --gradient:    linear-gradient(135deg, #1D4ED8 0%, #7C3AED 100%);
+  --gradient2:   linear-gradient(135deg, #7C3AED 0%, #1D4ED8 100%);
+  --gradient3:   linear-gradient(135deg, #A855F7 0%, #1D4ED8 100%);
 
   /* Typographie Nunito (arrondie, comme le logo) */
   --font-head:   'Nunito', 'Open Sans', sans-serif;

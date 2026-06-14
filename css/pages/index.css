@@ -2,9 +2,9 @@
 body {
   min-height: 100vh;
   background:
-    radial-gradient(circle at 12% 18%, rgba(155,53,236,0.18), transparent 28%),
-    radial-gradient(circle at 88% 10%, rgba(90,171,240,0.15), transparent 30%),
-    linear-gradient(180deg, #f7f5ff 0%, #ede9ff 100%);
+    radial-gradient(circle at 12% 18%, rgba(29,78,216,0.15), transparent 28%),
+    radial-gradient(circle at 88% 10%, rgba(124,58,237,0.14), transparent 30%),
+    linear-gradient(180deg, #eff6ff 0%, #f5f3ff 100%);
   overflow-x: hidden;
 }
 
@@ -21,7 +21,7 @@ body {
 .blob-1 {
   width: 420px;
   height: 420px;
-  background: rgba(90,171,240,0.12);
+  background: rgba(124,58,237,0.18);
   top: -80px;
   left: -100px;
   animation: floatBlob1 14s ease-in-out infinite;
@@ -30,7 +30,7 @@ body {
 .blob-2 {
   width: 340px;
   height: 340px;
-  background: rgba(155,53,236,0.10);
+  background: rgba(168,85,247,0.14);
   top: 40%;
   right: -80px;
   animation: floatBlob2 18s ease-in-out infinite;
@@ -39,7 +39,7 @@ body {
 .blob-3 {
   width: 260px;
   height: 260px;
-  background: rgba(90,171,240,0.08);
+  background: rgba(91,33,182,0.10);
   bottom: 60px;
   left: 30%;
   animation: floatBlob3 22s ease-in-out infinite;
@@ -60,10 +60,10 @@ body {
   gap: 24px;
   align-items: stretch;
   padding: clamp(24px, 4vw, 42px);
-  border: 1px solid rgba(90,171,240,0.16);
+  border: 1px solid rgba(167,139,250,0.25);
   border-radius: 20px;
-  background: rgba(255,255,255,0.92);
-  box-shadow: 0 20px 60px rgba(90,171,240,0.12);
+  background: rgba(255,255,255,0.94);
+  box-shadow: 0 20px 60px rgba(124,58,237,0.14);
   animation: heroIn 0.6s cubic-bezier(0.22,1,0.36,1) both;
 }
 
@@ -82,11 +82,11 @@ body {
 }
 
 .title-blue {
-  color: #5AABF0;
+  color: #1D4ED8;
 }
 
 .title-purple {
-  color: #9B35EC;
+  color: #7C3AED;
 }
 
 /* ── Label badge ── */
@@ -94,7 +94,7 @@ body {
   width: fit-content;
   padding: 7px 14px;
   border-radius: 999px;
-  background: linear-gradient(135deg, rgba(90,171,240,0.12), rgba(155,53,236,0.10));
+  background: linear-gradient(135deg, rgba(90,171,240,0.12), rgba(136,0,255,0.10));
   border: 1px solid rgba(90,171,240,0.18);
   color: var(--accent);
   font-size: 12px;
@@ -144,10 +144,10 @@ body {
 }
 
 .landing-action-primary {
-  background: linear-gradient(135deg, #5AABF0 0%, #9B35EC 100%);
+  background: linear-gradient(135deg, #1D4ED8 0%, #7C3AED 100%);
   border-color: transparent;
   color: #fff;
-  box-shadow: 0 6px 20px rgba(90,171,240,0.30);
+  box-shadow: 0 6px 20px rgba(124,58,237,0.40);
 }
 
 .landing-action-primary:hover {
@@ -157,15 +157,15 @@ body {
 
 .landing-action-secondary {
   background: transparent;
-  border-color: var(--accent2, #9B35EC);
-  color: var(--accent2, #9B35EC);
+  border-color: var(--accent2, #8800ff);
+  color: var(--accent2, #8800ff);
 }
 
 .landing-action-secondary:hover {
-  background: var(--accent2, #9B35EC);
+  background: var(--accent2, #8800ff);
   color: #fff;
   border-color: transparent;
-  box-shadow: 0 12px 32px rgba(155,53,236,0.30);
+  box-shadow: 0 12px 32px rgba(136,0,255,0.30);
 }
 
 /* ── Panel ── */
@@ -175,7 +175,7 @@ body {
   align-content: center;
   padding: 28px 24px;
   border-radius: 14px;
-  background: linear-gradient(160deg, #21314f 0%, #5AABF0 60%, #9B35EC 100%);
+  background: linear-gradient(160deg, #21314f 0%, #1e50e2 60%, #8800ff 100%);
   color: #fff;
   position: relative;
   overflow: hidden;
@@ -237,12 +237,12 @@ body {
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #5AABF0, #9B35EC);
+  background: linear-gradient(90deg, #7C3AED, #A855F7);
   border-radius: 18px 18px 0 0;
 }
 
-.grid-item-2::before { background: linear-gradient(90deg, #9B35EC, #c45aec); }
-.grid-item-3::before { background: linear-gradient(90deg, #0ea5a0, #5AABF0); }
+.grid-item-2::before { background: linear-gradient(90deg, #5B21B6, #7C3AED); }
+.grid-item-3::before { background: linear-gradient(90deg, #A855F7, #7C3AED); }
 
 .landing-grid article:hover {
   transform: translateY(-5px);
@@ -264,7 +264,7 @@ body {
 }
 
 .card-icon--blue   { background: rgba(90,171,240,0.12); }
-.card-icon--purple { background: rgba(155,53,236,0.10); animation-delay: 1s; }
+.card-icon--purple { background: rgba(136,0,255,0.10); animation-delay: 1s; }
 .card-icon--teal   { background: rgba(14,165,160,0.10); animation-delay: 2s; }
 
 /* ── Corps texte ── */
@@ -297,7 +297,7 @@ body {
   color: #3a8fd4;
 }
 
-.card-badge--purple { background: rgba(155,53,236,0.10); color: #9B35EC; }
+.card-badge--purple { background: rgba(136,0,255,0.10); color: #8800ff; }
 .card-badge--teal   { background: rgba(14,165,160,0.10);  color: #0ea5a0; }
 
 /* ── Profil button ── */

@@ -7,8 +7,8 @@ window.SITE_TEXT = {
   brand: {
     alt: 'École Francophone',
     homeHref: '../index.html',
-    blueHtml: 'école-',
-    purpleHtml: 'francophone',
+    blueHtml: 'learning',
+    purpleHtml: 'progress',
     courseTitlePrefix: 'École Francophone'
   },
 
@@ -20,8 +20,8 @@ window.SITE_TEXT = {
     schemaName: 'École Francophone',
     schemaDescription: 'Plateforme pédagogique de français adaptable aux vocabulaires, scénarios et contextes de chaque établissement, avec cours CECRL et version locale possible.',
     heroLabel: 'Solution pédagogique prête à déployer',
-    heroTitleBlueHtml: 'école-',
-    heroTitlePurpleHtml: 'francophone',
+    heroTitleBlueHtml: 'learning',
+    heroTitlePurpleHtml: 'progress',
     heroBody: 'Une plateforme de français claire, progressive et immédiatement utilisable, adaptable au vocabulaire, aux scénarios et aux contextes de chaque établissement. Elle peut aussi fonctionner en version locale, sans connexion internet.',
     primaryAction: 'Voir la démo',
     secondaryAction: 'Auto-évaluation CECRL',

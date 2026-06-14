@@ -6,7 +6,7 @@ window.COURSE_DATA_PARTS.b1 = {
   "section": {
     "title": "B1",
     "cls": "b1",
-    "idxLabel": "Parcours avancé",
+    "idxLabel": "Parcours autonome",
     "prefix": "b1-",
     "idxItemCls": "gold",
     "icon": "🎯",

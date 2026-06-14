@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="fr-CH">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="../../assets/logo.png" type="image/png">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title id="platformDocumentTitle">École Francophone | Plateforme A1</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="../../css/theme.css">
+  <link rel="stylesheet" href="../../css/layout.css">
+  <link rel="stylesheet" href="../platform.css">
+  <script src="../../js/auth.js"></script>
+  <script>efAuth.requireAuth('../../login.html');</script>
+</head>
+<body>
+  <div class="platform-shell" style="padding-top:var(--header-h)">
+    <div id="header-slot"></div>
+    <main class="platform-main">
+      <section class="platform-progress" aria-labelledby="platformWelcomeTitle">
+        <div class="platform-welcome">
+          <p class="platform-welcome-kicker">Bienvenue</p>
+          <h2 id="platformWelcomeTitle">Bonjour, ravi de vous retrouver sur votre parcours A1.</h2>
+          <p id="platformWelcomeText">Commencez tranquillement par une unité, puis revenez ici pour suivre votre progression. Chaque carte indique où vous en êtes.</p>
+        </div>
+
+        <div class="platform-progress-board" aria-label="Tableau de progression A1">
+          <div class="platform-progress-head">
+            <div>
+              <p class="platform-progress-kicker">Tableau de progression</p>
+              <h3 id="platformProgressTitle">Unités A1</h3>
+            </div>
+            <div class="platform-progress-score" aria-live="polite">
+              <strong id="platformProgressPct">0%</strong>
+              <span id="platformProgressCount">0 / 0 unités</span>
+            </div>
+          </div>
+          <div class="platform-progress-bar" aria-hidden="true">
+            <span id="platformProgressFill"></span>
+          </div>
+          <div class="platform-unit-grid" id="platformUnitGrid"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="../../js/course-data/levels/a1.js"></script>
+  <script>
+    window.EF_PLATFORM = {
+      level: 'a1',
+      title: 'A1 · Parcours débutant',
+      subtitle: 'Une plateforme séparée pour découvrir le français, les consignes simples et les premières situations du quotidien.'
+    };
+  </script>
+  <script src="../../js/shared-header.js"></script>
+  <script src="../platform.js"></script>
+</body>
+</html>

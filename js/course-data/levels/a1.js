@@ -738,9 +738,11 @@ window.COURSE_DATA_PARTS.a1 = {
     "unite-0": {
       "swissContextHtml": "<p class=\"unite-info-text\">La Suisse possède quatre langues nationales : le français, l'allemand, l'italien et le romanche.</p><p class=\"unite-info-text\">La région où l'on parle principalement français s'appelle la <strong>Suisse romande</strong>. Elle comprend notamment les cantons de Vaud, Genève, Neuchâtel et Jura.</p><p class=\"unite-info-text\">En Suisse romande, le français est utilisé dans la vie quotidienne, à l'école, au travail et dans les administrations.</p><p class=\"unite-info-text\">La Suisse romande fait partie de la <strong>francophonie</strong>, c'est-à-dire l'ensemble des pays et des régions où le français est utilisé.</p>",
       "objectives": [
-        "repérer quelques pays et villes francophones",
-        "identifier la place de la Suisse romande dans l'espace francophone",
-        "utiliser les prépositions avec les pays"
+        "💬 <strong>Communication</strong> — Dire d'où on vient et où on habite (<em>Je viens de…, J'habite à…</em>)",
+        "📐 <strong>Grammaire</strong> — Utiliser les prépositions avec les pays (<em>en, au, aux, à</em>)",
+        "🔄 <strong>Conjugaison</strong> — Conjuguer <em>être</em> et <em>parler</em> au présent",
+        "📖 <strong>Vocabulaire</strong> — Comprendre les mots essentiels de la francophonie (<em>pays, capitale, canton, francophone…</em>)",
+        "🔊 <strong>Phonétique</strong> — Prononcer les noms de pays et de villes francophones"
       ],
       "vocabulary": [
         {
@@ -909,7 +911,34 @@ window.COURSE_DATA_PARTS.a1 = {
             "answer": "La Croix-Rouge ou l'ONU."
           }
         ]
-      }
+      },
+      "finalTest": [
+        {
+          "prompt": "💬 Communication — Comment dit-on où l'on habite ?",
+          "choices": ["J'habite à…", "Je suis à…", "Je reste à…"],
+          "answer": 0
+        },
+        {
+          "prompt": "📐 Grammaire — Quelle préposition utilise-t-on avec un pays féminin comme la Suisse ?",
+          "choices": ["en", "au", "à"],
+          "answer": 0
+        },
+        {
+          "prompt": "🔄 Conjugaison — Quelle est la forme correcte de « être » avec « je » ?",
+          "choices": ["je suis", "je es", "je est"],
+          "answer": 0
+        },
+        {
+          "prompt": "📖 Vocabulaire — Que signifie « francophone » ?",
+          "choices": ["qui parle ou utilise le français", "qui vit en France", "qui apprend le français"],
+          "answer": 0
+        },
+        {
+          "prompt": "🔊 Phonétique — Dans quel mot entend-on le son [ɔ̃] comme dans « bon » ?",
+          "choices": ["francophone", "Suisse", "pays"],
+          "answer": 0
+        }
+      ]
     },
     "unite-1": {
       "objectives": [

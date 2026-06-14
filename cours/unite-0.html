@@ -11,95 +11,15 @@
 </head>
 <body>
   <div id="header-slot"></div>
-  <div class="page-wrap">
-
-        <div id="sidebar-slot"></div>
+  <div class="page-wrap page-wrap--no-sidebar">
 
     <main class="unite-main">
-      <style>
-        .intro-audio-btn {
-          display: inline-flex; align-items: center; gap: 12px;
-          background: linear-gradient(135deg, #5AABF0, #9B35EC);
-          color: #fff; border: none; border-radius: 16px;
-          padding: 14px 24px; font-size: .95rem; font-weight: 700;
-          font-family: inherit; cursor: pointer; margin-bottom: 20px;
-          box-shadow: 0 4px 20px rgba(90,171,240,.35);
-          transition: transform .18s, box-shadow .18s;
-          position: relative; overflow: hidden;
-        }
-        .intro-audio-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(90,171,240,.45); }
-        .intro-audio-btn:active { transform: translateY(0); }
-        .intro-audio-btn.playing { background: linear-gradient(135deg, #ef4444, #f59e0b); box-shadow: 0 4px 20px rgba(239,68,68,.35); }
-
-        /* Ondes animées autour de l'icône */
-        .intro-btn-icon-wrap { position: relative; width: 36px; height: 36px; flex-shrink: 0; }
-        .intro-btn-icon-wrap span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; z-index: 1; }
-        .intro-pulse { position: absolute; inset: -6px; border-radius: 50%; background: rgba(255,255,255,.25); animation: introPulse 1.6s ease-out infinite; }
-        .intro-pulse:nth-child(2) { animation-delay: .5s; }
-        .intro-pulse:nth-child(3) { animation-delay: 1s; }
-        @keyframes introPulse { 0%{transform:scale(.7);opacity:.8} 100%{transform:scale(1.9);opacity:0} }
-        .intro-audio-btn:not(.playing) .intro-pulse { display: none; }
-
-        /* Flèche "cliquer ici" */
-        .intro-hint { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
-        .intro-hint-arrow { font-size: 1.2rem; animation: bounceRight .7s ease-in-out infinite alternate; }
-        @keyframes bounceRight { from{transform:translateX(0)} to{transform:translateX(6px)} }
-        .intro-hint-text { font-size: .78rem; font-weight: 700; color: var(--accent,#5AABF0); text-transform: uppercase; letter-spacing: .06em; }
-
-        .intro-btn-copy { display: flex; flex-direction: column; align-items: flex-start; }
-        .intro-btn-label { font-size: .95rem; font-weight: 800; }
-        .intro-btn-sub { font-size: .75rem; opacity: .85; font-weight: 400; margin-top: 1px; }
-      </style>
-
-      <audio id="introAudioEl" src="../assets/audio/intro-a1-0.wav" preload="auto"></audio>
-
-      <div class="intro-hint">
-        <span class="intro-hint-arrow">▶</span>
-        <span class="intro-hint-text">Cliquer ici pour commencer</span>
-      </div>
-
-      <button id="introBtn" class="intro-audio-btn" onclick="playIntro()">
-        <div class="intro-btn-icon-wrap">
-          <div class="intro-pulse"></div>
-          <div class="intro-pulse"></div>
-          <div class="intro-pulse"></div>
-          <span id="introBtnIcon">🎧</span>
-        </div>
-        <div class="intro-btn-copy">
-          <span class="intro-btn-label" id="introBtnLabel">Écouter l'introduction</span>
-          <span class="intro-btn-sub" id="introBtnSub">Niveau A1 · ~30 secondes</span>
-        </div>
-      </button>
+      <a class="cours-back" data-keep-label="true" href="../plateformes/a1/index.html">← Choix d'unité</a>
 
       <script>
         function openLightbox() { document.getElementById('francoLightbox').classList.add('open'); document.body.style.overflow='hidden'; }
         function closeLightbox() { document.getElementById('francoLightbox').classList.remove('open'); document.body.style.overflow=''; }
         document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLightbox(); });
-
-        function playIntro() {
-          var btn = document.getElementById('introBtn');
-          var audio = document.getElementById('introAudioEl');
-          if (!audio.paused) {
-            audio.pause();
-            audio.currentTime = 0;
-            btn.classList.remove('playing');
-            document.getElementById('introBtnIcon').textContent = '🎧';
-            document.getElementById('introBtnLabel').textContent = 'Écouter l\'introduction';
-            document.getElementById('introBtnSub').textContent = 'Niveau A1 · ~30 secondes';
-            return;
-          }
-          btn.classList.add('playing');
-          document.getElementById('introBtnIcon').textContent = '⏹';
-          document.getElementById('introBtnLabel').textContent = 'Arrêter';
-          document.getElementById('introBtnSub').textContent = 'Cliquer pour stopper';
-          audio.play();
-          audio.onended = function() {
-            btn.classList.remove('playing');
-            document.getElementById('introBtnIcon').textContent = '🎧';
-            document.getElementById('introBtnLabel').textContent = 'Écouter l\'introduction';
-            document.getElementById('introBtnSub').textContent = 'Niveau A1 · ~30 secondes';
-          };
-        }
       </script>
 
       <div class="unite-hero blue">
@@ -129,7 +49,7 @@
         }
         .franco-img:hover {
           transform: scale(1.04) translateY(-4px);
-          box-shadow: 0 10px 36px rgba(155,53,236,.28);
+          box-shadow: 0 10px 36px rgba(136,0,255,.28);
         }
         @keyframes francoFloat {
           0%,100% { transform: translateY(0); }
@@ -188,5 +108,3 @@
   <script src="../js/focus-mode.js"></script>
 </body>
 </html>
-
-

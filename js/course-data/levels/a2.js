@@ -6,7 +6,7 @@ window.COURSE_DATA_PARTS.a2 = {
   "section": {
     "title": "A2",
     "cls": "a2",
-    "idxLabel": "Nouveau parcours",
+    "idxLabel": "Parcours intermédiaire",
     "prefix": "a2-",
     "idxItemCls": "teal",
     "icon": "🚀",

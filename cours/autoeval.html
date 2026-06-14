@@ -16,7 +16,7 @@
     @keyframes aeFadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
 
     /* ── Welcome ── */
-    .ae-hero        { background:linear-gradient(135deg,#5AABF0 0%,#9B35EC 100%);
+    .ae-hero        { background:linear-gradient(135deg,#1e50e2 0%,#8800ff 100%);
                       border-radius:20px; padding:40px 36px; color:#fff; text-align:center; margin-bottom:32px; }
     .ae-hero h1     { font-size:1.9rem; font-weight:900; margin:0 0 10px; }
     .ae-hero p      { font-size:1.05rem; opacity:.9; margin:0 0 24px; line-height:1.6; }
@@ -26,7 +26,7 @@
     .ae-info-grid   { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:16px; margin-bottom:32px; }
     .ae-info-card   { background:var(--surface2,#f0f4ff); border-radius:12px; padding:16px;
                       text-align:center; border:1px solid var(--border); }
-    .ae-info-card strong { display:block; font-size:1.5rem; color:var(--accent,#5AABF0); }
+    .ae-info-card strong { display:block; font-size:1.5rem; color:var(--accent,#1e50e2); }
     .ae-info-card span   { font-size:.85rem; color:var(--text-muted,#666); }
 
     /* ── Buttons ── */
@@ -34,24 +34,24 @@
                       border-radius:12px; font-size:1rem; font-weight:700; cursor:pointer;
                       border:none; text-decoration:none; transition:opacity .15s,transform .1s; }
     .ae-btn:hover   { opacity:.88; transform:translateY(-1px); }
-    .ae-btn--primary  { background:var(--accent,#5AABF0); color:#fff; }
-    .ae-btn--purple   { background:var(--accent2,#9B35EC); color:#fff; }
-    .ae-btn--outline  { background:transparent; border:2px solid var(--accent,#5AABF0); color:var(--accent,#5AABF0); }
+    .ae-btn--primary  { background:var(--accent,#1e50e2); color:#fff; }
+    .ae-btn--purple   { background:var(--accent2,#8800ff); color:#fff; }
+    .ae-btn--outline  { background:transparent; border:2px solid var(--accent,#1e50e2); color:var(--accent,#1e50e2); }
     .ae-btn--sm       { padding:8px 18px; font-size:.88rem; }
     .ae-btn-row     { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:8px; }
 
     /* ── Progress ── */
     .ae-progress-bar-wrap { height:8px; background:var(--border,#e5e7eb); border-radius:99px; margin-bottom:28px; overflow:hidden; }
-    .ae-progress-bar      { height:100%; background:linear-gradient(90deg,#5AABF0,#9B35EC); border-radius:99px; transition:width .4s ease; }
+    .ae-progress-bar      { height:100%; background:linear-gradient(90deg,#1e50e2,#8800ff); border-radius:99px; transition:width .4s ease; }
     .ae-progress-meta { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
     .ae-progress-label { font-size:.82rem; font-weight:700; color:var(--text-muted,#666); text-transform:uppercase; letter-spacing:.05em; }
     .ae-q-num { font-size:.82rem; color:var(--text-muted,#666); }
 
     /* ── Section header ── */
     .ae-section-banner { border-radius:12px; padding:14px 20px; margin-bottom:20px; display:flex; align-items:center; gap:14px; }
-    .ae-section-banner--a1  { background:#e0f0ff; border-left:5px solid #5AABF0; }
+    .ae-section-banner--a1  { background:#e0f0ff; border-left:5px solid #1e50e2; }
     .ae-section-banner--a2  { background:#e8f8e8; border-left:5px solid #22c55e; }
-    .ae-section-banner--b1  { background:#ede9fe; border-left:5px solid #9B35EC; }
+    .ae-section-banner--b1  { background:#ede9fe; border-left:5px solid #8800ff; }
     .ae-section-banner--b2  { background:#fef3c7; border-left:5px solid #f59e0b; }
     .ae-section-banner--c1  { background:#fee2e2; border-left:5px solid #ef4444; }
     .ae-section-badge { font-size:1.5rem; font-weight:900; }
@@ -71,29 +71,29 @@
     .ae-q-skill--EI  { background:#fee2e2; color:#991b1b; }
     .ae-q-text      { font-size:1.05rem; font-weight:600; line-height:1.55; margin:0 0 18px;
                       color:var(--text,#1a1a2e); }
-    .ae-q-text em   { font-style:normal; color:var(--accent2,#9B35EC); font-weight:700; }
+    .ae-q-text em   { font-style:normal; color:var(--accent2,#8800ff); font-weight:700; }
 
     /* ── Rating buttons ── */
     .ae-rating      { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
     .ae-rate-btn    { padding:10px 6px; border-radius:10px; border:2px solid var(--border,#e5e7eb);
                       background:var(--surface,#fff); font-size:.78rem; font-weight:600;
                       cursor:pointer; text-align:center; transition:all .15s; line-height:1.3; }
-    .ae-rate-btn:hover { border-color:var(--accent,#5AABF0); background:var(--surface2,#f0f4ff); }
+    .ae-rate-btn:hover { border-color:var(--accent,#1e50e2); background:var(--surface2,#f0f4ff); }
     .ae-rate-btn.selected { border-color:transparent; color:#fff; }
     .ae-rate-btn[data-val="0"].selected { background:#6b7280; }
     .ae-rate-btn[data-val="1"].selected { background:#f59e0b; }
     .ae-rate-btn[data-val="2"].selected { background:#22c55e; }
-    .ae-rate-btn[data-val="3"].selected { background:#5AABF0; }
+    .ae-rate-btn[data-val="3"].selected { background:#1e50e2; }
     .ae-rate-icon   { display:block; font-size:1.2rem; margin-bottom:3px; }
     .ae-rate-label  { display:block; font-size:.72rem; }
 
     /* ── Skip section ── */
     .ae-skip-bar    { display:flex; align-items:center; justify-content:flex-end; gap:10px; margin-bottom:12px; }
     .ae-skip-link   { font-size:.83rem; color:var(--text-muted,#888); cursor:pointer; text-decoration:underline; }
-    .ae-skip-link:hover { color:var(--accent,#5AABF0); }
+    .ae-skip-link:hover { color:var(--accent,#1e50e2); }
 
     /* ── Results ── */
-    .ae-results-hero { background:linear-gradient(135deg,#5AABF0,#9B35EC); color:#fff;
+    .ae-results-hero { background:linear-gradient(135deg,#1e50e2,#8800ff); color:#fff;
                        border-radius:20px; padding:32px; text-align:center; margin-bottom:28px; }
     .ae-level-badge  { display:inline-block; background:rgba(255,255,255,.25); border-radius:14px;
                        padding:6px 22px; font-size:2.2rem; font-weight:900; margin:8px 0 4px; }
@@ -112,9 +112,9 @@
     .ae-skill-name  { font-size:.82rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
     .ae-skill-track { height:12px; background:var(--border,#e5e7eb); border-radius:99px; overflow:hidden; }
     .ae-skill-fill  { height:100%; border-radius:99px; transition:width .8s ease .2s; }
-    .ae-skill-fill--CO { background:#5AABF0; }
+    .ae-skill-fill--CO { background:#1e50e2; }
     .ae-skill-fill--CE { background:#22c55e; }
-    .ae-skill-fill--EE { background:#9B35EC; }
+    .ae-skill-fill--EE { background:#8800ff; }
     .ae-skill-fill--EC { background:#f59e0b; }
     .ae-skill-fill--EI { background:#ef4444; }
     .ae-skill-level { font-size:.88rem; font-weight:700; text-align:right; color:var(--text,#222); }
@@ -135,10 +135,10 @@
     .ae-reco-card   { background:var(--surface,#fff); border:1px solid var(--border); border-radius:12px;
                       padding:14px; display:flex; flex-direction:column; gap:6px; }
     .ae-reco-level  { font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:.06em;
-                      color:var(--accent,#5AABF0); }
+                      color:var(--accent,#1e50e2); }
     .ae-reco-title  { font-size:.88rem; font-weight:700; color:var(--text,#222); }
     .ae-reco-why    { font-size:.8rem; color:var(--text-muted,#666); }
-    .ae-reco-link   { display:inline-block; font-size:.8rem; font-weight:700; color:var(--accent,#5AABF0);
+    .ae-reco-link   { display:inline-block; font-size:.8rem; font-weight:700; color:var(--accent,#1e50e2);
                       text-decoration:none; margin-top:4px; }
 
     /* ── Detail table ── */
@@ -160,14 +160,14 @@
                         border-radius:16px; padding:24px; box-shadow:0 2px 12px rgba(0,0,0,.06);
                         margin-bottom:12px; }
     .val-q-type       { font-size:.72rem; font-weight:800; text-transform:uppercase; letter-spacing:.07em;
-                        color:var(--accent2,#9B35EC); margin-bottom:8px; display:block; }
+                        color:var(--accent2,#8800ff); margin-bottom:8px; display:block; }
     .val-q-prompt     { font-size:1rem; font-weight:600; line-height:1.55; margin:0 0 16px; }
-    .val-q-prompt em  { font-style:normal; color:var(--accent2,#9B35EC); }
+    .val-q-prompt em  { font-style:normal; color:var(--accent2,#8800ff); }
     .val-choices      { display:flex; flex-direction:column; gap:8px; }
     .val-choice       { padding:11px 16px; border-radius:10px; border:2px solid var(--border);
                         background:var(--surface,#fff); font-size:.95rem; cursor:pointer;
                         text-align:left; transition:border-color .15s,background .15s; font-weight:500; }
-    .val-choice:hover          { border-color:var(--accent2,#9B35EC); background:var(--surface2,#f0f4ff); }
+    .val-choice:hover          { border-color:var(--accent2,#8800ff); background:var(--surface2,#f0f4ff); }
     .val-choice.val-correct    { border-color:#22c55e; background:#f0fdf4; color:#166534; font-weight:700; }
     .val-choice.val-wrong      { border-color:#ef4444; background:#fee2e2; color:#991b1b; }
     .val-choice.val-missed     { border-color:#22c55e; background:#f0fdf4; color:#166534; opacity:.7; }
@@ -175,7 +175,7 @@
     .val-fill-row     { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
     .val-fill-input   { padding:10px 14px; border:2px solid var(--border); border-radius:10px;
                         font-size:1rem; font-family:inherit; flex:1; min-width:120px; outline:none; }
-    .val-fill-input:focus  { border-color:var(--accent2,#9B35EC); }
+    .val-fill-input:focus  { border-color:var(--accent2,#8800ff); }
     .val-fill-input.val-ok { border-color:#22c55e; background:#f0fdf4; }
     .val-fill-input.val-err{ border-color:#ef4444; background:#fee2e2; }
     .val-feedback     { margin-top:10px; font-size:.9rem; font-weight:600; padding:8px 12px;
@@ -217,7 +217,7 @@
 
     /* ── Adaptive round label ── */
     .ae-round-tag { display:inline-block; background:var(--surface2,#f0f4ff); border-radius:99px;
-                    padding:3px 12px; font-size:.76rem; font-weight:700; color:var(--accent2,#9B35EC);
+                    padding:3px 12px; font-size:.76rem; font-weight:700; color:var(--accent2,#8800ff);
                     margin-bottom:10px; }
 
     /* ── Transition screen ── */
@@ -225,12 +225,12 @@
     .ae-transition-icon  { font-size:3.2rem; margin-bottom:14px; }
     .ae-transition-title { font-size:1.5rem; font-weight:900; margin:0 0 10px; }
     .ae-transition-sub   { font-size:.95rem; color:var(--text-muted,#666); margin:0 0 28px; line-height:1.6; }
-    .ae-transition-next  { display:inline-block; background:linear-gradient(135deg,#5AABF0,#9B35EC);
+    .ae-transition-next  { display:inline-block; background:linear-gradient(135deg,#1e50e2,#8800ff);
                            color:#fff; border-radius:14px; padding:10px 28px;
                            font-size:1.2rem; font-weight:900; }
     .ae-transition-bar   { height:5px; background:var(--border,#e5e7eb); border-radius:99px;
                            overflow:hidden; margin:28px auto 0; max-width:220px; }
-    .ae-transition-fill  { height:100%; background:linear-gradient(90deg,#5AABF0,#9B35EC);
+    .ae-transition-fill  { height:100%; background:linear-gradient(90deg,#1e50e2,#8800ff);
                            border-radius:99px; animation:aeTransFill 2s linear forwards; }
     @keyframes aeTransFill { from{width:0%} to{width:100%} }
   </style>
@@ -256,7 +256,7 @@
 
         <!-- Étape 1 : boutons d'accueil -->
         <div id="welcomeStep1">
-          <div style="background:var(--surface2,#f0f4ff);border-radius:12px;padding:18px 20px;margin-bottom:28px;border-left:4px solid var(--accent,#5AABF0)">
+          <div style="background:var(--surface2,#f0f4ff);border-radius:12px;padding:18px 20px;margin-bottom:28px;border-left:4px solid var(--accent,#1e50e2)">
             <p style="margin:0;font-size:.92rem;line-height:1.7">
               <strong>Comment ça marche ?</strong> Choisissez votre niveau estimé, puis répondez aux affirmations <em>« Je peux… »</em> honnêtement. Si vos réponses indiquent un niveau plus haut ou plus bas, le quiz s'ajuste tout seul.
             </p>
@@ -578,9 +578,9 @@
   var adaptRound = 0;
 
   var LEVEL_PICKER_DATA = [
-    { level:'A1', name:'A1 — Débutant',      desc:'Je connais quelques mots',      color:'#5AABF0' },
+    { level:'A1', name:'A1 — Débutant',      desc:'Je connais quelques mots',      color:'#1e50e2' },
     { level:'A2', name:'A2 — Élémentaire',   desc:'Je me débrouille un peu',       color:'#22c55e' },
-    { level:'B1', name:'B1 — Intermédiaire', desc:'Je communique au quotidien',    color:'#9B35EC' },
+    { level:'B1', name:'B1 — Intermédiaire', desc:'Je communique au quotidien',    color:'#8800ff' },
     { level:'B2', name:'B2 — Avancé',        desc:'Je parle avec aisance',         color:'#f59e0b' },
     { level:'C1', name:'C1 — Expert',        desc:'Je maîtrise la langue',         color:'#ef4444' },
     { level:'?',  name:'? — Je ne sais pas', desc:'Le quiz déterminera',           color:'#6b7280' }
@@ -1005,7 +1005,7 @@
       if (!sec) return;
       // Pick up to 4 units
       var units = sec.entries.slice(0, 4);
-      recoHtml += '<div style="grid-column:1/-1;margin:4px 0 4px"><strong style="font-size:.85rem;color:var(--accent,#5AABF0)">📚 Niveau '
+      recoHtml += '<div style="grid-column:1/-1;margin:4px 0 4px"><strong style="font-size:.85rem;color:var(--accent,#1e50e2)">📚 Niveau '
         +lvlName+' — Unités recommandées</strong></div>';
       units.forEach(function(e) {
         recoHtml += '<div class="ae-reco-card">'
@@ -1052,7 +1052,7 @@
 
     // 3. Training games link for overall level
     var a1Training = 'entrainement-a1.html';
-    recoHtml += '<div style="grid-column:1/-1;margin:12px 0 4px"><strong style="font-size:.85rem;color:var(--accent2,#9B35EC)">🎮 Exercices interactifs</strong></div>'
+    recoHtml += '<div style="grid-column:1/-1;margin:12px 0 4px"><strong style="font-size:.85rem;color:var(--accent2,#8800ff)">🎮 Exercices interactifs</strong></div>'
       +'<div class="ae-reco-card" style="grid-column:1/-1">'
       +'<div class="ae-reco-level">A1 · Tous jeux</div>'
       +'<div class="ae-reco-title">Jeux d\'entraînement A1</div>'
@@ -1084,7 +1084,7 @@
     var r = Math.min(cx,cy) - 56;
     var n = 5; // skills
     var skills = SKILLS_ORDER;
-    var colors = { CO:'#5AABF0', CE:'#22c55e', EE:'#9B35EC', EC:'#f59e0b', EI:'#ef4444' };
+    var colors = { CO:'#1e50e2', CE:'#22c55e', EE:'#8800ff', EC:'#f59e0b', EI:'#ef4444' };
 
     function angle(i) { return (i * 2*Math.PI/n) - Math.PI/2; }
     function pt(i, frac) { return { x: cx + frac*r*Math.cos(angle(i)), y: cy + frac*r*Math.sin(angle(i)) }; }
@@ -1138,7 +1138,7 @@
     ctx.closePath();
     ctx.fillStyle = 'rgba(90,171,240,0.25)';
     ctx.fill();
-    ctx.strokeStyle = '#5AABF0';
+    ctx.strokeStyle = '#1e50e2';
     ctx.lineWidth = 2.5;
     ctx.stroke();
 

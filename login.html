@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="fr-CH">
+<head>
+  <meta charset="utf-8">
+  <link rel="icon" href="assets/logo.png" type="image/png">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Connexion — École Francophone</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="css/theme.css">
+  <style>
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(circle at 12% 18%, rgba(29,78,216,0.16), transparent 28%),
+        radial-gradient(circle at 88% 10%, rgba(124,58,237,0.14), transparent 30%),
+        linear-gradient(180deg, #eff6ff 0%, #f5f3ff 100%);
+      overflow: hidden;
+    }
+
+    .blob { position: fixed; border-radius: 50%; filter: blur(60px); pointer-events: none; z-index: 0; }
+    .blob-1 { width: 420px; height: 420px; background: rgba(29,78,216,0.14); top: -80px; left: -100px; animation: floatBlob1 14s ease-in-out infinite; }
+    .blob-2 { width: 340px; height: 340px; background: rgba(124,58,237,0.12); top: 40%; right: -80px; animation: floatBlob2 18s ease-in-out infinite; }
+    .blob-3 { width: 260px; height: 260px; background: rgba(168,85,247,0.08); bottom: 60px; left: 30%; animation: floatBlob3 22s ease-in-out infinite; }
+
+    @keyframes floatBlob1 { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(30px,-20px) scale(1.05)} 66%{transform:translate(-15px,25px) scale(0.97)} }
+    @keyframes floatBlob2 { 0%,100%{transform:translate(0,0) scale(1)} 40%{transform:translate(-25px,30px) scale(1.08)} 70%{transform:translate(20px,-15px) scale(0.95)} }
+    @keyframes floatBlob3 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(20px,-25px) scale(1.06)} }
+
+    /* ── Card commune aux deux étapes ── */
+    .login-card {
+      position: relative;
+      z-index: 1;
+      background: rgba(255,255,255,0.94);
+      border: 1px solid rgba(29,78,216,0.16);
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(124,58,237,0.14);
+      padding: clamp(28px, 5vw, 48px);
+    }
+
+    /* ── Étape 1 : formulaire ── */
+    #step1 {
+      width: min(420px, calc(100vw - 32px));
+      animation: cardIn 0.5s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    /* ── Étape 2 : niveau ── */
+    #step2 {
+      width: min(680px, calc(100vw - 32px));
+      display: none;
+    }
+    #step2.visible {
+      display: block;
+      animation: cardIn 0.45s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(20px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ── Marque ── */
+    .login-brand { text-align: center; margin-bottom: 28px; }
+    .login-brand h1, .login-brand h2 {
+      font-family: var(--font-head);
+      font-weight: 800;
+      line-height: 1.1;
+    }
+    .login-brand h1 { font-size: clamp(22px, 5vw, 30px); }
+    .login-brand h2 { font-size: clamp(18px, 3.5vw, 24px); color: var(--text); }
+    .login-brand p { margin-top: 8px; font-size: 14px; color: var(--text2); }
+    .title-blue   { color: var(--accent); }
+    .title-purple { color: var(--accent2); }
+
+    /* ── Formulaire connexion ── */
+    .login-form { display: flex; flex-direction: column; gap: 16px; }
+
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: 13px; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; }
+    .field input {
+      font-family: var(--font-body);
+      font-size: 15px;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-md);
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .field input:focus { border-color: #1D4ED8; box-shadow: 0 0 0 3px rgba(29,78,216,0.15); }
+
+    .login-error {
+      display: none;
+      font-size: 13px; color: var(--danger);
+      background: rgba(224,85,85,0.08);
+      border: 1px solid rgba(224,85,85,0.2);
+      border-radius: var(--r-md);
+      padding: 10px 14px; text-align: center;
+    }
+    .login-error.visible { display: block; }
+
+    .login-btn {
+      margin-top: 4px; padding: 12px; border: none;
+      border-radius: var(--r-md);
+      background: var(--gradient);
+      color: #fff; font-family: var(--font-head); font-size: 15px; font-weight: 700;
+      cursor: pointer; transition: opacity 0.2s, transform 0.1s;
+      box-shadow: var(--shadow-accent);
+    }
+    .login-btn:hover  { opacity: 0.92; }
+    .login-btn:active { transform: scale(0.98); }
+
+    /* ── Grille de niveaux ── */
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 14px;
+      margin-top: 4px;
+    }
+
+    .level-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 20px 14px 18px;
+      border: 2px solid transparent;
+      border-radius: 14px;
+      background: var(--surface);
+      cursor: pointer;
+      text-align: center;
+      transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
+      font-family: var(--font-body);
+      color: var(--text);
+    }
+    .level-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+    }
+    .level-card:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+    .level-card:active { transform: scale(0.97); }
+
+    .level-card-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      font-family: var(--font-head);
+      font-weight: 800;
+      font-size: 15px;
+      color: #fff;
+      margin-bottom: 2px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .level-card-icon { font-size: 22px; line-height: 1; }
+    .level-card-name { font-weight: 700; font-size: 14px; color: var(--text); }
+    .level-card-desc { font-size: 12px; color: var(--text2); line-height: 1.4; }
+
+    /* couleurs par niveau */
+    .level-card--a1   { --lc: #1D4ED8; }
+    .level-card--a2   { --lc: #0ea5e9; }
+    .level-card--b1   { --lc: #f59e0b; }
+    .level-card--b2   { --lc: #7C3AED; }
+    .level-card--c1c2 { --lc: #f43f5e; }
+
+    .level-card { border-color: rgba(0,0,0,0.06); }
+    .level-card:hover { border-color: var(--lc); }
+    .level-card-badge { background: var(--lc); }
+
+    .level-note {
+      margin-top: 18px;
+      font-size: 12px;
+      color: var(--text3);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="blob blob-1" aria-hidden="true"></div>
+  <div class="blob blob-2" aria-hidden="true"></div>
+  <div class="blob blob-3" aria-hidden="true"></div>
+
+  <!-- Étape 1 : connexion -->
+  <div class="login-card" id="step1" role="main">
+    <div class="login-brand">
+      <h1><span class="title-blue">learning</span> <span class="title-purple">progress</span></h1>
+      <p>Veuillez vous connecter pour accéder à la plateforme.</p>
+    </div>
+
+    <form class="login-form" id="loginForm" novalidate>
+      <div class="field">
+        <label for="username">Identifiant</label>
+        <input type="text" id="username" name="username" autocomplete="username" placeholder="école-francophone.ch" required>
+      </div>
+      <div class="field">
+        <label for="password">Mot de passe</label>
+        <input type="password" id="password" name="password" autocomplete="current-password" placeholder="••••" required>
+      </div>
+      <div class="login-error" id="loginError" role="alert">Identifiant ou mot de passe incorrect.</div>
+      <button type="submit" class="login-btn">Se connecter</button>
+    </form>
+  </div>
+
+  <!-- Étape 2 : choix du niveau -->
+  <div class="login-card" id="step2" role="main" aria-label="Choix du niveau">
+    <div class="login-brand">
+      <h2>Mon niveau de français</h2>
+      <p>Le site s'adaptera entièrement à votre choix.</p>
+    </div>
+
+    <div class="level-grid" id="levelGrid">
+      <button class="level-card level-card--a1" data-level="a1" type="button">
+        <span class="level-card-badge">A1</span>
+        <span class="level-card-icon">🌱</span>
+        <span class="level-card-name">Débutant</span>
+        <span class="level-card-desc">Je découvre le français et les repères essentiels.</span>
+      </button>
+      <button class="level-card level-card--a2" data-level="a2" type="button">
+        <span class="level-card-badge">A2</span>
+        <span class="level-card-icon">🌿</span>
+        <span class="level-card-name">Élémentaire</span>
+        <span class="level-card-desc">Je m'exprime sur des sujets familiers du quotidien.</span>
+      </button>
+      <button class="level-card level-card--b1" data-level="b1" type="button">
+        <span class="level-card-badge">B1</span>
+        <span class="level-card-icon">🌳</span>
+        <span class="level-card-name">Intermédiaire</span>
+        <span class="level-card-desc">Je comprends et m'exprime dans des situations variées.</span>
+      </button>
+      <button class="level-card level-card--b2" data-level="b2" type="button">
+        <span class="level-card-badge">B2</span>
+        <span class="level-card-icon">🌟</span>
+        <span class="level-card-name">Avancé</span>
+        <span class="level-card-desc">Je communique avec aisance sur des sujets complexes.</span>
+      </button>
+      <button class="level-card level-card--c1c2" data-level="c1c2" type="button">
+        <span class="level-card-badge">C1/C2</span>
+        <span class="level-card-icon">🎓</span>
+        <span class="level-card-name">Maîtrise</span>
+        <span class="level-card-desc">Je maîtrise le français avec fluidité et nuance.</span>
+      </button>
+    </div>
+
+    <p class="level-note">Vous pourrez changer de niveau à tout moment depuis le menu.</p>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script>
+    // Si déjà connecté et niveau choisi → plateforme du niveau
+    if (efAuth.isLoggedIn() && efAuth.getLevel()) {
+      window.location.replace(efAuth.getPlatformUrl(efAuth.getLevel()) || 'cours/index.html');
+    } else if (efAuth.isLoggedIn()) {
+      document.getElementById('step1').style.display = 'none';
+      document.getElementById('step2').classList.add('visible');
+    }
+
+    // Étape 1 : connexion
+    document.getElementById('loginForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var user = document.getElementById('username').value.trim();
+      var pass = document.getElementById('password').value;
+      var err  = document.getElementById('loginError');
+
+      if (efAuth.login(user, pass)) {
+        document.getElementById('step1').style.display = 'none';
+        document.getElementById('step2').classList.add('visible');
+        document.getElementById('step2').focus();
+      } else {
+        err.classList.add('visible');
+        document.getElementById('password').value = '';
+        document.getElementById('password').focus();
+      }
+    });
+
+    // Étape 2 : choix du niveau
+    document.getElementById('levelGrid').addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-level]');
+      if (!btn) return;
+      efAuth.setLevel(btn.dataset.level);
+      window.location.replace(efAuth.getPlatformUrl(btn.dataset.level) || 'cours/index.html');
+    });
+  </script>
+</body>
+</html>

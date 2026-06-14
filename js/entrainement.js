@@ -11,6 +11,8 @@
   var badge    = params.get('unite');
   var unitId   = badge !== null ? 'unite-' + badge : null;
   var exerciseData = (window.EXERCISE_CONTENT && window.EXERCISE_CONTENT.byUnit) || {};
+  var COURSE_PROGRESS_KEY = 'ah:cours:progress:v1';
+  var EXERCISE_PROGRESS_KEY = 'ah:cours:exercise-progress:v1';
 
   /* ── Trouver l'entrée dans les données centralisées ── */
   function findEntry() {
@@ -52,8 +54,130 @@
     return base + (entry ? ' — ' + entry.label : '');
   }
 
+  function buildSmartObjectives() {
+    if (!entry) return [];
+    var themes = (entry.themes || []).slice(0, 3).join(', ');
+    var vocabWords = vocabulary.slice(0, 4).map(function(item) { return item.word; }).join(', ');
+    var verbs = verbsData.slice(0, 3).join(', ');
+    var focus = entry.focus || entry.summary || entry.label;
+    var objectives = [
+      'Comprendre le thème de l\'unité : ' + entry.label + '.',
+      themes
+        ? 'Repérer les idées et mots-clés liés à : ' + themes + '.'
+        : 'Repérer les idées principales et les mots importants de l\'unité.',
+      vocabWords
+        ? 'Utiliser le vocabulaire essentiel : ' + vocabWords + '.'
+        : 'Réutiliser le vocabulaire essentiel dans des phrases simples.',
+      'Communiquer pour ' + focus + '.'
+    ];
+    if (verbs) objectives.push('Conjuguer et employer les verbes utiles : ' + verbs + '.');
+    return objectives;
+  }
+
+  function buildObjectiveQuizQuestions() {
+    if (!entry) return [];
+    var questions = [];
+    var otherThemes = (entry.themes || []).slice(1, 4);
+    if (entry.focus) {
+      questions.push({
+        prompt: 'Quel objectif de communication travaille cette unité ?',
+        choices: [entry.focus, 'réciter l\'alphabet sans contexte', 'traduire un texte juridique complet'],
+        answer: 0
+      });
+    }
+    if (entry.themes && entry.themes.length) {
+      questions.push({
+        prompt: 'Quels mots-clés correspondent le mieux à cette unité ?',
+        choices: [(entry.themes || []).slice(0, 3).join(', '), 'mathématiques, chimie, sport', 'musique, météo, cuisine'],
+        answer: 0
+      });
+    }
+    vocabulary.slice(0, 2).forEach(function(item) {
+      var distractors = vocabulary.filter(function(other) { return other.word !== item.word; }).slice(0, 2).map(function(other) {
+        return other.definition;
+      });
+      while (distractors.length < 2) distractors.push(otherThemes.join(', ') || 'une autre notion');
+      questions.push({
+        prompt: 'Pour atteindre les objectifs, que signifie "' + item.word + '" ?',
+        choices: [item.definition].concat(distractors),
+        answer: 0
+      });
+    });
+    if (verbsData.length) {
+      questions.push({
+        prompt: 'Quel verbe est utile pour travailler les objectifs de cette unité ?',
+        choices: [verbsData[0], 'télécharger', 'multiplier'],
+        answer: 0
+      });
+    }
+    return questions;
+  }
+
+  function buildObjectiveTrueFalse() {
+    var objectives = buildSmartObjectives();
+    var rows = objectives.slice(0, 4).map(function(objective) {
+      return { phrase: objective, correct: true };
+    });
+    if (entry && entry.themes && entry.themes.length) {
+      rows.push({ phrase: 'Cette unité demande surtout de travailler un thème sans rapport avec : ' + entry.themes[0] + '.', correct: false });
+    }
+    if (vocabulary.length) {
+      rows.push({ phrase: 'Le vocabulaire aide à réussir les objectifs de l\'unité.', correct: true });
+    }
+    return rows;
+  }
+
+  function shuffleQuestionChoices(question) {
+    if (!question || !question.choices || question.choices.length < 2) return question;
+    var choices = question.choices.map(function(choice, index) {
+      return { text: choice, correct: index === question.answer };
+    });
+    choices = shuffle(choices);
+    return {
+      prompt: question.prompt,
+      choices: choices.map(function(choice) { return choice.text; }),
+      answer: choices.findIndex(function(choice) { return choice.correct; })
+    };
+  }
+
+  function readJson(key) {
+    try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch(e) { return {}; }
+  }
+
+  function writeJson(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch(e) {}
+  }
+
+  function markUnitStarted() {
+    if (!entry) return;
+    var page = entry.href.replace('.html', '');
+    var progress = readJson(COURSE_PROGRESS_KEY);
+    progress[page] = progress[page] || {};
+    if (progress[page].status !== 'completed') {
+      progress[page].status = 'started';
+      progress[page].updatedAt = new Date().toISOString();
+      writeJson(COURSE_PROGRESS_KEY, progress);
+    }
+  }
+
+  function markExerciseProgress(status, score, total) {
+    if (!entry || !pageId || pageId === 'entrainement-a1') return;
+    var page = entry.href.replace('.html', '');
+    var progress = readJson(EXERCISE_PROGRESS_KEY);
+    progress[page] = progress[page] || {};
+    progress[page][pageId] = {
+      status: status,
+      score: typeof score === 'number' ? score : null,
+      total: typeof total === 'number' ? total : null,
+      updatedAt: new Date().toISOString()
+    };
+    writeJson(EXERCISE_PROGRESS_KEY, progress);
+    markUnitStarted();
+  }
+
   var wrap = document.querySelector('.unite-sections');
   if (!wrap) return;
+  if (entry && pageId !== 'entrainement-a1') markExerciseProgress('started');
 
   /* ══════════════════════════════════════════════
      HUB — entrainement-a1.html?unite=X
@@ -82,8 +206,15 @@
     if (heroEl) heroEl.textContent = t(['hub', 'heroPrefix'], 'Entraînement — ') + entry.label;
     var sub = document.querySelector('.unite-hero-sub');
     if (sub) sub.textContent = entry.level + ' · Unité ' + badge + ' · ' + (entry.summary || '');
+    var objectives = buildSmartObjectives();
 
     wrap.innerHTML = '<section class="unite-section" style="--section-i:0">'
+      + '<h3 class="unite-section-title"><span class="unite-section-icon" aria-hidden="true">🎯</span>Objectifs travaillés</h3>'
+      + '<ul class="unite-obj-list">'
+      + objectives.map(function(objective) { return '<li>' + esc(objective) + '</li>'; }).join('')
+      + '</ul>'
+      + '</section>'
+      + '<section class="unite-section" style="--section-i:1">'
       + '<h3 class="unite-section-title"><span class="unite-section-icon" aria-hidden="true">🎮</span>' + t(['hub', 'chooseGame'], 'Choisissez un jeu') + '</h3>'
       + '<div class="game-hub">'
       + cards.map(function(c) {
@@ -95,7 +226,7 @@
         }).join('')
       + '</div>'
       + '</section>'
-      + '<section class="unite-section" style="--section-i:1">'
+      + '<section class="unite-section" style="--section-i:2">'
       + '<div class="course-nav-links"><a class="course-nav-link course-nav-link--prev" href="' + (entry ? entry.href : 'index.html') + '"><span>' + t(['returnToLesson'], 'Retour à la leçon') + '</span><strong>' + (entry ? entry.label : 'Cours') + '</strong></a></div>'
       + '</section>';
   }
@@ -130,6 +261,7 @@
 
     function showScore() {
       var pct = Math.round(score / questions.length * 100);
+      markExerciseProgress('completed', score, questions.length);
       var emoji = pct === 100 ? '🏆' : pct >= 70 ? '⭐' : pct >= 40 ? '👍' : '💪';
       container.innerHTML = '<div class="game-score-screen">'
         + '<div class="game-score-emoji">' + emoji + '</div>'
@@ -159,6 +291,18 @@
     return '<button class="game-btn game-btn--next" id="gNext">' + (label || t(['nextButton'], 'Suivant →')) + '</button>';
   }
 
+  if (entry && pageId !== 'entrainement-a1' && window.MutationObserver) {
+    var scoreObserver = new MutationObserver(function() {
+      var scoreScreen = wrap.querySelector('.game-score-screen, .game-score-wrap');
+      if (!scoreScreen || scoreScreen.dataset.exerciseProgressSaved === '1') return;
+      scoreScreen.dataset.exerciseProgressSaved = '1';
+      var scoreText = scoreScreen.textContent || '';
+      var match = scoreText.match(/(\d+)\s*\/\s*(\d+)/);
+      markExerciseProgress('completed', match ? Number(match[1]) : null, match ? Number(match[2]) : null);
+    });
+    scoreObserver.observe(wrap, { childList: true, subtree: true });
+  }
+
   /* ══════════════════════════════════════════════
      QUIZ — entrainement-conjugaison-quiz.html
   ══════════════════════════════════════════════ */
@@ -166,6 +310,7 @@
     var questions = exUnit && exUnit.quiz && exUnit.quiz.length
       ? exUnit.quiz.slice()
       : ((entry && entry.assessment) ? entry.assessment.slice() : []);
+    questions = questions.concat(buildObjectiveQuizQuestions()).slice(0, 12).map(shuffleQuestionChoices);
     if (!questions.length) {
       wrap.innerHTML = emptyState(t(['empty', 'noQuestions'], 'Pas de questions pour cette unité.'));
       return;
@@ -217,6 +362,9 @@
         };
       });
     }
+    raw = raw.concat(buildObjectiveTrueFalse().map(function(item) {
+      return { phrase: esc(item.phrase), correct: !!item.correct };
+    }));
     if (!raw.length && vocabulary.length) {
       vocabulary.slice(0, 5).forEach(function(v) {
         raw.push({ phrase: esc(v.word) + ' : ' + esc(v.definition), correct: true });
@@ -393,7 +541,7 @@
       : null;
     if (!items) {
       var exprs    = (entry && entry.expressions) ? entry.expressions : [];
-      var pool     = shuffle(examples.concat(exprs)).slice(0, 6);
+      var pool     = shuffle(buildSmartObjectives().concat(examples).concat(exprs)).slice(0, 6);
       if (pool.length < 2) {
         wrap.innerHTML = '<div class="game-empty"><p>Pas assez d\'exemples pour ce jeu.</p><a href="entrainement-a1.html?unite=' + esc(badge) + '">← Retour</a></div>';
         return;

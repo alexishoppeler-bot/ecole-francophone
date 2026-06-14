@@ -6,7 +6,7 @@ window.COURSE_DATA_PARTS.b2 = {
   "section": {
     "title": "B2",
     "cls": "b2",
-    "idxLabel": "Parcours sup.",
+    "idxLabel": "Parcours avancé",
     "prefix": "b2-",
     "idxItemCls": "purple",
     "icon": "💡",

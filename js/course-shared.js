@@ -7,12 +7,29 @@
   const file = window.location.pathname.split('/').pop() || 'index.html';
   const pageId = file.replace(/\.html$/i, '');
   const PROGRESS_KEY = 'ah:cours:progress:v1';
+  const EXERCISE_PROGRESS_KEY = 'ah:cours:exercise-progress:v1';
+
+  const EF_LEVELS = {
+    a1:   { label: 'A1',    icon: '🌱', color: '#5AABF0', name: 'Débutant',      desc: 'Je découvre le français et les repères essentiels.' },
+    a2:   { label: 'A2',    icon: '🌿', color: '#3db8b0', name: 'Élémentaire',   desc: 'Je m\'exprime sur des sujets familiers du quotidien.' },
+    b1:   { label: 'B1',    icon: '🌳', color: '#b8a055', name: 'Intermédiaire', desc: 'Je comprends et m\'exprime dans des situations variées.' },
+    b2:   { label: 'B2',    icon: '🌟', color: '#9B35EC', name: 'Avancé',        desc: 'Je communique avec aisance sur des sujets complexes.' },
+    c1c2: { label: 'C1/C2', icon: '🎓', color: '#e84b6c', name: 'Maîtrise',     desc: 'Je maîtrise le français avec fluidité et nuance.' }
+  };
+
+  function getStoredLevel() {
+    try { return localStorage.getItem('ef_level') || null; } catch(e) { return null; }
+  }
+
+  function setStoredLevel(key) {
+    try { localStorage.setItem('ef_level', key); } catch(e) {}
+  }
   const SITE_TEXT = window.SITE_TEXT || {};
   const BRAND = SITE_TEXT.brand || {
     alt: 'École Francophone',
     homeHref: '../index.html',
-    blueHtml: 'école-',
-    purpleHtml: 'francophone',
+    blueHtml: 'learning',
+    purpleHtml: 'progress',
     courseTitlePrefix: 'École Francophone'
   };
   const COURSE_TEXT = SITE_TEXT.course || {};
@@ -80,6 +97,14 @@
     return progress[page] && progress[page].status ? progress[page].status : 'idle';
   }
 
+  function readExerciseProgress() {
+    try {
+      return JSON.parse(localStorage.getItem(EXERCISE_PROGRESS_KEY) || '{}');
+    } catch (error) {
+      return {};
+    }
+  }
+
   function getPrevNext(page) {
     const index = orderedPages.indexOf(page);
     return {
@@ -94,35 +119,133 @@
     return level || 'À faire';
   }
 
+  function getLevelProgress(levelKey) {
+    var progress = readProgress();
+    var section = sections.find(function(item) { return item.cls === levelKey; });
+    if (!section || !section.entries || !section.entries.length) {
+      return { done: 0, total: 0, pct: 0 };
+    }
+    var done = section.entries.filter(function(entry) {
+      var page = entry.href.replace('.html', '');
+      return progress[page] && progress[page].status === 'completed';
+    }).length;
+    return {
+      done: done,
+      total: section.entries.length,
+      pct: Math.round(done / section.entries.length * 100)
+    };
+  }
+
+  function renderLevelPickerOverlay() {
+    var overlay = document.createElement('div');
+    overlay.id = 'levelPickerOverlay';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-label', 'Changer de niveau');
+    overlay.innerHTML = [
+      '<div class="lpo-backdrop"></div>',
+      '<div class="lpo-panel">',
+      '  <button class="lpo-close" aria-label="Fermer">✕</button>',
+      '  <p class="lpo-title">Mon niveau de français</p>',
+      '  <div class="lpo-grid">',
+      Object.keys(EF_LEVELS).map(function(key) {
+        var lv = EF_LEVELS[key];
+        return [
+          '<button class="lpo-card lpo-card--' + key + '" data-level="' + key + '" type="button">',
+          '  <span class="lpo-badge" style="background:' + lv.color + '">' + lv.label + '</span>',
+          '  <span class="lpo-icon">' + lv.icon + '</span>',
+          '  <span class="lpo-name">' + lv.name + '</span>',
+          '  <span class="lpo-desc">' + lv.desc + '</span>',
+          '</button>'
+        ].join('');
+      }).join(''),
+      '  </div>',
+      '</div>'
+    ].join('');
+    document.body.appendChild(overlay);
+
+    function closeOverlay() { overlay.classList.remove('open'); }
+
+    overlay.querySelector('.lpo-backdrop').addEventListener('click', closeOverlay);
+    overlay.querySelector('.lpo-close').addEventListener('click', closeOverlay);
+    overlay.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeOverlay(); });
+
+    overlay.querySelector('.lpo-grid').addEventListener('click', function(e) {
+      var btn = e.target.closest('[data-level]');
+      if (!btn) return;
+      setStoredLevel(btn.dataset.level);
+      var platformUrls = {
+        a1: '../plateformes/a1/index.html',
+        a2: '../plateformes/a2/index.html',
+        b1: '../plateformes/b1/index.html',
+        b2: '../plateformes/b2/index.html',
+        c1c2: '../plateformes/c1c2/index.html'
+      };
+      window.location.href = platformUrls[btn.dataset.level] || 'index.html';
+    });
+
+    return overlay;
+  }
+
   function renderHeader() {
     if (!slotHeader) return;
+    var level = getStoredLevel();
+    var lv = level ? EF_LEVELS[level] : null;
+    var a1Progress = getLevelProgress('a1');
+    var levelChipHtml = lv
+      ? '<button class="header-level-chip" id="headerLevelChip" title="Changer de niveau" type="button" aria-label="Niveau ' + lv.label + ' — Changer">'
+        + '<span class="hlc-badge" style="background:' + lv.color + '">' + lv.label + '</span>'
+        + '<span class="hlc-icon">' + lv.icon + '</span>'
+        + '<span class="hlc-name">' + lv.name + '</span>'
+        + '</button>'
+      : '';
+    var a1ProgressHtml = '<div class="header-level-progress" role="progressbar" aria-label="Progression A1" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + a1Progress.pct + '">'
+      + '<span class="hlp-top"><strong>A1</strong><span>' + a1Progress.pct + '%</span></span>'
+      + '<span class="hlp-track"><span class="hlp-fill" style="width:' + a1Progress.pct + '%"></span></span>'
+      + '<span class="hlp-count">' + a1Progress.done + '/' + a1Progress.total + ' unités</span>'
+      + '</div>';
+
     slotHeader.innerHTML = [
       '<header class="header">',
       '  <div class="header-row1">',
       '    <a href="' + BRAND.homeHref + '" class="header-logo">',
       '      <img src="../assets/logo.png" class="header-logo-img" alt="' + BRAND.alt + '" />',
-      '      <span class="header-logo-text"><span class="header-logo-blue">' + BRAND.blueHtml + '</span><span class="header-logo-purple">' + BRAND.purpleHtml + '</span></span>',
+      '      <span class="header-logo-text"><span class="header-logo-blue">' + BRAND.blueHtml + '</span> <span class="header-logo-purple">' + BRAND.purpleHtml + '</span></span>',
       '    </a>',
       '    <div class="header-right">',
-      '      <nav class="header-nav" aria-label="' + COURSE_NAV.ariaLabel + '">',
-      '        <a class="header-menu-link" href="../index.html"><span aria-hidden="true">🏠</span><span>' + COURSE_NAV.home + '</span></a>',
-      '        <a class="header-menu-link active" href="index.html"><span aria-hidden="true">📚</span><span>' + COURSE_NAV.course + '</span></a>',
-      '        <a class="header-menu-link" href="autoeval.html"><span aria-hidden="true">🎯</span><span>' + COURSE_NAV.autoeval + '</span></a>',
-      '      </nav>',
+      levelChipHtml,
+      a1ProgressHtml,
       '    </div>',
       '  </div>',
       '</header>'
     ].join('');
+
+    if (lv) {
+      var overlay = renderLevelPickerOverlay();
+      document.getElementById('headerLevelChip').addEventListener('click', function() {
+        overlay.classList.add('open');
+        overlay.querySelector('.lpo-close').focus();
+      });
+    }
   }
 
   function renderSidebar() {
     if (!slotSidebar) return;
+    if (pageId.indexOf('entrainement') === 0) {
+      var trainingWrap = document.querySelector('.page-wrap');
+      if (trainingWrap) trainingWrap.classList.add('page-wrap--no-sidebar');
+      slotSidebar.remove();
+      return;
+    }
+    var storedLevel = getStoredLevel();
     slotSidebar.innerHTML = [
       '<aside class="sommaire" aria-label="Sommaire des cours">',
       '  <p class="sommaire-title">' + COURSE_SIDEBAR_TEXT.title + '</p>',
       sections.map(function(section) {
+        var isActive = storedLevel && section.cls === storedLevel;
+        var openAttr = isActive ? ' open' : '';
         return [
-          '  <details class="som-details' + (section.cls ? ' som-level-' + section.cls : '') + '">',
+          '  <details class="som-details' + (section.cls ? ' som-level-' + section.cls : '') + (isActive ? ' som-level-active' : '') + '"' + openAttr + '>',
           '    <summary class="som-details-summary">',
           section.cls ? '      <span class="som-level-badge">' + section.title + '</span>' : '',
           '      <span class="som-details-icon">' + section.icon + '</span>',
@@ -187,23 +310,37 @@
       }
     } catch(e) {}
 
-    slot.innerHTML = sections.map(function(section) {
+    var storedLevel = getStoredLevel();
+
+    var visibleSections = storedLevel
+      ? sections.filter(function(section) { return section.cls === storedLevel; })
+      : sections;
+    if (!visibleSections.length) visibleSections = sections;
+
+    slot.innerHTML = visibleSections.map(function(section) {
       var levelId = 'level-' + section.cls;
       var isA1 = section.cls === 'a1';
+      var isMyLevel = storedLevel && section.cls === storedLevel;
+      var openAttr = storedLevel ? ' open' : '';
+      var myLevelBanner = isMyLevel
+        ? '<div class="idx-my-level-banner">Mon niveau</div>'
+        : '';
       return [
-        '<details class="idx-level" id="' + levelId + '" data-prefix="' + (section.prefix || '') + '">',
+        '<details class="idx-level' + (isMyLevel ? ' idx-level-active' : '') + '" id="' + levelId + '" data-prefix="' + (section.prefix || '') + '"' + openAttr + '>',
         '  <summary class="idx-level-summary">',
+        myLevelBanner,
         '    <span class="idx-level-badge">' + section.title + '</span>',
         '    <span class="idx-level-label">' + (section.idxLabel || '') + '</span>',
         isA1 ? '' : '    <span class="idx-wip">🚧</span>',
         '    <span class="idx-level-count">' + section.entries.length + ' unités</span>',
         '    <span class="idx-chevron">▸</span>',
         '  </summary>',
-        '  <div class="idx-list">',
+        '  <div class="idx-list idx-card-grid">',
         section.entries.map(function(entry) {
-          return '    <a class="idx-item ' + (section.idxItemCls || entry.tone) + '" href="' + entry.href + '">'
-            + '<span class="idx-num">' + entry.badge + '</span>'
+          return '    <a class="idx-item idx-unit-card ' + (section.idxItemCls || entry.tone) + '" href="' + entry.href + '">'
+            + '<span class="idx-card-top"><span class="idx-num">' + entry.badge + '</span><span class="idx-card-icon">' + (entry.iconSymbol || section.icon || '') + '</span></span>'
             + '<span class="idx-title">' + entry.label + '</span>'
+            + '<span class="idx-card-summary">' + (entry.summary || entry.focus || '') + '</span>'
             + '</a>';
         }).join('\n'),
         '  </div>',
@@ -222,6 +359,16 @@
       var page = ref.split('/').pop().split('?')[0];
       var link = slot.querySelector('.idx-item[href="' + page + '"]');
       if (link) link.classList.add('active');
+    }
+
+    // Scroll automatique vers le niveau choisi
+    if (storedLevel) {
+      var activeEl = document.getElementById('level-' + storedLevel);
+      if (activeEl) {
+        setTimeout(function() {
+          activeEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 120);
+      }
     }
   }
 
@@ -301,6 +448,54 @@
     }).join('');
   }
 
+  function getTrainingCards(entry) {
+    if (!entry || entry.level !== 'A1') return [];
+    var u = '?unite=' + encodeURIComponent(entry.badge);
+    return [
+      { id: 'entrainement-a1-vrai-faux', href: 'entrainement-a1-vrai-faux.html' + u, label: 'Vrai / Faux', icon: '✓✗' },
+      { id: 'entrainement-a1-apparier', href: 'entrainement-a1-apparier.html' + u, label: 'Associer', icon: '🔗' },
+      { id: 'entrainement-a1-completer', href: 'entrainement-a1-completer.html' + u, label: 'Compléter', icon: '✏️' },
+      { id: 'entrainement-a1-ecouter', href: 'entrainement-a1-ecouter.html' + u, label: 'Écouter', icon: '🔊' },
+      { id: 'entrainement-conjugaison-quiz', href: 'entrainement-conjugaison-quiz.html' + u, label: 'Quiz', icon: '🧠' },
+      { id: 'entrainement-conjugaison-a1', href: 'entrainement-conjugaison-a1.html' + u, label: 'Conjugaison', icon: '🔤' },
+      { id: 'entrainement-a1-mots-meles', href: 'entrainement-a1-mots-meles.html' + u, label: 'Mots mêlés', icon: '🔍' },
+      { id: 'entrainement-a1-anagrammes', href: 'entrainement-a1-anagrammes.html' + u, label: 'Anagrammes', icon: '🔀' },
+      { id: 'entrainement-a1-flashcards', href: 'entrainement-a1-flashcards.html' + u, label: 'Flashcards', icon: '🃏' },
+      { id: 'entrainement-a1-dialogue', href: 'entrainement-a1-dialogue.html' + u, label: 'Dialogue', icon: '💬' },
+      { id: 'entrainement-a1-construire', href: 'entrainement-a1-construire.html' + u, label: 'Construire', icon: '🧩' },
+      { id: 'entrainement-a1-validation', href: 'entrainement-a1-validation.html' + u, label: 'Valider', icon: '✍️' }
+    ];
+  }
+
+  function buildTrainingProgress(entry) {
+    var cards = getTrainingCards(entry);
+    if (!cards.length) return '';
+    var page = entry.href.replace('.html', '');
+    var progress = readExerciseProgress();
+    var unitProgress = progress[page] || {};
+    var done = cards.filter(function(card) {
+      return unitProgress[card.id] && unitProgress[card.id].status === 'completed';
+    }).length;
+    return '<div class="unit-training-progress">'
+      + '<div class="unit-training-head"><div><span class="unit-progress-kicker">Entraînements</span><strong>' + done + ' / ' + cards.length + ' jeux terminés</strong></div>'
+      + '<a class="game-btn game-btn--secondary" href="entrainement-a1.html?unite=' + encodeURIComponent(entry.badge) + '">Tous les jeux</a></div>'
+      + '<div class="unit-training-grid">'
+      + cards.map(function(card) {
+        var item = unitProgress[card.id] || {};
+        var status = item.status || 'idle';
+        var label = status === 'completed' ? 'Terminé' : status === 'started' ? 'En cours' : 'À faire';
+        var score = item.score !== null && item.score !== undefined && item.total ? '<span class="unit-training-score">' + item.score + '/' + item.total + '</span>' : '';
+        return '<a class="unit-training-card unit-training-card--' + status + '" href="' + card.href + '">'
+          + '<span class="unit-training-icon">' + card.icon + '</span>'
+          + '<span class="unit-training-label">' + card.label + '</span>'
+          + '<span class="unit-training-status">' + label + '</span>'
+          + score
+          + '</a>';
+      }).join('')
+      + '</div>'
+      + '</div>';
+  }
+
   function buildNavigation(entry) {
     const neighbors = getPrevNext(entry.href.replace('.html', ''));
     return [
@@ -317,15 +512,219 @@
     ].join('');
   }
 
+  function escapeHtml(value) {
+    return String(value || '').replace(/[&<>"']/g, function(ch) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+    });
+  }
+
+  function buildSmartObjectives(entry, unitContent, verbData) {
+    if (unitContent.objectives && unitContent.objectives.length) {
+      return unitContent.objectives;
+    }
+
+    var themes = (entry.themes || []).slice(0, 3).join(', ');
+    var vocabWords = (unitContent.vocabulary || []).slice(0, 4).map(function(item) {
+      return item.word;
+    }).join(', ');
+    var verbs = (verbData.verbs || []).slice(0, 3).join(', ');
+    var focus = entry.focus || entry.summary || entry.label;
+    var grammar = unitContent.grammarTitle || 'les structures utiles';
+    var objectives = [
+      'Comprendre le thème de l\'unité : ' + entry.label + '.',
+      themes
+        ? 'Repérer les idées et mots-clés liés à : ' + themes + '.'
+        : 'Repérer les idées principales et les mots importants de l\'unité.',
+      vocabWords
+        ? 'Utiliser le vocabulaire essentiel : ' + vocabWords + '.'
+        : 'Réutiliser le vocabulaire essentiel dans des phrases simples.',
+      'Communiquer pour ' + focus + '.',
+      'Observer et réutiliser : ' + grammar + '.'
+    ];
+
+    if (verbs) {
+      objectives.push('Conjuguer et employer les verbes utiles : ' + verbs + '.');
+    }
+
+    return objectives;
+  }
+
+  function normalizeFinalChoices(choices, answer, index) {
+    var clean = [];
+    (choices || []).forEach(function(choice, choiceIndex) {
+      var text = String(choice || '').trim();
+      if (!text || clean.some(function(item) { return item.text === text; })) return;
+      clean.push({ text: text, correct: choiceIndex === answer });
+    });
+    if (!clean.some(function(item) { return item.correct; }) && clean.length) {
+      clean[0].correct = true;
+    }
+    if (clean.length > 1) {
+      var offset = index % clean.length;
+      clean = clean.slice(offset).concat(clean.slice(0, offset));
+    }
+    return {
+      choices: clean.map(function(item) { return item.text; }),
+      answer: clean.findIndex(function(item) { return item.correct; })
+    };
+  }
+
+  function buildFinalTestItems(entry, unitContent, verbData) {
+    if (unitContent.finalTest && unitContent.finalTest.length) {
+      return unitContent.finalTest.map(function(question, index) {
+        var normalized = normalizeFinalChoices(question.choices, question.answer, index);
+        return { prompt: question.prompt, choices: normalized.choices, answer: normalized.answer };
+      }).filter(function(item) { return item.choices.length > 1 && item.answer >= 0; });
+    }
+
+    var items = [];
+    (entry.assessment || []).slice(0, 4).forEach(function(question) {
+      var normalized = normalizeFinalChoices(question.choices, question.answer, items.length);
+      if (normalized.choices.length > 1 && normalized.answer >= 0) {
+        items.push({
+          prompt: question.prompt,
+          choices: normalized.choices,
+          answer: normalized.answer
+        });
+      }
+    });
+
+    var vocab = unitContent.vocabulary || [];
+    vocab.slice(0, 3).forEach(function(item) {
+      var distractors = vocab.filter(function(other) { return other.word !== item.word; }).slice(0, 2).map(function(other) {
+        return other.definition;
+      });
+      if (distractors.length < 2) distractors = distractors.concat(['une autre idée du thème', 'une réponse sans rapport']);
+      var normalized = normalizeFinalChoices([item.definition].concat(distractors), 0, items.length);
+      if (item.word && normalized.choices.length > 1 && normalized.answer >= 0) {
+        items.push({
+          prompt: 'Que signifie "' + item.word + '" ?',
+          choices: normalized.choices,
+          answer: normalized.answer
+        });
+      }
+    });
+
+    (verbData.verbs || []).slice(0, 2).forEach(function(verb) {
+      var forms = conjugateVerb(verb);
+      var normalized = normalizeFinalChoices([forms[0], forms[1], forms[3]], 0, items.length);
+      if (verb && normalized.choices.length > 1 && normalized.answer >= 0) {
+        items.push({
+          prompt: 'Quelle forme est correcte pour "' + verb + '" avec "je" ?',
+          choices: normalized.choices,
+          answer: normalized.answer
+        });
+      }
+    });
+
+    return items.slice(0, 10);
+  }
+
+  function buildFinalTest(entry, unitContent, verbData, objectives) {
+    var items = buildFinalTestItems(entry, unitContent, verbData);
+    if (!items.length) {
+      return '<div class="final-unit-test"><h4>Test final</h4><p>Le test final sera disponible dès que l\'unité contient des questions d\'évaluation.</p></div>';
+    }
+
+    var objectiveCount = objectives && objectives.length ? objectives.length : items.length;
+    var objectivePreview = '<div class="final-objective-progress" id="finalObjectiveProgress">'
+      + '<div class="final-objective-progress-head"><strong>Objectifs à valider</strong><span id="finalObjectiveProgressText">0 / ' + objectiveCount + ' validés</span></div>'
+      + '<div class="final-objective-progress-bar"><span id="finalObjectiveProgressFill" style="width:0%"></span></div>'
+      + '<ul class="final-objective-list" id="finalObjectiveList">'
+      + (objectives || []).map(function(objective, index) {
+        return '<li data-final-objective="' + index + '"><span class="final-objective-check">✓</span><span>' + objective + '</span></li>';
+      }).join('')
+      + '</ul>'
+      + '</div>';
+
+    return '<form class="final-unit-test" id="finalUnitTest" data-total="' + items.length + '">'
+      + '<h4>Validation finale des objectifs</h4>'
+      + '<p>Répondez aux questions après les entraînements. À chaque bonne réponse, vos objectifs se remplissent. Objectif final : 80% ou plus.</p>'
+      + objectivePreview
+      + items.map(function(item, index) {
+        return '<fieldset class="course-check-item final-test-item" data-answer="' + item.answer + '">'
+          + '<legend>' + (index + 1) + '. ' + escapeHtml(item.prompt) + '</legend>'
+          + item.choices.map(function(choice, choiceIndex) {
+            return '<label class="course-check-choice"><input type="radio" name="final-test-' + index + '" value="' + choiceIndex + '"><span>' + escapeHtml(choice) + '</span></label>';
+          }).join('')
+          + '</fieldset>';
+      }).join('')
+      + '<div class="course-check-actions">'
+      + '<button class="game-btn game-btn--primary" type="submit">Corriger le test final</button>'
+      + '<span class="course-check-result" id="finalUnitResult"></span>'
+      + '</div>'
+      + '</form>';
+  }
+
+  function buildCommunicationCascade(entry, unitContent, chipsHtml) {
+    var key = entry.href.replace('.html', '');
+    var dialogues = (DIALOGUES && DIALOGUES[key]) || [];
+    var firstDialogue = dialogues[0] || null;
+    var theme = (entry.themes || [entry.label])[0] || entry.label;
+    var supportHtml = key === 'unite-0'
+      ? '<figure class="comm-support-figure"><img src="../assets/francophonie.png" alt="Carte du monde francophone"><figcaption>Observez l’image, puis décrivez ce que vous voyez avec des phrases simples.</figcaption></figure>'
+      : '<div class="comm-support-card"><strong>' + escapeHtml(entry.label) + '</strong><p>' + escapeHtml(entry.summary || entry.focus || 'Observez la situation et préparez quelques phrases simples.') + '</p></div>';
+
+    var reading = unitContent.textAuth
+      ? '<div class="textauth-box"><p class="textauth-source">' + escapeHtml(unitContent.textAuth.source || 'Texte') + '</p><blockquote class="textauth-text">' + unitContent.textAuth.text + '</blockquote>'
+        + ((unitContent.textAuth.questions || []).length ? '<ol class="textauth-questions">' + unitContent.textAuth.questions.map(function(q) {
+          return '<li class="textauth-q"><span class="textauth-q-text">' + q.question + '</span><span class="textauth-a">' + q.answer + '</span></li>';
+        }).join('') + '</ol>' : '')
+        + '</div>'
+      : '<div class="comm-mini-text"><strong>' + escapeHtml(entry.label) + '</strong><p>' + escapeHtml(entry.summary || entry.focus || '') + '</p><p>Je lis le texte, je repère les mots importants, puis je réponds avec une phrase courte.</p></div>';
+
+    var oralText = firstDialogue
+      ? '<div class="comm-dialogue-box"><strong>' + escapeHtml(firstDialogue.title || 'Dialogue') + '</strong><p>' + escapeHtml(firstDialogue.context || '') + '</p>'
+        + '<ol>' + (firstDialogue.steps || []).map(function(step) {
+          if (step.text) return '<li>' + escapeHtml(step.text) + '</li>';
+          if (step.options && step.options.length) return '<li>' + escapeHtml((step.options.find(function(opt) { return opt.ok; }) || step.options[0]).text) + '</li>';
+          return '';
+        }).join('') + '</ol></div>'
+      : '<div class="comm-dialogue-box"><strong>Dialogue modèle</strong><ol><li>Bonjour, je voudrais parler de ' + escapeHtml(theme) + '.</li><li>D’accord. Qu’est-ce qui est important ?</li><li>Je pense que ' + escapeHtml(entry.focus || entry.summary || theme) + '.</li></ol></div>';
+
+    var oralProduction = '<div class="unit-practice-box"><strong>Production orale</strong><p>À deux, créez un dialogue court dans une situation réelle liée à : ' + escapeHtml(theme) + '. Utilisez au moins trois expressions du mémo.</p></div>';
+    var writtenProduction = '<div class="unit-practice-box"><strong>Production écrite</strong><p>Écrivez 5 à 8 phrases pour expliquer une situation concrète liée à : ' + escapeHtml(theme) + '. Ajoutez une phrase personnelle.</p></div>';
+    var memo = (chipsHtml ? '<div class="unite-chips">' + chipsHtml + '</div>' : '')
+      + '<div class="unite-expression-box"><ul class="unite-expression-list unite-expression-list--cols">'
+      + unitContent.examples.map(function(ex) {
+        return '<li><button class="chip-listen" aria-label="Écouter" data-word="' + ex.replace(/"/g,'&quot;') + '">🔊</button>' + ex + '</li>';
+      }).join('')
+      + '</ul></div>';
+
+    var panels = [
+      ['support', '1. Support', supportHtml],
+      ['comprehension', '2. Compréhension', '<h4>Compréhension écrite</h4>' + reading + '<h4>Compréhension orale</h4>' + oralText],
+      ['oral', '3. Production orale', oralProduction],
+      ['ecrit', '4. Production écrite', writtenProduction],
+      ['memo', '5. Mémo', memo]
+    ];
+
+    return '<div class="comm-cascade">'
+      + '<div class="comm-cascade-tabs" role="tablist" aria-label="Communication">'
+      + panels.map(function(panel, index) {
+        return '<button class="comm-cascade-btn' + (index === 0 ? ' active' : '') + '" type="button" data-comm-tab="' + panel[0] + '">' + panel[1] + '</button>';
+      }).join('')
+      + '</div>'
+      + panels.map(function(panel, index) {
+        return '<div class="comm-cascade-panel' + (index === 0 ? ' active' : '') + '" data-comm-panel="' + panel[0] + '"' + (index === 0 ? '' : ' hidden') + '>' + panel[2] + '</div>';
+      }).join('')
+      + '</div>';
+  }
+
   function buildUnitMarkup(entry) {
     const unitContent = getUnitContent(entry);
     const verbData = getVerbData(entry);
-    var i = 0;
+    var currentStatus = getProgressState(entry.href.replace('.html', ''));
 
-    function section(icon, title, body) {
-      var idx = i++;
-      return '<section class="unite-section" style="--section-i:' + idx + '">'
-        + '<h3 class="unite-section-title"><span class="unite-section-icon" aria-hidden="true">' + icon + '</span>' + title + '</h3>'
+    function tabButton(id, icon, label, active) {
+      return '<button class="unit-tab-btn' + (active ? ' active' : '') + '" type="button" role="tab" aria-selected="' + (active ? 'true' : 'false') + '" aria-controls="tab-' + id + '" data-tab="' + id + '">'
+        + '<span aria-hidden="true">' + icon + '</span><span>' + label + '</span>'
+        + '</button>';
+    }
+
+    function tabPanel(id, title, body, active, index) {
+      return '<section class="unite-section unit-tab-panel' + (active ? ' active' : '') + '" id="tab-' + id + '" role="tabpanel" data-tab-panel="' + id + '" style="--section-i:' + index + '"' + (active ? '' : ' hidden') + '>'
+        + '<h3 class="unite-section-title">' + title + '</h3>'
         + body
         + '</section>';
     }
@@ -357,16 +756,23 @@
     }
 
     var parts = [];
+    var tabs = [
+      ['objectifs', '🎯', 'Objectifs'],
+      ['communication', '💬', 'Communication'],
+      ['grammaire', '📐', 'Grammaire'],
+      ['conjugaison', '🔄', 'Conjugaison'],
+      ['vocabulaire', '📖', 'Vocabulaire'],
+      ['phonetique', '🔊', 'Phonétique'],
+      ['jeux', '🎮', 'Jeux'],
+      ['progression', '📊', 'Progression']
+    ];
 
-    parts.push(section('📖', 'Vocabulaire clé',
-      '<div class="vocab-grid">' + vocab + '</div>'
-    ));
+    var smartObjectives = buildSmartObjectives(entry, unitContent, verbData);
+    var objectivesBody = '<ul class="unite-obj-list">'
+      + smartObjectives.map(function(obj) { return '<li>' + obj + '</li>'; }).join('')
+      + '</ul>';
 
-    if (chipsHtml) {
-      parts.push(section('💬', 'Expressions clés',
-        '<div class="unite-chips">' + chipsHtml + '</div>'
-      ));
-    }
+    var communicationBody = buildCommunicationCascade(entry, unitContent, chipsHtml);
 
     // Grammaire + encadré erreur fréquente
     var grammarBody = '<div class="gram-box"><div class="gram-title">' + unitContent.grammarTitle + '</div><div class="gram-rule">'
@@ -378,32 +784,8 @@
     if (unitContent.grammarError) {
       grammarBody += '<div class="gram-error-box"><span class="gram-error-label">Erreur fréquente</span><div class="gram-error-text">' + unitContent.grammarError + '</div></div>';
     }
-    parts.push(section('📐', 'Grammaire', grammarBody));
+    grammarBody += '<div class="unit-practice-box"><strong>Exercice grammaire</strong><p>Repérez la structure dans un exemple, puis transformez-la avec une autre information.</p></div>';
 
-    // Texte authentique
-    if (unitContent.textAuth) {
-      var ta = unitContent.textAuth;
-      var qHtml = (ta.questions || []).map(function(q, qi) {
-        return '<li class="textauth-q"><span class="textauth-q-text">' + q.question + '</span>'
-          + '<span class="textauth-a">' + q.answer + '</span></li>';
-      }).join('');
-      parts.push(section('📄', 'Document authentique',
-        '<div class="textauth-box">'
-        + '<p class="textauth-source">' + (ta.source || '') + '</p>'
-        + '<blockquote class="textauth-text">' + ta.text + '</blockquote>'
-        + (qHtml ? '<ol class="textauth-questions">' + qHtml + '</ol>' : '')
-        + '</div>'
-      ));
-    }
-
-    var exHtml = '<div class="unite-expression-box"><ul class="unite-expression-list unite-expression-list--cols">'
-      + unitContent.examples.map(function(ex){
-          return '<li><button class="chip-listen" aria-label="Écouter" data-word="' + ex.replace(/"/g,'&quot;') + '">🔊</button>' + ex + '</li>';
-        }).join('')
-      + '</ul></div>';
-    parts.push(section('💡', 'Exemples', exHtml));
-
-    var verbIdx = i++;
     var conjCards = verbData.verbs.map(function(v) {
       var forms = conjugateVerb(v);
       var rows = forms.map(function(f) {
@@ -417,43 +799,84 @@
         + '<div class="conj-card-body">' + rows + '</div>'
         + '</div>';
     }).join('');
-    parts.push(
-      '<section class="unite-section" style="--section-i:' + verbIdx + '">'
-      + '<h3 class="unite-section-title"><span class="unite-section-icon" aria-hidden="true">🔄</span>Conjugaisons</h3>'
-      + '<div class="conj-grid">' + conjCards + '</div>'
-      + '</section>'
-    );
+    var conjugaisonBody = '<div class="conj-grid">' + conjCards + '</div>'
+      + '<div class="unit-practice-box"><strong>Exercice conjugaison</strong><p>Choisissez un verbe, écoutez les formes, puis faites trois phrases : je, nous, ils/elles.</p></div>';
+
+    var vocabBody = '<div class="vocab-grid">' + vocab + '</div>'
+      + '<div class="unit-practice-box"><strong>Exercice vocabulaire</strong><p>Choisissez cinq mots, écoutez-les, puis associez chaque mot à une situation réelle.</p></div>';
+
+    var phonWords = unitContent.vocabulary.slice(0, 8).map(function(item) {
+      return '<button class="phon-chip chip-listen" type="button" data-word="' + item.word.replace(/"/g, '&quot;') + '">' + item.word + '</button>';
+    }).join('');
+    var phonetiqueBody = '<div class="unit-practice-box"><strong>Écoute et répétition</strong><p>Cliquez sur les mots, écoutez, puis répétez lentement. Faites attention aux sons, au rythme et aux liaisons possibles.</p></div>'
+      + '<div class="phon-chip-grid">' + phonWords + '</div>';
 
     // Exercice de débat (C1/C2)
+    var debateBody = '';
     if (unitContent.debat) {
       var db = unitContent.debat;
-      parts.push(section('🗣️', 'Pour aller plus loin : débat',
-        '<div class="debat-box">'
+      debateBody = '<div class="debat-box">'
         + '<p class="debat-question">' + db.question + '</p>'
         + '<div class="debat-positions">'
         + '<div class="debat-pour"><strong>Arguments pour</strong><ul>' + db.pour.map(function(p) { return '<li>' + p + '</li>'; }).join('') + '</ul></div>'
         + '<div class="debat-contre"><strong>Arguments contre / nuances</strong><ul>' + db.contre.map(function(c) { return '<li>' + c + '</li>'; }).join('') + '</ul></div>'
         + '</div>'
         + (db.consigne ? '<p class="debat-consigne">' + db.consigne + '</p>' : '')
-        + '</div>'
-      ));
+        + '</div>';
     }
 
-    var trainingByLevel = { 'A1': '../cours/entrainement-a1.html' };
-    var trainingUrl = trainingByLevel[entry.level];
-    if (trainingUrl) {
-      var unite = encodeURIComponent(entry.badge);
-      var content = '<a href="' + trainingUrl + '?unite=' + unite + '" class="train-random-btn">'
-        + '<span class="train-random-icon">🎲</span>'
-        + '<span class="train-random-label">Entraînement aléatoire</span>'
-        + '<span class="train-random-sub">Quiz · Trous · Vrai/Faux · Paires · Conjugaison · Écoute</span>'
-        + '</a>';
-      parts.push(section('🏋️', 'Entraînement', content));
+    var gamesBody = debateBody;
+    if (entry.level === 'A1') {
+      var u = '?unite=' + encodeURIComponent(entry.badge);
+      var gameCards = [
+        { href: 'entrainement-a1-vrai-faux.html'    + u, icon: '✓✗',  label: 'Vrai ou Faux',  desc: 'Évaluer des affirmations sur le thème',          color: 'teal'   },
+        { href: 'entrainement-a1-apparier.html'     + u, icon: '🔗',  label: 'Associer',       desc: 'Relier chaque mot à sa définition',               color: 'blue'   },
+        { href: 'entrainement-a1-completer.html'    + u, icon: '✏️',  label: 'Compléter',      desc: 'Retrouver les mots manquants',                    color: 'purple' },
+        { href: 'entrainement-a1-ecouter.html'      + u, icon: '🔊',  label: 'Écouter',        desc: 'Comprendre un document oral',                     color: 'gold'   },
+        { href: 'entrainement-conjugaison-quiz.html'+ u, icon: '🧠',  label: 'Quiz',           desc: 'Vérifier sa compréhension de l\'unité',           color: 'red'    },
+        { href: 'entrainement-conjugaison-a1.html'  + u, icon: '🔤',  label: 'Conjugaison',    desc: 'S\'entraîner sur les verbes clés',                color: 'teal'   },
+        { href: 'entrainement-a1-mots-meles.html'   + u, icon: '🔍',  label: 'Mots mêlés',     desc: 'Retrouver les mots cachés dans la grille',        color: 'blue'   },
+        { href: 'entrainement-a1-anagrammes.html'   + u, icon: '🔀',  label: 'Anagrammes',     desc: 'Reconstituer les mots à partir des lettres',      color: 'purple' },
+        { href: 'entrainement-a1-flashcards.html'   + u, icon: '🃏',  label: 'Flashcards',     desc: 'Mémoriser le vocabulaire avec des cartes',        color: 'teal'   },
+        { href: 'entrainement-a1-dialogue.html'     + u, icon: '💬',  label: 'Dialogue',       desc: 'Simuler une situation de communication',          color: 'gold'   },
+        { href: 'entrainement-a1-construire.html'   + u, icon: '🧩',  label: 'Construire',     desc: 'Remettre les mots d\'une phrase en ordre',        color: 'red'    },
+        { href: 'entrainement-a1-validation.html'   + u, icon: '✍️',  label: 'Valider',        desc: 'Tapez le mot correspondant à la définition',      color: 'purple' }
+      ];
+      gamesBody += '<div class="game-hub">'
+        + gameCards.map(function(c) {
+            return '<a class="game-card game-card--' + c.color + '" href="' + c.href + '">'
+              + '<span class="game-card-icon" aria-hidden="true">' + c.icon + '</span>'
+              + '<span class="game-card-label">' + c.label + '</span>'
+              + '<span class="game-card-desc">' + c.desc + '</span>'
+              + '</a>';
+          }).join('')
+        + '</div>';
     }
 
-    parts.push(buildNavigation(entry));
+    var progressLabel = getStatusLabel(currentStatus, entry.level);
+    var trainingProgressBody = buildTrainingProgress(entry);
+    var finalTestBody = buildFinalTest(entry, unitContent, verbData, smartObjectives);
+    var progressionBody = '<div class="unit-progress-card" data-current-status="' + currentStatus + '">'
+      + '<div><span class="unit-progress-kicker">Statut actuel</span><strong id="unitProgressStatus">' + progressLabel + '</strong></div>'
+      + '<div class="unit-progress-actions">'
+      + '<button class="game-btn game-btn--secondary" type="button" data-progress-action="started">Marquer en cours</button>'
+      + '</div>'
+      + '</div>'
+      + trainingProgressBody
+      + finalTestBody
+      + buildNavigation(entry);
 
-    return parts.join('');
+    return '<nav class="unit-tabs" role="tablist" aria-label="Menu de l\'unité">'
+      + tabs.map(function(tab, index) { return tabButton(tab[0], tab[1], tab[2], index === 0); }).join('')
+      + '</nav>'
+      + tabPanel('objectifs', '<span class="unite-section-icon" aria-hidden="true">🎯</span>Objectifs', objectivesBody, true, 0)
+      + tabPanel('communication', '<span class="unite-section-icon" aria-hidden="true">💬</span>Communication', communicationBody, false, 1)
+      + tabPanel('grammaire', '<span class="unite-section-icon" aria-hidden="true">📐</span>Grammaire', grammarBody, false, 2)
+      + tabPanel('conjugaison', '<span class="unite-section-icon" aria-hidden="true">🔄</span>Conjugaison', conjugaisonBody, false, 3)
+      + tabPanel('vocabulaire', '<span class="unite-section-icon" aria-hidden="true">📖</span>Vocabulaire', vocabBody, false, 4)
+      + tabPanel('phonetique', '<span class="unite-section-icon" aria-hidden="true">🔊</span>Phonétique', phonetiqueBody, false, 5)
+      + tabPanel('jeux', '<span class="unite-section-icon" aria-hidden="true">🎮</span>Jeux', gamesBody, false, 6)
+      + tabPanel('progression', '<span class="unite-section-icon" aria-hidden="true">📊</span>Progression', progressionBody, false, 7);
   }
 
   function getUnitContent(entry) {
@@ -618,12 +1041,44 @@
   function bindAssessment() {
     const form = document.getElementById('courseCheckForm');
     const result = document.getElementById('courseCheckResult');
-    if (!form || !result) return;
+    if (form && result) {
+      form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const fields = Array.from(form.querySelectorAll('.course-check-item'));
+        let score = 0;
+        let answered = 0;
+        fields.forEach(function(field) {
+          const expected = Number(field.getAttribute('data-answer'));
+          const checked = field.querySelector('input:checked');
+          field.classList.remove('is-correct', 'is-wrong');
+          if (!checked) return;
+          answered += 1;
+          if (Number(checked.value) === expected) {
+            score += 1;
+            field.classList.add('is-correct');
+          } else {
+            field.classList.add('is-wrong');
+          }
+        });
+        if (answered !== fields.length) {
+          result.textContent = 'Répondez aux ' + fields.length + ' questions pour obtenir un score complet.';
+          return;
+        }
+        result.textContent = 'Score : ' + score + ' / ' + fields.length + '.';
+      });
+    }
+  }
+
+  function bindFinalUnitTest(entry) {
+    const form = document.getElementById('finalUnitTest');
+    const result = document.getElementById('finalUnitResult');
+    if (!form || !result || !entry) return;
     form.addEventListener('submit', function(event) {
       event.preventDefault();
-      const fields = Array.from(form.querySelectorAll('.course-check-item'));
+      const fields = Array.from(form.querySelectorAll('.final-test-item'));
       let score = 0;
       let answered = 0;
+
       fields.forEach(function(field) {
         const expected = Number(field.getAttribute('data-answer'));
         const checked = field.querySelector('input:checked');
@@ -637,11 +1092,38 @@
           field.classList.add('is-wrong');
         }
       });
+
       if (answered !== fields.length) {
-        result.textContent = 'Répondez aux ' + fields.length + ' questions pour obtenir un score complet.';
+        result.textContent = 'Répondez aux ' + fields.length + ' questions pour corriger le test.';
         return;
       }
-      result.textContent = 'Score : ' + score + ' / ' + fields.length + '.';
+
+      var pct = fields.length ? Math.round(score / fields.length * 100) : 0;
+      var objectives = Array.from(document.querySelectorAll('[data-final-objective]'));
+      var objectiveTotal = objectives.length || fields.length;
+      var objectiveDone = Math.min(objectiveTotal, Math.round(objectiveTotal * pct / 100));
+      objectives.forEach(function(item, index) {
+        item.classList.toggle('is-done', index < objectiveDone);
+      });
+      var objectiveText = document.getElementById('finalObjectiveProgressText');
+      var objectiveFill = document.getElementById('finalObjectiveProgressFill');
+      if (objectiveText) objectiveText.textContent = objectiveDone + ' / ' + objectiveTotal + ' validés';
+      if (objectiveFill) objectiveFill.style.width = pct + '%';
+
+      if (pct < 80) {
+        result.textContent = 'Score : ' + score + ' / ' + fields.length + ' (' + pct + '%). Vous avancez : ' + objectiveDone + ' objectif(s) se remplissent déjà. Reprenez les onglets et les jeux, puis réessayez.';
+        updateProgress(entry.href.replace('.html', ''), 'started');
+        var startedLabel = document.getElementById('unitProgressStatus');
+        if (startedLabel) startedLabel.textContent = getStatusLabel('started', entry.level);
+        syncStatusDecorations();
+        return;
+      }
+
+      updateProgress(entry.href.replace('.html', ''), 'completed');
+      result.textContent = 'Score : ' + score + ' / ' + fields.length + ' (' + pct + '%). Bravo, les objectifs sont validés. Unité terminée.';
+      var completedLabel = document.getElementById('unitProgressStatus');
+      if (completedLabel) completedLabel.textContent = getStatusLabel('completed', entry.level);
+      syncStatusDecorations();
     });
   }
 
@@ -652,7 +1134,10 @@
     const sectionsWrap = document.querySelector('.unite-sections');
     const back = document.querySelector('.cours-back');
     if (!hero || !title || !sectionsWrap) return;
-    if (back) back.textContent = COURSE_BACK.unit;
+    var pageWrap = document.querySelector('.page-wrap');
+    if (pageWrap) pageWrap.classList.add('page-wrap--no-sidebar');
+    if (slotSidebar) slotSidebar.remove();
+    if (back && !back.dataset.keepLabel) back.textContent = COURSE_BACK.unit;
     document.title = BRAND.courseTitlePrefix + ' | Unité ' + entry.badge + ' — ' + entry.label;
 
     if (getProgressState(pageId) !== 'completed') {
@@ -701,6 +1186,48 @@
     }
 
     sectionsWrap.addEventListener('click', function(e) {
+      var commTab = e.target.closest('[data-comm-tab]');
+      if (commTab) {
+        var commTarget = commTab.dataset.commTab;
+        var cascade = commTab.closest('.comm-cascade');
+        if (!cascade) return;
+        cascade.querySelectorAll('[data-comm-tab]').forEach(function(btn) {
+          btn.classList.toggle('active', btn.dataset.commTab === commTarget);
+        });
+        cascade.querySelectorAll('[data-comm-panel]').forEach(function(panel) {
+          var active = panel.dataset.commPanel === commTarget;
+          panel.classList.toggle('active', active);
+          panel.hidden = !active;
+        });
+        return;
+      }
+
+      var tab = e.target.closest('[data-tab]');
+      if (tab) {
+        var target = tab.dataset.tab;
+        sectionsWrap.querySelectorAll('[data-tab]').forEach(function(btn) {
+          var active = btn.dataset.tab === target;
+          btn.classList.toggle('active', active);
+          btn.setAttribute('aria-selected', active ? 'true' : 'false');
+        });
+        sectionsWrap.querySelectorAll('[data-tab-panel]').forEach(function(panel) {
+          var active = panel.dataset.tabPanel === target;
+          panel.classList.toggle('active', active);
+          panel.hidden = !active;
+        });
+        return;
+      }
+
+      var progressBtn = e.target.closest('[data-progress-action]');
+      if (progressBtn) {
+        var status = progressBtn.dataset.progressAction;
+        updateProgress(pageId, status);
+        var label = document.getElementById('unitProgressStatus');
+        if (label) label.textContent = getStatusLabel(status, entry.level);
+        syncStatusDecorations();
+        return;
+      }
+
       var btn = e.target.closest('.vocab-listen, .chip-listen');
       if (!btn) return;
       var word = btn.dataset.word;
@@ -717,6 +1244,8 @@
       window.speechSynthesis.speak(utt);
     });
 
+    bindAssessment();
+    bindFinalUnitTest(entry);
     syncStatusDecorations();
   }
 
@@ -763,6 +1292,213 @@
     syncStatusDecorations();
   }
 
+  function renderCourseChatbot() {
+    if (document.getElementById('courseChatbot')) return;
+
+    function escapeHtml(value) {
+      return String(value || '').replace(/[&<>"']/g, function(ch) {
+        return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+      });
+    }
+
+    function stripHtml(value) {
+      return String(value || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+
+    function normalize(value) {
+      return String(value || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9\s'-]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function tokens(value) {
+      return normalize(value).split(' ').filter(function(token) {
+        return token.length > 2 && ['les','des','une','dans','avec','pour','sur','est','sont','que','qui','quoi','comment'].indexOf(token) === -1;
+      });
+    }
+
+    function buildKnowledge() {
+      return sections.reduce(function(items, section) {
+        return items.concat(section.entries.map(function(entry) {
+          var content = getUnitContent(entry);
+          var verbs = getVerbData(entry);
+          var vocab = content.vocabulary || [];
+          var grammar = (content.grammarRules || []).map(stripHtml).join(' ');
+          var conjugations = (verbs.conjugations || []).map(stripHtml).join(' ');
+          var text = [
+            entry.level, entry.label, entry.summary, entry.focus, entry.task, entry.swissContext,
+            (entry.themes || []).join(' '),
+            (entry.expressions || []).join(' '),
+            vocab.map(function(item) { return item.word + ' ' + item.definition; }).join(' '),
+            content.grammarTitle, grammar, conjugations
+          ].join(' ');
+          return {
+            entry: entry,
+            content: content,
+            verbs: verbs,
+            text: normalize(text),
+            vocab: vocab
+          };
+        }));
+      }, []);
+    }
+
+    var knowledge = buildKnowledge();
+
+    function findVocabulary(queryTokens, rawQuery) {
+      var q = normalize(rawQuery);
+      var hits = [];
+      knowledge.forEach(function(item) {
+        item.vocab.forEach(function(vocabItem) {
+          var hay = normalize(vocabItem.word + ' ' + vocabItem.definition);
+          var exact = hay.indexOf(q) !== -1 || q.indexOf(normalize(vocabItem.word)) !== -1;
+          var score = queryTokens.reduce(function(sum, token) {
+            return sum + (hay.indexOf(token) !== -1 ? 1 : 0);
+          }, exact ? 4 : 0);
+          if (score > 0) hits.push({ score: score, item: item, vocab: vocabItem });
+        });
+      });
+      return hits.sort(function(a, b) { return b.score - a.score; }).slice(0, 5);
+    }
+
+    function findVerb(rawQuery) {
+      var q = normalize(rawQuery);
+      var hits = [];
+      knowledge.forEach(function(item) {
+        (item.verbs.verbs || []).forEach(function(verb) {
+          var nv = normalize(verb);
+          if (q.indexOf(nv) !== -1 || normalize('conjugaison ' + verb).indexOf(q) !== -1) {
+            hits.push({ item: item, verb: verb, forms: conjugateVerb(verb) });
+          }
+        });
+      });
+      return hits.slice(0, 3);
+    }
+
+    function findUnits(queryTokens) {
+      return knowledge.map(function(item) {
+        var score = queryTokens.reduce(function(sum, token) {
+          return sum + (item.text.indexOf(token) !== -1 ? 1 : 0);
+        }, 0);
+        return { score: score, item: item };
+      }).filter(function(hit) {
+        return hit.score > 0;
+      }).sort(function(a, b) {
+        return b.score - a.score;
+      }).slice(0, 4);
+    }
+
+    function linkTo(entry, panelId) {
+      return '<a href="' + entry.href + (panelId ? '#' + panelId : '') + '">' + escapeHtml(entry.level + ' · ' + entry.label) + '</a>';
+    }
+
+    function answerQuestion(rawQuery) {
+      var q = normalize(rawQuery);
+      var queryTokens = tokens(rawQuery);
+      if (!q) return 'Je suis là. Pose-moi une question sur un mot, une règle, une conjugaison ou une unité.';
+      if (/^(bonjour|salut|hello|coucou|bonsoir)/.test(q)) {
+        return 'Bonjour, ravi de t’aider. Dis-moi ce que tu veux travailler: vocabulaire, grammaire, conjugaison, phonétique, jeux ou progression.';
+      }
+
+      var wantsVerb = q.indexOf('conjug') !== -1 || q.indexOf('verbe') !== -1;
+      var verbHits = wantsVerb ? findVerb(rawQuery) : [];
+      if (verbHits.length) {
+        var first = verbHits[0];
+        return [
+          '<strong>Conjugaison de "' + escapeHtml(first.verb) + '"</strong>',
+          '<p>' + escapeHtml(first.forms.join(', ')) + '.</p>',
+          '<p>Tu peux le retravailler ici: ' + linkTo(first.item.entry, 'tab-conjugaison') + '.</p>',
+          '<p>Petit pas, bonne direction: répète les formes à voix haute, puis fais une phrase simple.</p>'
+        ].join('');
+      }
+
+      var wantsVocab = q.indexOf('vocab') !== -1 || q.indexOf('glossaire') !== -1 || q.indexOf('mot') !== -1 || q.indexOf('definition') !== -1 || q.indexOf('signifie') !== -1;
+      var vocabHits = findVocabulary(queryTokens, rawQuery);
+      if (wantsVocab && vocabHits.length) {
+        return '<strong>Voici ce que j’ai trouvé dans le vocabulaire :</strong><ul>' + vocabHits.map(function(hit) {
+          return '<li><strong>' + escapeHtml(hit.vocab.word) + '</strong> : ' + escapeHtml(hit.vocab.definition) + '<br><small>' + linkTo(hit.item.entry, 'tab-vocabulaire') + '</small></li>';
+        }).join('') + '</ul><p>Tu avances bien: choisis un mot et essaie de faire une phrase avec.</p>';
+      }
+
+      var unitHits = findUnits(queryTokens);
+      if (q.indexOf('grammaire') !== -1 && unitHits.length) {
+        return '<strong>Pour la grammaire, je te conseille :</strong><ul>' + unitHits.map(function(hit) {
+          var rules = (hit.item.content.grammarRules || []).slice(0, 2).map(stripHtml).join(' ');
+          return '<li>' + linkTo(hit.item.entry, 'tab-grammaire') + '<br><small>' + escapeHtml(rules) + '</small></li>';
+        }).join('') + '</ul>';
+      }
+
+      if ((q.indexOf('progression') !== -1 || q.indexOf('objectif') !== -1 || q.indexOf('commencer') !== -1) && unitHits.length) {
+        return '<strong>Bonne idée. Voici un chemin simple :</strong><ol>' + unitHits.slice(0, 3).map(function(hit) {
+          return '<li>Ouvre ' + linkTo(hit.item.entry, 'tab-objectifs') + ', puis fais Communication → Vocabulaire → Jeux → Progression.</li>';
+        }).join('') + '</ol><p>Un niveau se construit petit à petit. Tu n’as pas besoin de tout réussir du premier coup.</p>';
+      }
+
+      if (unitHits.length) {
+        return '<strong>J’ai trouvé des unités utiles :</strong><ul>' + unitHits.map(function(hit) {
+          return '<li>' + linkTo(hit.item.entry, 'tab-objectifs') + '<br><small>' + escapeHtml(hit.item.entry.summary || hit.item.entry.focus || '') + '</small></li>';
+        }).join('') + '</ul><p>Choisis une unité, puis commence par Objectifs. Je reste avec toi.</p>';
+      }
+
+      return 'Je n’ai pas trouvé de correspondance précise, mais on peut y arriver. Essaie avec un mot-clé comme “logement”, “emploi”, “conjugaison être”, “grammaire”, “phonétique” ou “A1”.';
+    }
+
+    var wrap = document.createElement('section');
+    wrap.className = 'course-chatbot';
+    wrap.id = 'courseChatbot';
+    wrap.innerHTML = [
+      '<button class="course-chatbot-toggle" type="button" aria-expanded="false" aria-controls="courseChatbotPanel">💬</button>',
+      '<div class="course-chatbot-panel" id="courseChatbotPanel" hidden>',
+      '  <div class="course-chatbot-head">',
+      '    <strong>Assistant École Francophone</strong>',
+      '    <span>Sympa, local, basé sur les unités</span>',
+      '  </div>',
+      '  <div class="course-chatbot-log" aria-live="polite">',
+      '    <div class="course-chatbot-msg bot">Bonjour. Je peux t’aider avec le vocabulaire, la grammaire, la conjugaison, la phonétique, les jeux ou la progression. Que veux-tu travailler ?</div>',
+      '  </div>',
+      '  <form class="course-chatbot-form">',
+      '    <input type="text" autocomplete="off" placeholder="Ex. conjugaison être, logement, grammaire A2...">',
+      '    <button type="submit">Envoyer</button>',
+      '  </form>',
+      '</div>'
+    ].join('');
+    document.body.appendChild(wrap);
+
+    var toggle = wrap.querySelector('.course-chatbot-toggle');
+    var panel = wrap.querySelector('.course-chatbot-panel');
+    var form = wrap.querySelector('.course-chatbot-form');
+    var input = form.querySelector('input');
+    var log = wrap.querySelector('.course-chatbot-log');
+
+    function addMessage(kind, html) {
+      var msg = document.createElement('div');
+      msg.className = 'course-chatbot-msg ' + kind;
+      msg.innerHTML = html;
+      log.appendChild(msg);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    toggle.addEventListener('click', function() {
+      var open = panel.hasAttribute('hidden');
+      panel.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      if (open) input.focus();
+    });
+
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      var question = input.value.trim();
+      if (!question) return;
+      addMessage('user', escapeHtml(question));
+      input.value = '';
+      addMessage('bot', answerQuestion(question));
+    });
+  }
+
 
   renderHeader();
   renderSidebar();
@@ -771,4 +1507,5 @@
   renderProgressPanel();
   enhanceIndexCards();
   enhanceUnitPage(entryByPage[pageId]);
+  renderCourseChatbot();
 }());
