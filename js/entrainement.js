@@ -285,7 +285,7 @@
       wrap.innerHTML = '<div class="game-empty"><p>Pas assez de vocabulaire pour ce jeu.</p><a href="entrainement-a1.html?unite=' + esc(badge) + '">← Retour</a></div>';
       return;
     }
-    pairs = shuffle(pairs).slice(0, 6);
+    pairs = shuffle(pairs);
     var matched = 0;
     var selected = null;
 
