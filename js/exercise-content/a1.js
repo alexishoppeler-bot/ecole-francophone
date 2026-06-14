@@ -69,93 +69,142 @@ window.EXERCISE_CONTENT_PARTS["a1"] = {
         ]
       },
       "vraiFaux": [
-        {
-          "phrase": "La francophonie correspond à l'ensemble des pays et des personnes qui utilisent le français.",
-          "correct": true
-        },
-        {
-          "phrase": "Berne est la capitale de la Suisse.",
-          "correct": true
-        },
-        {
-          "phrase": "La Suisse romande est la partie francophone de la Suisse.",
-          "correct": true
-        },
-        {
-          "phrase": "À Genève, on parle principalement le romanche.",
-          "correct": false
-        },
-        {
-          "phrase": "Un canton est une division administrative de la Suisse.",
-          "correct": true
-        },
-        {
-          "phrase": "La Suisse romande est un pays indépendant.",
-          "correct": false
-        },
-        {
-          "phrase": "Une capitale est une langue officielle.",
-          "correct": false
-        },
-        {
-          "phrase": "Le français est principalement parlé en Suisse romande.",
-          "correct": true
-        }
+        { "phrase": "La francophonie regroupe les pays et les personnes qui utilisent le français.", "correct": true },
+        { "phrase": "Une capitale est une langue officielle.", "correct": false },
+        { "phrase": "La Suisse romande est la partie francophone de la Suisse.", "correct": true },
+        { "phrase": "Un canton est une ville.", "correct": false },
+        { "phrase": "Une personne bilingue parle deux langues.", "correct": true },
+        { "phrase": "Une frontière sépare deux pays.", "correct": true },
+        { "phrase": "Le romanche est parlé dans les Grisons.", "correct": true },
+        { "phrase": "Un locuteur est une personne qui parle une langue.", "correct": true },
+        { "phrase": "Un continent est une ville importante.", "correct": false },
+        { "phrase": "Genève est un canton.", "correct": false },
+        { "phrase": "La Suisse possède quatre langues nationales.", "correct": true },
+        { "phrase": "Le français est une langue officielle à Genève.", "correct": true },
+        { "phrase": "La Belgique est un pays francophone en partie.", "correct": true },
+        { "phrase": "Lausanne est la capitale de la Suisse.", "correct": false },
+        { "phrase": "Berne est la capitale de la Suisse.", "correct": true },
+        { "phrase": "Fribourg est une ville bilingue.", "correct": true },
+        { "phrase": "On parle romanche dans le canton de Vaud.", "correct": false },
+        { "phrase": "Le Canada est un pays totalement francophone.", "correct": false },
+        { "phrase": "La France est voisine de la Suisse.", "correct": true },
+        { "phrase": "Genève se trouve au bord du lac Léman.", "correct": true },
+        { "phrase": "On dit : « au Suisse ».", "correct": false },
+        { "phrase": "On dit : « en Suisse ».", "correct": true },
+        { "phrase": "On dit : « au Canada ».", "correct": true },
+        { "phrase": "On dit : « aux États-Unis ».", "correct": true },
+        { "phrase": "On dit : « en États-Unis ».", "correct": false },
+        { "phrase": "On dit : « à Lausanne ».", "correct": true },
+        { "phrase": "Je viens du Canada.", "correct": true },
+        { "phrase": "Je viens de Suisse.", "correct": true },
+        { "phrase": "Je viens des États-Unis.", "correct": true },
+        { "phrase": "Genève est située en Suisse alémanique.", "correct": false },
+        { "phrase": "Genève accueille des organisations internationales.", "correct": true },
+        { "phrase": "L'ONU est présente à Genève.", "correct": true },
+        { "phrase": "La Croix-Rouge est présente à Genève.", "correct": true },
+        { "phrase": "Un habitant est une personne qui vit dans un lieu.", "correct": true },
+        { "phrase": "Une région est une partie d'un pays.", "correct": true },
+        { "phrase": "Le portugais est une langue nationale suisse.", "correct": false },
+        { "phrase": "Le romanche est une langue nationale suisse.", "correct": true },
+        { "phrase": "Le terme « francophone » désigne une personne qui parle français.", "correct": true },
+        { "phrase": "Le Maroc est un pays masculin : on dit « au Maroc ».", "correct": true },
+        { "phrase": "Les Pays-Bas sont un pays pluriel : on dit « aux Pays-Bas ».", "correct": true },
+        { "phrase": "Nous parlons français.", "correct": true },
+        { "phrase": "Vous habitez à Genève.", "correct": true },
+        { "phrase": "Ils viennent du Canada.", "correct": true },
+        { "phrase": "Nous comprenons le document.", "correct": true },
+        { "phrase": "Je suis en Suisse romande.", "correct": true },
+        { "phrase": "La Chine est un pays féminin : on dit « en Chine ».", "correct": true },
+        { "phrase": "Le Japon est un pays masculin : on dit « au Japon ».", "correct": true },
+        { "phrase": "Une langue officielle est utilisée dans les institutions d'un pays.", "correct": true },
+        { "phrase": "La Suisse se trouve en Afrique.", "correct": false },
+        { "phrase": "Genève est une ville internationale.", "correct": true }
       ],
       "quiz": [
         {
-          "prompt": "Pour parler d'un pays féminin, on dit…",
-          "choices": [
-            "en Suisse",
-            "au Suisse",
-            "à Suisse"
-          ],
-          "answer": 0
-        },
-        {
-          "prompt": "Berne est…",
-          "choices": [
-            "une langue",
-            "une capitale",
-            "un continent"
-          ],
+          "prompt": "La francophonie, c'est :",
+          "choices": ["Une ville", "Les pays et les personnes qui utilisent le français", "Une organisation"],
           "answer": 1
         },
         {
-          "prompt": "La Suisse romande correspond à…",
-          "choices": [
-            "la partie francophone de la Suisse",
-            "tout le territoire suisse",
-            "un autre pays"
-          ],
+          "prompt": "Une capitale est :",
+          "choices": ["Une langue", "Une région", "La ville principale d'un pays"],
+          "answer": 2
+        },
+        {
+          "prompt": "Un canton est :",
+          "choices": ["Une division administrative de la Suisse", "Une capitale", "Un continent"],
+          "answer": 0
+        },
+        {
+          "prompt": "Une personne qui parle une langue est :",
+          "choices": ["Un locuteur", "Un voisin", "Un habitant"],
+          "answer": 0
+        },
+        {
+          "prompt": "Une personne bilingue parle :",
+          "choices": ["Une langue", "Deux langues", "Quatre langues"],
+          "answer": 1
+        },
+        {
+          "prompt": "Une frontière sépare :",
+          "choices": ["Deux villes", "Deux pays", "Deux langues"],
+          "answer": 1
+        },
+        {
+          "prompt": "Le romanche est :",
+          "choices": ["Une ville", "Une langue nationale suisse", "Un canton"],
+          "answer": 1
+        },
+        {
+          "prompt": "Francophone signifie :",
+          "choices": ["Qui parle français", "Qui parle allemand", "Qui parle anglais"],
+          "answer": 0
+        },
+        {
+          "prompt": "Une région est :",
+          "choices": ["Une partie d'un pays", "Une capitale", "Une langue"],
+          "answer": 0
+        },
+        {
+          "prompt": "Un habitant est :",
+          "choices": ["Une personne qui vit dans un lieu", "Une langue", "Un pays"],
           "answer": 0
         }
       ],
       "apparier": [
-        {
-          "word": "la francophonie",
-          "definition": "ensemble des pays et des personnes qui utilisent le français"
-        },
-        {
-          "word": "un pays",
-          "definition": "territoire organisé comme la Suisse, la Belgique ou le Canada"
-        },
-        {
-          "word": "une ville",
-          "definition": "agglomération où vivent des habitants"
-        },
-        {
-          "word": "une capitale",
-          "definition": "ville principale d'un pays"
-        },
-        {
-          "word": "une langue officielle",
-          "definition": "langue utilisée dans les institutions et l'administration"
-        },
-        {
-          "word": "la Suisse romande",
-          "definition": "région de Suisse où le français est la langue principale"
-        }
+        { "word": "la francophonie",    "definition": "ensemble des pays et des personnes qui utilisent le français" },
+        { "word": "une capitale",       "definition": "ville principale d'un pays" },
+        { "word": "un locuteur",        "definition": "personne qui parle une langue" },
+        { "word": "la Suisse romande",  "definition": "partie francophone de la Suisse" },
+        { "word": "une frontière",      "definition": "limite entre deux pays" },
+        { "word": "un canton",          "definition": "division administrative suisse" },
+        { "word": "bilingue",           "definition": "qui parle deux langues" },
+        { "word": "francophone",        "definition": "qui parle français" },
+        { "word": "un habitant",        "definition": "personne qui vit dans un lieu" },
+        { "word": "une région",         "definition": "partie d'un pays" },
+        { "word": "Suisse",             "definition": "en Suisse" },
+        { "word": "Canada",             "definition": "au Canada" },
+        { "word": "États-Unis",         "definition": "aux États-Unis" },
+        { "word": "Maroc",              "definition": "au Maroc" },
+        { "word": "Belgique",           "definition": "en Belgique" },
+        { "word": "France",             "definition": "en France" },
+        { "word": "Japon",              "definition": "au Japon" },
+        { "word": "Pays-Bas",           "definition": "aux Pays-Bas" },
+        { "word": "Genève",             "definition": "ville internationale" },
+        { "word": "Berne",              "definition": "capitale de la Suisse" },
+        { "word": "Fribourg",           "definition": "ville bilingue" },
+        { "word": "Lausanne",           "definition": "ville du canton de Vaud" },
+        { "word": "Neuchâtel",          "definition": "ville romande" },
+        { "word": "le français",        "definition": "langue officielle à Genève" },
+        { "word": "le romanche",        "definition": "langue nationale parlée dans les Grisons" },
+        { "word": "l'allemand",         "definition": "langue parlée en Suisse alémanique" },
+        { "word": "le portugais",       "definition": "langue parlée par de nombreux habitants en Suisse" },
+        { "word": "Je viens de…",       "definition": "la Suisse" },
+        { "word": "J'habite à…",        "definition": "Lausanne" },
+        { "word": "Je parle…",          "definition": "français et italien" },
+        { "word": "La capitale est…",   "definition": "Berne" },
+        { "word": "On parle français en…", "definition": "Suisse romande" }
       ],
       "completer": [
         {

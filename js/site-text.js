@@ -13,40 +13,40 @@ window.SITE_TEXT = {
   },
 
   home: {
-    documentTitle: 'École Francophone | Exercices gratuits',
-    metaDescription: 'Exercices gratuits et progressifs pour apprendre le numérique, la bureautique, le français pratique, les e-mails, le CV et les démarches d\'emploi.',
-    ogTitle: 'École Francophone | Exercices gratuits',
-    ogDescription: 'Exercices gratuits et progressifs pour apprendre le numérique, la bureautique, le français pratique, les e-mails, le CV et les démarches d\'emploi.',
+    documentTitle: 'École Francophone | Plateforme de français prête à déployer',
+    metaDescription: 'Plateforme pédagogique de français adaptable aux vocabulaires, scénarios et contextes de chaque établissement, avec parcours CECRL A1 à C2 et version locale possible.',
+    ogTitle: 'École Francophone | Plateforme de français prête à déployer',
+    ogDescription: 'Solution pédagogique de français adaptable aux vocabulaires, scénarios et contextes de chaque établissement, avec version locale possible sans internet.',
     schemaName: 'École Francophone',
-    schemaDescription: 'Exercices progressifs pour apprendre le numérique, la bureautique, le français pratique et les démarches d\'emploi.',
-    heroLabel: 'Plateforme d\'exercices',
+    schemaDescription: 'Plateforme pédagogique de français adaptable aux vocabulaires, scénarios et contextes de chaque établissement, avec cours CECRL et version locale possible.',
+    heroLabel: 'Solution pédagogique prête à déployer',
     heroTitleBlueHtml: 'école-',
     heroTitlePurpleHtml: 'francophone',
-    heroBody: 'Des cours gratuits et progressifs pour apprendre le français — de A1 à C2 — avec des leçons, des exercices d\'entraînement et des évaluations.',
-    primaryAction: 'Cours',
-    secondaryAction: '🎯 Auto-évaluation CECRL',
-    panelTitle: 'Parcours utiles',
+    heroBody: 'Une plateforme de français claire, progressive et immédiatement utilisable, adaptable au vocabulaire, aux scénarios et aux contextes de chaque établissement. Elle peut aussi fonctionner en version locale, sans connexion internet.',
+    primaryAction: 'Voir la démo',
+    secondaryAction: 'Auto-évaluation CECRL',
+    panelTitle: 'Arguments forts',
     panelItems: [
-      'Cours progressifs de A1 à C2',
-      'Grammaire, conjugaison et vocabulaire',
-      'Compréhension orale et écrite',
-      'Exercices d\'entraînement et préparation au DELF'
+      'Parcours complet de A1 à C2',
+      'Vocabulaire, situations et scénarios adaptés à votre public',
+      'Utilisable en autonomie, en classe ou en ateliers accompagnés',
+      'Version locale possible sans connexion internet'
     ],
     cards: [
       {
-        title: 'Cours par niveaux',
-        body: 'Des unités thématiques progressives de A1 à C2, avec leçons et points de langue.',
+        title: 'Produit démontrable',
+        body: 'Plus de 80 pages de cours, entraînements et annexes déjà consultables pour convaincre rapidement un décideur.',
         badge: 'A1 → C2'
       },
       {
-        title: 'Grammaire et conjugaison',
-        body: 'Fiches de grammaire, tableaux de conjugaison et exercices d\'orthographe.',
-        badge: 'Langue'
+        title: 'Adaptable au terrain',
+        body: 'Lexique métier, dialogues, démarches, consignes et situations peuvent être ajustés aux besoins réels de chaque établissement.',
+        badge: 'Sur mesure'
       },
       {
-        title: 'Entraînement et DELF',
-        body: 'Exercices de compréhension orale, entraînements par compétence et blancs d\'examen.',
-        badge: 'Examen'
+        title: 'Mode local possible',
+        body: 'La plateforme peut être installée localement pour fonctionner dans une salle, une structure ou un réseau avec peu ou pas d\'internet.',
+        badge: 'Hors ligne'
       }
     ]
   },

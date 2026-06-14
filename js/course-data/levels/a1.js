@@ -57,29 +57,92 @@ window.COURSE_DATA_PARTS.a1 = {
         ],
         "assessment": [
           {
-            "prompt": "Pour parler d'un pays féminin, on dit…",
+            "prompt": "La francophonie, c'est :",
             "choices": [
-              "en Suisse",
-              "au Suisse",
-              "à Suisse"
-            ],
-            "answer": 0
-          },
-          {
-            "prompt": "Berne est…",
-            "choices": [
-              "une langue",
-              "une capitale",
-              "un continent"
+              "Une ville",
+              "Les pays et les personnes qui utilisent le français",
+              "Une organisation"
             ],
             "answer": 1
           },
           {
-            "prompt": "La Suisse romande correspond à…",
+            "prompt": "Une capitale est :",
             "choices": [
-              "la partie francophone de la Suisse",
-              "tout le territoire suisse",
-              "un autre pays"
+              "Une langue",
+              "Une région",
+              "La ville principale d'un pays"
+            ],
+            "answer": 2
+          },
+          {
+            "prompt": "Un canton est :",
+            "choices": [
+              "Une division administrative de la Suisse",
+              "Une capitale",
+              "Un continent"
+            ],
+            "answer": 0
+          },
+          {
+            "prompt": "Une personne qui parle une langue est :",
+            "choices": [
+              "Un locuteur",
+              "Un voisin",
+              "Un habitant"
+            ],
+            "answer": 0
+          },
+          {
+            "prompt": "Une personne bilingue parle :",
+            "choices": [
+              "Une langue",
+              "Deux langues",
+              "Quatre langues"
+            ],
+            "answer": 1
+          },
+          {
+            "prompt": "Une frontière sépare :",
+            "choices": [
+              "Deux villes",
+              "Deux pays",
+              "Deux langues"
+            ],
+            "answer": 1
+          },
+          {
+            "prompt": "Le romanche est :",
+            "choices": [
+              "Une ville",
+              "Une langue nationale suisse",
+              "Un canton"
+            ],
+            "answer": 1
+          },
+          {
+            "prompt": "Francophone signifie :",
+            "choices": [
+              "Qui parle français",
+              "Qui parle allemand",
+              "Qui parle anglais"
+            ],
+            "answer": 0
+          },
+          {
+            "prompt": "Une région est :",
+            "choices": [
+              "Une partie d'un pays",
+              "Une capitale",
+              "Une langue"
+            ],
+            "answer": 0
+          },
+          {
+            "prompt": "Un habitant est :",
+            "choices": [
+              "Une personne qui vit dans un lieu",
+              "Une langue",
+              "Un pays"
             ],
             "answer": 0
           }
@@ -789,6 +852,7 @@ window.COURSE_DATA_PARTS.a1 = {
         "<em>à</em> + ville : à Lausanne, à Genève, à Paris",
         "<em>de / du / des</em> pour l'origine : de Suisse, du Canada, des États-Unis"
       ],
+      "grammarExtra": "<div class=\"gram-country-table\"><div class=\"gram-country-col\"><div class=\"gram-country-head fem\">🔵 Féminin — <em>en</em></div><ul><li>en Suisse</li><li>en Belgique</li><li>en France</li><li>en Espagne</li><li>en Italie</li><li>en Allemagne</li><li>en Chine</li><li>en Tunisie</li></ul></div><div class=\"gram-country-col\"><div class=\"gram-country-head masc\">🟠 Masculin — <em>au</em></div><ul><li>au Canada</li><li>au Maroc</li><li>au Portugal</li><li>au Japon</li><li>au Brésil</li><li>au Mexique</li><li>au Sénégal</li><li>au Cameroun</li></ul></div><div class=\"gram-country-col\"><div class=\"gram-country-head plur\">🟢 Pluriel — <em>aux</em></div><ul><li>aux États-Unis</li><li>aux Pays-Bas</li><li>aux Philippines</li></ul></div></div>",
       "grammarError": "<span class=\"gram-wrong\">Je vais au Suisse.</span> → <span class=\"gram-right\">Je vais en Suisse.</span> — La Suisse est féminin, on utilise <em>en</em>, pas <em>au</em>.",
       "expressionsPlus": [
         {

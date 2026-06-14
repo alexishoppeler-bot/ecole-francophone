@@ -235,7 +235,7 @@
         });
       });
     }
-    raw = shuffle(raw).slice(0, 8);
+    raw = shuffle(raw);
     if (!raw.length) {
       wrap.innerHTML = emptyState(t(['empty', 'noGameData'], 'Pas de données pour ce jeu.'));
       return;

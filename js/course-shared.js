@@ -372,6 +372,9 @@
     var grammarBody = '<div class="gram-box"><div class="gram-title">' + unitContent.grammarTitle + '</div><div class="gram-rule">'
       + unitContent.grammarRules.map(function(r) { return '<div>' + r + '</div>'; }).join('')
       + '</div></div>';
+    if (unitContent.grammarExtra) {
+      grammarBody += unitContent.grammarExtra;
+    }
     if (unitContent.grammarError) {
       grammarBody += '<div class="gram-error-box"><span class="gram-error-label">Erreur fréquente</span><div class="gram-error-text">' + unitContent.grammarError + '</div></div>';
     }
