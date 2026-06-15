@@ -1408,11 +1408,9 @@ function affResultat() {
   window.scrollTo(0, 0);
 
   const reg = _getRegData();
-  _sauverFirebase(niv, pct, reg.prenom, reg.nom, reg.email, dureeSec, reg).then(() => {
-    const msg = document.getElementById("save-msg");
-    if (msg) { msg.textContent = "✓ Vos résultats ont été enregistrés. Merci !"; msg.style.color = "var(--success)"; }
-  });
-  _envoyerEmail(niv, pct, reg.prenom, reg.nom, reg.email, dureeSec);
+  const msg = document.getElementById("save-msg");
+  _sauverFirebase(niv, pct, reg.prenom, reg.nom, reg.email, dureeSec, reg);
+  _envoyerEmail(niv, pct, reg.prenom, reg.nom, reg.email, dureeSec, msg);
 }
 
 function _getRegData() {
@@ -1428,29 +1426,44 @@ function _getRegData() {
   };
 }
 
-function _envoyerEmail(niv, pct, prenom, nom, email, dureeSec) {
+function _envoyerEmail(niv, pct, prenom, nom, email, dureeSec, msgEl) {
+  if (msgEl) { msgEl.textContent = "Envoi de l'e-mail…"; msgEl.style.color = ""; }
   try {
     const ej = window._emailjs;
-    if (!ej || typeof emailjs === "undefined") return;
+    if (!ej || typeof emailjs === "undefined") {
+      if (msgEl) { msgEl.textContent = "✓ Résultats enregistrés (email non configuré)."; msgEl.style.color = "var(--warning)"; }
+      return;
+    }
     const minutes  = Math.floor(dureeSec / 60);
     const secondes = dureeSec % 60;
     const duree    = `${minutes}m ${secondes}s`;
     const params   = {
-      prenom: prenom || "(non renseigné)",
-      nom:    nom    || "(non renseigné)",
-      email:  email  || "(non renseigné)",
-      niveau: niv,
-      score:  pct,
-      duree:  duree
+      prenom:  prenom || "(non renseigné)",
+      nom:     nom    || "(non renseigné)",
+      email:   email  || "(non renseigné)",
+      niveau:  niv,
+      score:   pct,
+      duree:   duree,
+      to_email: "alexis.hoppeler@gmail.com"
     };
     // Notification admin (toujours)
-    emailjs.send(ej.serviceId, ej.templateId, { ...params, to_email: "alexis.hoppeler@gmail.com" });
+    emailjs.send(ej.serviceId, ej.templateId, params)
+      .then(() => {
+        if (msgEl) { msgEl.textContent = "✓ Résultats enregistrés et e-mail envoyé !"; msgEl.style.color = "var(--success)"; }
+      })
+      .catch(err => {
+        console.error("EmailJS erreur:", err);
+        if (msgEl) { msgEl.textContent = "Résultats enregistrés — erreur email : " + (err.text || err); msgEl.style.color = "var(--danger)"; }
+      });
     // Copie élève (uniquement si case cochée et email fourni)
     const autoemail = document.getElementById("reg-autoemail");
     if (autoemail && autoemail.checked && email) {
       emailjs.send(ej.serviceId, ej.templateEleveId, { ...params, to_email: email });
     }
-  } catch(e) { console.warn("EmailJS:", e.message); }
+  } catch(e) {
+    console.error("EmailJS exception:", e);
+    if (msgEl) { msgEl.textContent = "Erreur : " + e.message; msgEl.style.color = "var(--danger)"; }
+  }
 }
 
 async function _sauverFirebase(niv, pct, prenom, nom, email, dureeSec, reg = {}) {
