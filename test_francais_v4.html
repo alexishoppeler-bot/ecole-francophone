@@ -5,6 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Test de niveau de français — école-francophone.ch</title>
 
+<!-- EmailJS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  (function(){
+    const EMAILJS_PUBLIC_KEY          = "EMAILJS_PUBLIC_KEY";          // ← remplacez
+    const EMAILJS_SERVICE_ID          = "EMAILJS_SERVICE_ID";          // ← remplacez
+    const EMAILJS_TEMPLATE_ID         = "EMAILJS_TEMPLATE_ID";         // ← remplacez (notification admin)
+    const EMAILJS_TEMPLATE_ELEVE_ID   = "EMAILJS_TEMPLATE_ELEVE_ID";  // ← remplacez (copie élève)
+    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+    window._emailjs = { serviceId: EMAILJS_SERVICE_ID, templateId: EMAILJS_TEMPLATE_ID, templateEleveId: EMAILJS_TEMPLATE_ELEVE_ID };
+  })();
+</script>
+
 <!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -282,7 +295,7 @@ body {
 /* ── FORMULAIRE (écran résultats) ── */
 .form-grp { margin-bottom: 16px }
 .form-grp label { display:block; font-weight:800; margin-bottom:5px; font-size:.9rem }
-.form-grp input {
+.form-grp input, .form-grp select {
   width: 100%; padding: 12px 16px;
   border: 1.5px solid var(--border);
   border-radius: var(--r-md);
@@ -290,8 +303,14 @@ body {
   outline: none; transition: border-color .15s, box-shadow .15s;
   background: var(--surface); color: var(--text);
 }
-.form-grp input:focus { border-color:var(--accent2); box-shadow:0 0 0 3px rgba(124,58,237,.14) }
+.form-grp input:focus, .form-grp select:focus { border-color:var(--accent2); box-shadow:0 0 0 3px rgba(124,58,237,.14) }
 .form-err { color:var(--danger); font-size:.82rem; margin-top:3px; display:none }
+.form-row { display:grid; gap:12px }
+.form-row-2 { grid-template-columns: 1fr 1fr }
+.form-tel { display:flex; gap:8px }
+.form-tel select { width:auto; min-width:110px; flex-shrink:0 }
+.form-tel input  { flex:1 }
+@media(max-width:520px) { .form-row-2 { grid-template-columns:1fr } }
 
 /* ── BOUTONS ── */
 .btn {
@@ -444,10 +463,88 @@ h3 {
 
       <p style="font-size:.95rem;color:var(--text2);margin-bottom:28px">
         Répondez à <strong>30 questions</strong> dans l'ordre. Vous ne pouvez pas revenir en arrière.<br>
-        Vos coordonnées vous seront demandées à la fin pour recevoir votre résultat.
+        Vos coordonnées vous seront demandées avant de commencer.
       </p>
 
-      <button class="btn btn-grad" onclick="demarrer()">Commencer le test →</button>
+      <button class="btn btn-grad" onclick="affEcran('e-inscription')">Commencer le test →</button>
+    </div>
+  </div>
+
+  <!-- ══ ÉCRAN 1b : FORMULAIRE D'INSCRIPTION ══ -->
+  <div id="e-inscription" class="ecran">
+    <div class="card">
+      <h2>Vos coordonnées</h2>
+      <p class="sous-t" style="margin-bottom:24px">Ces informations permettent de vous envoyer votre résultat et de vous contacter si nécessaire.</p>
+
+      <div class="form-row form-row-2">
+        <div class="form-grp">
+          <label for="reg-prenom">Prénom *</label>
+          <input type="text" id="reg-prenom" placeholder="Votre prénom" autocomplete="given-name">
+          <div class="form-err" id="err-reg-prenom">Veuillez entrer votre prénom.</div>
+        </div>
+        <div class="form-grp">
+          <label for="reg-nom">Nom *</label>
+          <input type="text" id="reg-nom" placeholder="Votre nom" autocomplete="family-name">
+          <div class="form-err" id="err-reg-nom">Veuillez entrer votre nom.</div>
+        </div>
+      </div>
+
+      <div class="form-grp">
+        <label for="reg-email">Adresse e-mail *</label>
+        <input type="email" id="reg-email" placeholder="votre@email.com" autocomplete="email">
+        <div class="form-err" id="err-reg-email">Veuillez entrer une adresse e-mail valide.</div>
+      </div>
+
+      <div class="form-grp">
+        <label for="reg-adresse">Adresse (numéro et rue) *</label>
+        <input type="text" id="reg-adresse" placeholder="Ex : 12 rue des Alpes" autocomplete="street-address">
+        <div class="form-err" id="err-reg-adresse">Veuillez entrer votre adresse.</div>
+      </div>
+
+      <div class="form-row form-row-2">
+        <div class="form-grp">
+          <label for="reg-npa">Code postal *</label>
+          <input type="text" id="reg-npa" placeholder="Ex : 1200" autocomplete="postal-code">
+          <div class="form-err" id="err-reg-npa">Veuillez entrer votre code postal.</div>
+        </div>
+        <div class="form-grp">
+          <label for="reg-ville">Ville *</label>
+          <input type="text" id="reg-ville" placeholder="Ex : Genève" autocomplete="address-level2">
+          <div class="form-err" id="err-reg-ville">Veuillez entrer votre ville.</div>
+        </div>
+      </div>
+
+      <div class="form-grp">
+        <label for="reg-tel">Numéro de téléphone</label>
+        <div class="form-tel">
+          <select id="reg-indicatif" autocomplete="tel-country-code">
+            <option value="+41">🇨🇭 +41</option>
+            <option value="+33">🇫🇷 +33</option>
+            <option value="+32">🇧🇪 +32</option>
+            <option value="+352">🇱🇺 +352</option>
+            <option value="+1">🇺🇸 +1</option>
+            <option value="+44">🇬🇧 +44</option>
+            <option value="+49">🇩🇪 +49</option>
+            <option value="+39">🇮🇹 +39</option>
+            <option value="+34">🇪🇸 +34</option>
+            <option value="+351">🇵🇹 +351</option>
+            <option value="+212">🇲🇦 +212</option>
+            <option value="+213">🇩🇿 +213</option>
+            <option value="+216">🇹🇳 +216</option>
+            <option value="+225">🇨🇮 +225</option>
+            <option value="+237">🇨🇲 +237</option>
+            <option value="+221">🇸🇳 +221</option>
+          </select>
+          <input type="tel" id="reg-tel" placeholder="Ex : 079 123 45 67" autocomplete="tel-national">
+        </div>
+      </div>
+
+      <div class="form-grp" style="flex-direction:row;align-items:center;gap:10px;margin-top:4px">
+        <input type="checkbox" id="reg-autoemail" style="width:18px;height:18px;accent-color:var(--accent2);cursor:pointer;flex-shrink:0">
+        <label for="reg-autoemail" style="margin:0;cursor:pointer;font-size:.93rem;color:var(--text2)">Recevoir mon résultat par e-mail après le test</label>
+      </div>
+
+      <button class="btn btn-grad" style="margin-top:24px" onclick="validerInscription()">Démarrer le test →</button>
     </div>
   </div>
 
@@ -491,29 +588,9 @@ h3 {
       </div>
     </div>
 
-    <!-- Carte 2 : Formulaire e-mail -->
-    <div class="card" style="margin-top:16px">
-      <h3>Recevoir mon résultat par e-mail</h3>
-      <p class="sous-t" style="margin-bottom:20px">Facultatif — vos données sont utilisées uniquement pour vous envoyer le résultat.</p>
-
-      <div class="form-grp">
-        <label for="inp-prenom">Prénom</label>
-        <input type="text" id="inp-prenom" placeholder="Votre prénom">
-      </div>
-      <div class="form-grp">
-        <label for="inp-nom">Nom</label>
-        <input type="text" id="inp-nom" placeholder="Votre nom">
-      </div>
-      <div class="form-grp">
-        <label for="inp-email">Adresse e-mail *</label>
-        <input type="email" id="inp-email" placeholder="votre@email.com">
-        <div class="form-err" id="err-email">Veuillez entrer une adresse e-mail valide.</div>
-      </div>
-
-      <button class="btn btn-grad" onclick="sauver()">Enregistrer mes résultats →</button>
-      <button class="btn btn-ghost" onclick="sauver(true)">Passer — continuer sans enregistrer</button>
-
-      <p style="font-size:.78rem;color:var(--text3);margin-top:16px;text-align:center" id="save-msg"></p>
+    <!-- Carte 2 : Confirmation enregistrement -->
+    <div class="card" style="margin-top:16px;text-align:center">
+      <p id="save-msg" style="font-size:.95rem;color:var(--text2)">Enregistrement de vos résultats…</p>
     </div>
 
   </div>
@@ -908,6 +985,29 @@ let qIdx = 0;
 let repDetail = [];
 let dragSrc = null;
 let zoneOrdre = []; // mots dans la zone de réponse pour demele
+
+/* ── INSCRIPTION ── */
+function validerInscription() {
+  let ok = true;
+  const champs = [
+    { id: "reg-prenom", err: "err-reg-prenom" },
+    { id: "reg-nom",    err: "err-reg-nom"    },
+    { id: "reg-email",  err: "err-reg-email"  },
+    { id: "reg-adresse",err: "err-reg-adresse"},
+    { id: "reg-npa",    err: "err-reg-npa"    },
+    { id: "reg-ville",  err: "err-reg-ville"  },
+  ];
+  champs.forEach(({ id, err }) => {
+    const el = document.getElementById(id);
+    const errEl = document.getElementById(err);
+    const vide = !el.value.trim();
+    const emailInvalide = id === "reg-email" && !vide && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value.trim());
+    if (vide || emailInvalide) { errEl.style.display = "block"; ok = false; }
+    else errEl.style.display = "none";
+  });
+  if (!ok) return;
+  demarrer();
+}
 
 /* ── DÉMARRER ── */
 let tempsDebut = null;
@@ -1307,42 +1407,62 @@ function affResultat() {
   affAnalyse();
   window.scrollTo(0, 0);
 
-  _sauverFirebase(niv, pct, "", "", "", dureeSec);
+  const reg = _getRegData();
+  _sauverFirebase(niv, pct, reg.prenom, reg.nom, reg.email, dureeSec, reg).then(() => {
+    const msg = document.getElementById("save-msg");
+    if (msg) { msg.textContent = "✓ Vos résultats ont été enregistrés. Merci !"; msg.style.color = "var(--success)"; }
+  });
+  _envoyerEmail(niv, pct, reg.prenom, reg.nom, reg.email, dureeSec);
 }
 
-/* ── FIREBASE ── */
-async function sauver(skip = false) {
-  const bonnes = repDetail.filter(r => r.correct).length;
-  const pct    = Math.round(bonnes / TOTAL * 100);
-  const niv    = niveauDepuisScore(bonnes);
-  const dureeSec = tempsDebut ? Math.round((Date.now() - tempsDebut) / 1000) : 0;
-
-  if (skip) {
-    document.getElementById("save-msg").textContent = "Résultats non enregistrés.";
-    return;
-  }
-
-  const email = document.getElementById("inp-email").value.trim();
-  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    document.getElementById("err-email").style.display = "block";
-    return;
-  }
-  document.getElementById("err-email").style.display = "none";
-
-  const prenom = document.getElementById("inp-prenom").value.trim();
-  const nom    = document.getElementById("inp-nom").value.trim();
-
-  await _sauverFirebase(niv, pct, prenom, nom, email, dureeSec);
-  document.getElementById("save-msg").textContent = "✓ Vos résultats ont été enregistrés. Merci !";
-  document.getElementById("save-msg").style.color = "var(--success)";
+function _getRegData() {
+  return {
+    prenom:   (document.getElementById("reg-prenom")?.value   || "").trim(),
+    nom:      (document.getElementById("reg-nom")?.value      || "").trim(),
+    email:    (document.getElementById("reg-email")?.value    || "").trim(),
+    adresse:  (document.getElementById("reg-adresse")?.value  || "").trim(),
+    npa:      (document.getElementById("reg-npa")?.value      || "").trim(),
+    ville:    (document.getElementById("reg-ville")?.value    || "").trim(),
+    tel:      ((document.getElementById("reg-indicatif")?.value || "") + " " + (document.getElementById("reg-tel")?.value || "")).trim(),
+    autoemail: document.getElementById("reg-autoemail")?.checked || false,
+  };
 }
 
-async function _sauverFirebase(niv, pct, prenom, nom, email, dureeSec) {
+function _envoyerEmail(niv, pct, prenom, nom, email, dureeSec) {
+  try {
+    const ej = window._emailjs;
+    if (!ej || typeof emailjs === "undefined") return;
+    const minutes  = Math.floor(dureeSec / 60);
+    const secondes = dureeSec % 60;
+    const duree    = `${minutes}m ${secondes}s`;
+    const params   = {
+      prenom: prenom || "(non renseigné)",
+      nom:    nom    || "(non renseigné)",
+      email:  email  || "(non renseigné)",
+      niveau: niv,
+      score:  pct,
+      duree:  duree
+    };
+    // Notification admin (toujours)
+    emailjs.send(ej.serviceId, ej.templateId, { ...params, to_email: "alexis.hoppeler@gmail.com" });
+    // Copie élève (uniquement si case cochée et email fourni)
+    const autoemail = document.getElementById("reg-autoemail");
+    if (autoemail && autoemail.checked && email) {
+      emailjs.send(ej.serviceId, ej.templateEleveId, { ...params, to_email: email });
+    }
+  } catch(e) { console.warn("EmailJS:", e.message); }
+}
+
+async function _sauverFirebase(niv, pct, prenom, nom, email, dureeSec, reg = {}) {
   try {
     const db = window._db;
     if (!db) return;
     await window._addDoc(window._collection(db, "resultats_test"), {
       prenom, nom, email,
+      adresse:         reg.adresse  || "",
+      npa:             reg.npa      || "",
+      ville:           reg.ville    || "",
+      telephone:       reg.tel      || "",
       date:            window._serverTimestamp(),
       niveau_final:    niv,
       score_pct:       pct,
