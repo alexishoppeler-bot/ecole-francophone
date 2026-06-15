@@ -1409,8 +1409,64 @@ function affResultat() {
 
   const reg = _getRegData();
   const msg = document.getElementById("save-msg");
+
+  // Scores par compétence
+  const compScores = {};
+  COMP.forEach(c => {
+    const qs = repDetail.filter(r => c.ids.includes(r.question_id));
+    compScores[c.key] = qs.length ? Math.round(qs.filter(r => r.correct).length / qs.length * 100) : 0;
+  });
+
+  // Scores par niveau CECRL
+  const nivScores = {};
+  Object.entries(PAR_NIVEAU).forEach(([n, ids]) => {
+    const qs = repDetail.filter(r => ids.includes(r.question_id));
+    nivScores[n] = qs.length ? Math.round(qs.filter(r => r.correct).length / qs.length * 100) : 0;
+  });
+
+  // Points forts / à renforcer
+  const sorted = COMP.map(c => ({ label: c.label, icon: c.icon, p: compScores[c.key] })).sort((a,b) => b.p - a.p);
+  const forts   = sorted.filter(c => c.p >= 70).map(c => `${c.icon} ${c.label} (${c.p}%)`).join(", ") || "—";
+  const faibles = sorted.filter(c => c.p < 50).map(c => `${c.icon} ${c.label} (${c.p}%)`).join(", ") || "Aucune faiblesse";
+
+  // Date/heure
+  const now = new Date();
+  const dateTest  = now.toLocaleDateString("fr-CH", { day:"2-digit", month:"2-digit", year:"numeric" });
+  const heureTest = now.toLocaleTimeString("fr-CH", { hour:"2-digit", minute:"2-digit" });
+
+  const emailParams = {
+    prenom:    reg.prenom  || "—",
+    nom:       reg.nom     || "—",
+    email:     reg.email   || "—",
+    adresse:   reg.adresse || "—",
+    npa:       reg.npa     || "—",
+    ville:     reg.ville   || "—",
+    telephone: reg.tel     || "—",
+    niveau:    niv === "Pre-A1" ? "Pré-A1" : niv,
+    score:     pct,
+    bonnes:    bonnes,
+    total:     TOTAL,
+    duree:     `${min}m ${sec.toString().padStart(2,"0")}s`,
+    desc_niveau:      DESC[niv] || "",
+    date_test:        dateTest,
+    heure_test:       heureTest,
+    comp_grammaire:   compScores.grammaire   + "%",
+    comp_conjugaison: compScores.conjugaison + "%",
+    comp_oral:        compScores.oral        + "%",
+    comp_ecrit:       compScores.ecrit       + "%",
+    comp_vocabulaire: compScores.vocabulaire + "%",
+    niv_prea1: (nivScores["Pré-A1"] ?? 0) + "%",
+    niv_a1:    (nivScores["A1"]     ?? 0) + "%",
+    niv_a2:    (nivScores["A2"]     ?? 0) + "%",
+    niv_b1:    (nivScores["B1"]     ?? 0) + "%",
+    niv_b2:    (nivScores["B2"]     ?? 0) + "%",
+    niv_c1:    (nivScores["C1"]     ?? 0) + "%",
+    points_forts:   forts,
+    points_faibles: faibles,
+  };
+
   _sauverFirebase(niv, pct, reg.prenom, reg.nom, reg.email, dureeSec, reg);
-  _envoyerEmail(niv, pct, reg.prenom, reg.nom, reg.email, dureeSec, msg);
+  _envoyerEmail(emailParams, reg.email, reg.autoemail, msg);
 }
 
 function _getRegData() {
@@ -1426,7 +1482,7 @@ function _getRegData() {
   };
 }
 
-function _envoyerEmail(niv, pct, prenom, nom, email, dureeSec, msgEl) {
+function _envoyerEmail(params, eleveEmail, autoEmail, msgEl) {
   if (msgEl) { msgEl.textContent = "Envoi de l'e-mail…"; msgEl.style.color = ""; }
   try {
     const ej = window._emailjs;
@@ -1434,31 +1490,18 @@ function _envoyerEmail(niv, pct, prenom, nom, email, dureeSec, msgEl) {
       if (msgEl) { msgEl.textContent = "✓ Résultats enregistrés (email non configuré)."; msgEl.style.color = "var(--warning)"; }
       return;
     }
-    const minutes  = Math.floor(dureeSec / 60);
-    const secondes = dureeSec % 60;
-    const duree    = `${minutes}m ${secondes}s`;
-    const params   = {
-      prenom:  prenom || "(non renseigné)",
-      nom:     nom    || "(non renseigné)",
-      email:   email  || "(non renseigné)",
-      niveau:  niv,
-      score:   pct,
-      duree:   duree,
-      to_email: "alexis.hoppeler@gmail.com"
-    };
-    // Notification admin (toujours)
-    emailjs.send(ej.serviceId, ej.templateId, params)
+    // Notification admin
+    emailjs.send(ej.serviceId, ej.templateId, { ...params, to_email: "alexis.hoppeler@gmail.com" })
       .then(() => {
         if (msgEl) { msgEl.textContent = "✓ Résultats enregistrés et e-mail envoyé !"; msgEl.style.color = "var(--success)"; }
       })
       .catch(err => {
         console.error("EmailJS erreur:", err);
-        if (msgEl) { msgEl.textContent = "Résultats enregistrés — erreur email : " + (err.text || err); msgEl.style.color = "var(--danger)"; }
+        if (msgEl) { msgEl.textContent = "Erreur email : " + (err.text || err); msgEl.style.color = "var(--danger)"; }
       });
-    // Copie élève (uniquement si case cochée et email fourni)
-    const autoemail = document.getElementById("reg-autoemail");
-    if (autoemail && autoemail.checked && email) {
-      emailjs.send(ej.serviceId, ej.templateEleveId, { ...params, to_email: email });
+    // Copie élève (si case cochée)
+    if (autoEmail && eleveEmail) {
+      emailjs.send(ej.serviceId, ej.templateEleveId, { ...params, to_email: eleveEmail });
     }
   } catch(e) {
     console.error("EmailJS exception:", e);
