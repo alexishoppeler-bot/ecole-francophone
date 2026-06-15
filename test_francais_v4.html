@@ -1483,6 +1483,7 @@ function _getRegData() {
 }
 
 function _envoyerEmail(params, eleveEmail, autoEmail, msgEl) {
+  console.log("📧 EmailParams envoyés :", JSON.stringify(params, null, 2));
   if (msgEl) { msgEl.textContent = "Envoi de l'e-mail…"; msgEl.style.color = ""; }
   try {
     const ej = window._emailjs;
