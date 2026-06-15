@@ -9,10 +9,10 @@
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
   (function(){
-    const EMAILJS_PUBLIC_KEY          = "EMAILJS_PUBLIC_KEY";          // ← remplacez
-    const EMAILJS_SERVICE_ID          = "EMAILJS_SERVICE_ID";          // ← remplacez
-    const EMAILJS_TEMPLATE_ID         = "EMAILJS_TEMPLATE_ID";         // ← remplacez (notification admin)
-    const EMAILJS_TEMPLATE_ELEVE_ID   = "EMAILJS_TEMPLATE_ELEVE_ID";  // ← remplacez (copie élève)
+    const EMAILJS_PUBLIC_KEY          = "70v8ZeP93IYYMA6FO";
+    const EMAILJS_SERVICE_ID          = "service_6zurkie";
+    const EMAILJS_TEMPLATE_ID         = "iwqiphl";   // notification admin
+    const EMAILJS_TEMPLATE_ELEVE_ID   = "iwqiphl";  // copie élève (même template, To = {{to_email}})
     emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
     window._emailjs = { serviceId: EMAILJS_SERVICE_ID, templateId: EMAILJS_TEMPLATE_ID, templateEleveId: EMAILJS_TEMPLATE_ELEVE_ID };
   })();
