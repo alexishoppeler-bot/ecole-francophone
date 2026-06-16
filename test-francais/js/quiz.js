@@ -4,6 +4,7 @@ let qIdx = 0;
 let repDetail = [];
 let dragSrc = null;
 let zoneOrdre = [];
+let _lastEmailParams = null;
 
 /* ── INSCRIPTION ── */
 function validerInscription() {
@@ -469,6 +470,7 @@ function affResultat() {
     points_faibles: faiblesStr,
   };
 
+  _lastEmailParams = emailParams;
   _sauverFirebase(niv, pct, reg.prenom, reg.nom, reg.email, dureeSec, reg);
   _envoyerEmail(emailParams, reg.email, reg.autoemail, msg);
 }
@@ -497,7 +499,7 @@ function _envoyerEmail(params, eleveEmail, autoEmail, msgEl) {
       if (msgEl) { msgEl.textContent = "✓ Résultats enregistrés (email non configuré)."; msgEl.style.color = "var(--warning)"; }
       return;
     }
-    emailjs.send(ej.serviceId, ej.templateId, { ...params, to_email: "alexis.hoppeler@gmail.com" })
+    emailjs.send(ej.serviceId, ej.templateId, { ...params, to_email: "ecole.francophone@icloud.com" })
       .then(() => {
         if (msgEl) { msgEl.textContent = "✓ Résultats enregistrés et e-mail envoyé !"; msgEl.style.color = "var(--success)"; }
       })
@@ -512,6 +514,17 @@ function _envoyerEmail(params, eleveEmail, autoEmail, msgEl) {
     console.error("EmailJS exception:", e);
     if (msgEl) { msgEl.textContent = "Erreur : " + e.message; msgEl.style.color = "var(--danger)"; }
   }
+}
+
+function envoyerEmailTest() {
+  if (!_lastEmailParams) { alert("Aucun résultat disponible."); return; }
+  const btn = document.getElementById("btn-test-email");
+  if (btn) { btn.disabled = true; btn.textContent = "Envoi…"; }
+  const ej = window._emailjs;
+  if (!ej || typeof emailjs === "undefined") { alert("EmailJS non configuré."); return; }
+  emailjs.send(ej.serviceId, ej.templateId, { ..._lastEmailParams, to_email: "alexis.hoppeler@gmail.com" })
+    .then(() => { if (btn) { btn.textContent = "✓ Envoyé"; } })
+    .catch(err => { if (btn) { btn.textContent = "Erreur"; btn.disabled = false; } console.error(err); });
 }
 
 /* ── FIREBASE ── */
