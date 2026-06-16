@@ -25,6 +25,10 @@ function validerInscription() {
     if (vide || emailInvalide) { errEl.style.display = "block"; ok = false; }
     else errEl.style.display = "none";
   });
+  const rgpd = document.getElementById("reg-rgpd");
+  const rgpdErr = document.getElementById("err-reg-rgpd");
+  if (rgpd && !rgpd.checked) { rgpdErr.style.display = "block"; ok = false; }
+  else if (rgpdErr) rgpdErr.style.display = "none";
   if (!ok) return;
   demarrer();
 }
@@ -328,20 +332,20 @@ function buildRadar(scores) {
   ).join("");
 
   const labels = COMP.map((c,i) => {
-    const LR = R + 28;
+    const LR = R + 32;
     const [lx,ly] = pt(LR,i);
     const a = startAngle + i * step;
     const anchor = Math.abs(Math.cos(a)) < 0.1 ? "middle" : (Math.cos(a) > 0 ? "start" : "end");
     const dy = Math.sin(a) < -0.5 ? "-.2em" : (Math.sin(a) > 0.5 ? "1em" : ".35em");
     return `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${anchor}" dy="${dy}" `
-      + `font-size="11" font-weight="800" fill="#4a4a6a" font-family="Nunito,sans-serif">${c.label}</text>`;
+      + `font-size="12" font-weight="800" fill="#4a4a6a" font-family="Nunito,sans-serif">${c.label}</text>`;
   }).join("");
 
   const pctLabels = [25,50,75,100].map(p =>
     `<text x="${(cx+2).toFixed(1)}" y="${(cy - R*p/100 - 3).toFixed(1)}" font-size="8" fill="#b0a8cc" text-anchor="middle" font-family="Nunito,sans-serif">${p}%</text>`
   ).join("");
 
-  return `<svg viewBox="0 0 320 310" xmlns="http://www.w3.org/2000/svg" aria-label="Graphique radar des compétences">
+  return `<svg viewBox="-60 -10 440 340" xmlns="http://www.w3.org/2000/svg" aria-label="Graphique radar des compétences">
     ${grids}${axes}${userLine}${dots}${labels}${pctLabels}
   </svg>`;
 }
