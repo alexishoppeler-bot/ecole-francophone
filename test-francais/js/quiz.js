@@ -472,7 +472,8 @@ function affResultat() {
 
   _lastEmailParams = emailParams;
   _sauverFirebase(niv, pct, reg.prenom, reg.nom, reg.email, dureeSec, reg);
-  _envoyerEmail(emailParams, reg.email, reg.autoemail, msg);
+  const wrap = document.getElementById("btn-results-wrap");
+  if (wrap) wrap.style.display = "flex";
 }
 
 /* ── DONNÉES D'INSCRIPTION ── */
@@ -485,12 +486,11 @@ function _getRegData() {
     npa:      (document.getElementById("reg-npa")?.value      || "").trim(),
     ville:    (document.getElementById("reg-ville")?.value    || "").trim(),
     tel:      ((document.getElementById("reg-indicatif")?.value || "") + " " + (document.getElementById("reg-tel")?.value || "")).trim(),
-    autoemail: document.getElementById("reg-autoemail")?.checked || false,
   };
 }
 
 /* ── EMAIL ── */
-function _envoyerEmail(params, eleveEmail, autoEmail, msgEl) {
+function _envoyerEmail(params, msgEl) {
   console.log("📧 EmailParams envoyés :", JSON.stringify(params, null, 2));
   if (msgEl) { msgEl.textContent = "Envoi de l'e-mail…"; msgEl.style.color = ""; }
   try {
@@ -501,19 +501,46 @@ function _envoyerEmail(params, eleveEmail, autoEmail, msgEl) {
     }
     emailjs.send(ej.serviceId, ej.templateId, { ...params, to_email: "ecole.francophone@icloud.com" })
       .then(() => {
-        if (msgEl) { msgEl.textContent = "✓ Résultats enregistrés et e-mail envoyé !"; msgEl.style.color = "var(--success)"; }
+        if (msgEl) { msgEl.textContent = "✓ Résultats envoyés !"; msgEl.style.color = "var(--success)"; }
       })
       .catch(err => {
         console.error("EmailJS erreur:", err);
         if (msgEl) { msgEl.textContent = "Erreur email : " + (err.text || err); msgEl.style.color = "var(--danger)"; }
       });
-    if (autoEmail && eleveEmail) {
-      emailjs.send(ej.serviceId, ej.templateEleveId, { ...params, to_email: eleveEmail });
-    }
   } catch(e) {
     console.error("EmailJS exception:", e);
     if (msgEl) { msgEl.textContent = "Erreur : " + e.message; msgEl.style.color = "var(--danger)"; }
   }
+}
+
+function envoyerEmailConfirm() {
+  if (!_lastEmailParams) return;
+  const btn = document.getElementById("btn-confirm-email");
+  const msg = document.getElementById("save-msg");
+  if (btn) { btn.disabled = true; btn.textContent = "Envoi en cours…"; }
+  _envoyerEmail(_lastEmailParams, msg);
+}
+
+function telechargerImage() {
+  if (!_lastEmailParams) return;
+  const p = _lastEmailParams;
+  const nom = (p.prenom + "_" + p.nom).replace(/\s+/g,"_");
+  const filename = `résultats_${nom}_${p.niveau}.png`;
+  const wrap = document.getElementById("btn-results-wrap");
+  const msg  = document.getElementById("save-msg");
+  if (wrap) wrap.style.visibility = "hidden";
+  if (msg)  msg.style.visibility  = "hidden";
+  html2canvas(document.getElementById("e-res"), { scale: 2, useCORS: true, backgroundColor: "#f5f3ff" })
+    .then(canvas => {
+      const a = document.createElement("a");
+      a.href = canvas.toDataURL("image/png");
+      a.download = filename;
+      a.click();
+    })
+    .finally(() => {
+      if (wrap) wrap.style.visibility = "";
+      if (msg)  msg.style.visibility  = "";
+    });
 }
 
 function envoyerEmailTest() {

@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Test de niveau de français — école-francophone.ch</title>
 
+<!-- html2canvas -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 <!-- EmailJS SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
@@ -539,10 +542,6 @@ h3 {
         </div>
       </div>
 
-      <div class="form-grp" style="flex-direction:row;align-items:center;gap:10px;margin-top:4px">
-        <input type="checkbox" id="reg-autoemail" style="width:18px;height:18px;accent-color:var(--accent2);cursor:pointer;flex-shrink:0">
-        <label for="reg-autoemail" style="margin:0;cursor:pointer;font-size:.93rem;color:var(--text2)">Recevoir mon résultat par e-mail après le test</label>
-      </div>
 
       <button class="btn btn-grad" style="margin-top:24px" onclick="validerInscription()">Démarrer le test →</button>
     </div>
@@ -569,16 +568,11 @@ h3 {
       <div class="sep"></div>
       <h3 style="margin-bottom:4px">Analyse détaillée</h3>
 
-      <div class="res-analyse-grid">
-        <div>
-          <p class="res-section-title">Profil de compétences</p>
-          <div id="radar-svg"></div>
-        </div>
-        <div>
-          <p class="res-section-title">Résultats par niveau CECRL</p>
-          <div id="res-niveaux"></div>
-        </div>
+      <div>
+        <p class="res-section-title">Profil de compétences</p>
+        <div id="radar-svg"></div>
       </div>
+      <div id="res-niveaux" style="display:none"></div>
 
       <div class="sep"></div>
 
@@ -589,9 +583,13 @@ h3 {
     </div>
 
     <!-- Carte 2 : Confirmation enregistrement -->
-    <div class="card" style="margin-top:16px;text-align:center">
-      <p id="save-msg" style="font-size:.95rem;color:var(--text2)">Enregistrement de vos résultats…</p>
-      <button id="btn-test-email" onclick="envoyerEmailTest()" style="margin-top:12px;font-size:11px;color:#bbb;background:none;border:1px solid #ddd;border-radius:6px;padding:4px 10px;cursor:pointer">test</button>
+    <div class="card" style="margin-top:16px;text-align:center;padding:24px">
+      <div id="btn-results-wrap" style="display:none;flex-direction:column;align-items:center;gap:12px">
+        <button id="btn-confirm-email" onclick="envoyerEmailConfirm()" style="font-size:1rem;font-weight:700;color:#fff;background:linear-gradient(135deg,#1D4ED8,#7C3AED);border:none;border-radius:10px;padding:14px 32px;cursor:pointer;width:100%;max-width:320px">Envoyer mes résultats →</button>
+        <button onclick="telechargerImage()" style="font-size:.95rem;font-weight:700;color:#1D4ED8;background:#f0f4ff;border:2px solid #c7d7ff;border-radius:10px;padding:12px 32px;cursor:pointer;width:100%;max-width:320px">⬇ Télécharger l'image</button>
+      </div>
+      <p id="save-msg" style="font-size:.95rem;color:var(--text2);margin-top:8px"></p>
+      <button id="btn-test-email" onclick="envoyerEmailTest()" style="margin-top:16px;font-size:11px;color:#ccc;background:none;border:1px solid #eee;border-radius:6px;padding:3px 8px;cursor:pointer">test</button>
     </div>
 
   </div>
@@ -1469,7 +1467,8 @@ function affResultat() {
 
   _lastEmailParams = emailParams;
   _sauverFirebase(niv, pct, reg.prenom, reg.nom, reg.email, dureeSec, reg);
-  _envoyerEmail(emailParams, reg.email, reg.autoemail, msg);
+  const wrap = document.getElementById("btn-results-wrap");
+  if (wrap) wrap.style.display = "flex";
 }
 
 function _getRegData() {
@@ -1481,11 +1480,10 @@ function _getRegData() {
     npa:      (document.getElementById("reg-npa")?.value      || "").trim(),
     ville:    (document.getElementById("reg-ville")?.value    || "").trim(),
     tel:      ((document.getElementById("reg-indicatif")?.value || "") + " " + (document.getElementById("reg-tel")?.value || "")).trim(),
-    autoemail: document.getElementById("reg-autoemail")?.checked || false,
   };
 }
 
-function _envoyerEmail(params, eleveEmail, autoEmail, msgEl) {
+function _envoyerEmail(params, msgEl) {
   console.log("📧 EmailParams envoyés :", JSON.stringify(params, null, 2));
   if (msgEl) { msgEl.textContent = "Envoi de l'e-mail…"; msgEl.style.color = ""; }
   try {
@@ -1494,23 +1492,48 @@ function _envoyerEmail(params, eleveEmail, autoEmail, msgEl) {
       if (msgEl) { msgEl.textContent = "✓ Résultats enregistrés (email non configuré)."; msgEl.style.color = "var(--warning)"; }
       return;
     }
-    // Notification admin
     emailjs.send(ej.serviceId, ej.templateId, { ...params, to_email: "ecole.francophone@icloud.com" })
       .then(() => {
-        if (msgEl) { msgEl.textContent = "✓ Résultats enregistrés et e-mail envoyé !"; msgEl.style.color = "var(--success)"; }
+        if (msgEl) { msgEl.textContent = "✓ Résultats envoyés !"; msgEl.style.color = "var(--success)"; }
       })
       .catch(err => {
         console.error("EmailJS erreur:", err);
         if (msgEl) { msgEl.textContent = "Erreur email : " + (err.text || err); msgEl.style.color = "var(--danger)"; }
       });
-    // Copie élève (si case cochée)
-    if (autoEmail && eleveEmail) {
-      emailjs.send(ej.serviceId, ej.templateEleveId, { ...params, to_email: eleveEmail });
-    }
   } catch(e) {
     console.error("EmailJS exception:", e);
     if (msgEl) { msgEl.textContent = "Erreur : " + e.message; msgEl.style.color = "var(--danger)"; }
   }
+}
+
+function envoyerEmailConfirm() {
+  if (!_lastEmailParams) return;
+  const btn = document.getElementById("btn-confirm-email");
+  const msg = document.getElementById("save-msg");
+  if (btn) { btn.disabled = true; btn.textContent = "Envoi en cours…"; }
+  _envoyerEmail(_lastEmailParams, msg);
+}
+
+function telechargerImage() {
+  if (!_lastEmailParams) return;
+  const p = _lastEmailParams;
+  const nom = (p.prenom + "_" + p.nom).replace(/\s+/g,"_");
+  const filename = `résultats_${nom}_${p.niveau}.png`;
+  const wrap = document.getElementById("btn-results-wrap");
+  const msg  = document.getElementById("save-msg");
+  if (wrap) wrap.style.visibility = "hidden";
+  if (msg)  msg.style.visibility  = "hidden";
+  html2canvas(document.getElementById("e-res"), { scale: 2, useCORS: true, backgroundColor: "#f5f3ff" })
+    .then(canvas => {
+      const a = document.createElement("a");
+      a.href = canvas.toDataURL("image/png");
+      a.download = filename;
+      a.click();
+    })
+    .finally(() => {
+      if (wrap) wrap.style.visibility = "";
+      if (msg)  msg.style.visibility  = "";
+    });
 }
 
 function envoyerEmailTest() {
