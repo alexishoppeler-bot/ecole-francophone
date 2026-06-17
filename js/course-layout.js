@@ -12,6 +12,7 @@
   const _coursIdx = _pathParts.lastIndexOf('cours');
   const _depth = _coursIdx >= 0 ? _pathParts.length - _coursIdx - 2 : 0;
   const hrefBase = '../'.repeat(Math.max(0, _depth));
+  const ROOT = window.EF_ROOT || hrefBase + '../';
 
   function pageKeyFromHref(href) {
     return href.split('/').pop().replace(/\.html$/i, '');
@@ -46,7 +47,7 @@
   const UNIT_BOT     = UNIT_TEXT.bot      || { idle:'Je suis là. Pose-moi une question.', greet:'Bonjour, ravi de t\'aider.', diagDefault:'Commencez par Communication, puis faites un jeu.', diagDone:'Cette unité est terminée : passez à la suite.', diagGood:'Bonne base : faites le test final ou complétez les jeux restants.', diagStarted:'Vous avez commencé : terminez un jeu court avant de changer d\'unité.' };
   const BRAND = SITE_TEXT.brand || {
     alt: 'École Francophone',
-    homeHref: hrefBase + '../index.html',
+    homeHref: ROOT + 'index.html',
     blueHtml: 'learning',
     purpleHtml: 'progress',
     courseTitlePrefix: 'École Francophone'
@@ -194,11 +195,11 @@
       if (!btn) return;
       setStoredLevel(btn.dataset.level);
       var platformUrls = {
-        a1: hrefBase + '../plateformes/a1/index.html',
-        a2: hrefBase + '../plateformes/a2/index.html',
-        b1: hrefBase + '../plateformes/b1/index.html',
-        b2: hrefBase + '../plateformes/b2/index.html',
-        c1c2: hrefBase + '../plateformes/c1c2/index.html'
+        a1: ROOT + 'plateformes/a1/index.html',
+        a2: ROOT + 'plateformes/a2/index.html',
+        b1: ROOT + 'plateformes/b1/index.html',
+        b2: ROOT + 'plateformes/b2/index.html',
+        c1c2: ROOT + 'plateformes/c1c2/index.html'
       };
       window.location.href = platformUrls[btn.dataset.level] || resolveUrl('index.html');
     });
@@ -228,7 +229,7 @@
       '<header class="header">',
       '  <div class="header-row1">',
       '    <a href="' + BRAND.homeHref + '" class="header-logo">',
-      '      <img src="' + hrefBase + '../assets/logo.png" class="header-logo-img" alt="' + BRAND.alt + '" />',
+      '      <img src="' + ROOT + 'assets/logo.png" class="header-logo-img" alt="' + BRAND.alt + '" />',
       '      <span class="header-logo-text"><span class="header-logo-blue">' + BRAND.blueHtml + '</span> <span class="header-logo-purple">' + BRAND.purpleHtml + '</span></span>',
       '    </a>',
       '    <div class="header-right">',
