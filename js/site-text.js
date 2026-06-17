@@ -71,7 +71,7 @@ window.SITE_TEXT = {
       titleBlueHtml: 'Cours',
       titlePurpleHtml: 'de français',
       subtitle: 'Choisissez une unité dans le sommaire pour accéder aux leçons, exercices et points de langue.',
-      progressLinkLabel: '📊 Voir mon tableau de progression →'
+      progressLinkLabel: ''
     },
     footer: [
       'learning progress · cours et repères pratiques',
@@ -116,16 +116,4 @@ window.SITE_TEXT = {
     }
   },
 
-  exercises: {
-    headerAriaLabel: 'Accueil et suivi',
-    sidebarHeadingTitle: 'Activités',
-    sidebarHeadingSubtitle: 'Choisissez un exercice',
-    appsTitle: 'Applications',
-    footer: [
-      'Plateforme simple pour apprendre pas a pas',
-      'Vos résultats restent sur cet appareil'
-    ],
-    toggleLabel: 'Ouvrir les activités',
-    toggleTitle: 'Activités'
-  }
 };

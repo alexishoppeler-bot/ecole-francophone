@@ -54,7 +54,7 @@ body {
   z-index: 1;
   width: min(1120px, calc(100% - 32px));
   margin: 0 auto;
-  padding: clamp(28px, 6vw, 72px) 0;
+  padding: clamp(16px, 3vw, 32px) 0;
 }
 
 .landing-hero {
@@ -171,30 +171,6 @@ body {
   border-color: rgba(136,0,255,0.60);
   color: #8800FF;
   box-shadow: 0 12px 32px rgba(136,0,255,0.18);
-}
-
-.landing-action-test {
-  margin-left: 8px;
-  background: linear-gradient(135deg, #fff8ec 0%, #fef3c7 100%);
-  border-color: rgba(245,158,11,0.40);
-  color: #92400e;
-  box-shadow: 0 4px 16px rgba(245,158,11,0.12);
-  position: relative;
-}
-
-.landing-action-test::before {
-  content: '';
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: #f59e0b;
-  box-shadow: 0 0 0 4px rgba(245,158,11,0.18);
-  flex-shrink: 0;
-}
-
-.landing-action-test:hover {
-  border-color: rgba(245,158,11,0.65);
-  box-shadow: 0 12px 32px rgba(245,158,11,0.22);
 }
 
 /* ── Panel ── */
@@ -479,8 +455,5 @@ body {
 @media (max-width: 520px) {
   .landing-action {
     width: 100%;
-  }
-  .landing-action-test {
-    margin-left: 0;
   }
 }

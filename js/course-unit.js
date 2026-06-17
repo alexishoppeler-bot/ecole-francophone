@@ -11,7 +11,6 @@
   var readProgress       = ef.readProgress;
   var updateProgress     = ef.updateProgress;
   var getProgressState   = ef.getProgressState;
-  var readExerciseProgress = ef.readExerciseProgress;
   var getPrevNext        = ef.getPrevNext;
   var getStatusLabel     = ef.getStatusLabel;
   var entryByPage        = ef.entryByPage;
@@ -62,16 +61,6 @@
     }).join('');
   }
 
-  function createTrainingLinks(entry) {
-    const links = entry.training || [
-      { href: '../games/completer.html', label: 'Compléter', note: 'retrouver le mot ou la structure adaptée' },
-      { href: '../games/quiz.html', label: 'Quiz', note: 'vérifier la compréhension du thème' },
-      { href: '../games/vrai-faux.html', label: 'Vrai / Faux', note: 'nuancer et valider les idées clés' }
-    ];
-    return links.map(function(link) {
-      return '<li><a href="' + resolveUrl(link.href) + '">' + link.label + '</a><span>' + link.note + '</span></li>';
-    }).join('');
-  }
 
   function buildAssessment(entry) {
     return (entry.assessment || []).map(function(question, index) {
@@ -86,62 +75,6 @@
     }).join('');
   }
 
-  function getTrainingCards(entry) {
-    if (!entry || entry.level !== 'A1') return [];
-    var u = '?unite=' + encodeURIComponent(entry.badge);
-    return [
-      { id: 'entrainement-a1-vrai-faux', href: 'entrainement-a1-vrai-faux.html' + u, label: 'Vrai / Faux', icon: '✓✗' },
-      { id: 'entrainement-a1-apparier', href: 'entrainement-a1-apparier.html' + u, label: 'Associer', icon: '🔗' },
-      { id: 'entrainement-a1-completer', href: 'entrainement-a1-completer.html' + u, label: 'Compléter', icon: '✏️' },
-      { id: 'entrainement-a1-ecouter', href: 'entrainement-a1-ecouter.html' + u, label: 'Écouter', icon: '🔊' },
-      { id: 'entrainement-conjugaison-quiz', href: 'entrainement-conjugaison-quiz.html' + u, label: 'Quiz', icon: '🧠' },
-      { id: 'entrainement-conjugaison-a1', href: 'entrainement-conjugaison-a1.html' + u, label: 'Conjugaison', icon: '🔤' },
-      { id: 'entrainement-a1-mots-meles', href: 'entrainement-a1-mots-meles.html' + u, label: 'Mots mêlés', icon: '🔍' },
-      { id: 'entrainement-a1-anagrammes', href: 'entrainement-a1-anagrammes.html' + u, label: 'Anagrammes', icon: '🔀' },
-      { id: 'entrainement-a1-flashcards', href: 'entrainement-a1-flashcards.html' + u, label: 'Flashcards', icon: '🃏' },
-      { id: 'entrainement-a1-dialogue', href: 'entrainement-a1-dialogue.html' + u, label: 'Dialogue', icon: '💬' },
-      { id: 'entrainement-a1-construire', href: 'entrainement-a1-construire.html' + u, label: 'Construire', icon: '🧩' },
-      { id: 'entrainement-a1-validation', href: 'entrainement-a1-validation.html' + u, label: 'Valider', icon: '✍️' }
-    ];
-  }
-
-  function buildTrainingProgress(entry) {
-    var cards = getTrainingCards(entry);
-    if (!cards.length) return '';
-    var page = pageKeyFromHref(entry.href);
-    var progress = readExerciseProgress();
-    var unitProgress = progress[page] || {};
-    var done = cards.filter(function(card) {
-      return unitProgress[card.id] && unitProgress[card.id].status === 'completed';
-    }).length;
-    var pct = Math.round(done / cards.length * 100);
-    return '<div class="unit-training-progress">'
-      + '<div class="unit-training-head"><div><span class="unit-progress-kicker">' + UNIT_PROG.gamesKicker + '</span><strong>' + done + ' / ' + cards.length + ' ' + UNIT_PROG.gamesDone + '</strong></div>'
-      + '<div class="unit-training-ring" style="--training-pct:' + pct + '%"><span>' + pct + '%</span></div>'
-      + '<a class="game-btn game-btn--secondary" href="' + resolveUrl('entrainement-a1.html') + '?unite=' + encodeURIComponent(entry.badge) + '">' + UNIT_PROG.gamesLabel + '</a></div>'
-      + '<div class="unit-training-grid">'
-      + cards.map(function(card, index) {
-        var item = unitProgress[card.id] || {};
-        var status = item.status || 'idle';
-        var label = status === 'completed' ? UNIT_STATUS.cardCompleted : status === 'started' ? UNIT_STATUS.cardStarted : UNIT_STATUS.cardIdle;
-        var score = item.score !== null && item.score !== undefined && item.total ? '<span class="unit-training-score">' + item.score + '/' + item.total + '</span>' : '';
-        var cardPct = status === 'completed' ? 100 : status === 'started' ? 35 : 0;
-        if (item.score !== null && item.score !== undefined && item.total) {
-          cardPct = Math.round(item.score / item.total * 100);
-        }
-        return '<article class="unit-training-card unit-training-card--' + status + '" style="--training-i:' + index + '">'
-          + '<span class="unit-training-icon">' + card.icon + '</span>'
-          + '<span class="unit-training-label">' + card.label + '</span>'
-          + '<span class="unit-training-status">' + label + '</span>'
-          + score
-          + '<span class="unit-training-mini-progress" aria-label="Progression ' + cardPct + '%"><span style="width:' + cardPct + '%"></span></span>'
-          + '<span class="unit-training-percent">' + cardPct + '%</span>'
-          + '<a class="unit-training-open" href="' + resolveUrl(card.href) + '">Ouvrir</a>'
-          + '</article>';
-      }).join('')
-      + '</div>'
-      + '</div>';
-  }
 
   function buildNavigation(entry) {
     const neighbors = getPrevNext(pageKeyFromHref(entry.href));
@@ -308,34 +241,45 @@
     var dialogues = (DIALOGUES && DIALOGUES[key]) || [];
     var firstDialogue = dialogues[0] || null;
     var theme = (entry.themes || [entry.label])[0] || entry.label;
-    var standardQuestionSearches = [
-      { label: 'Qui ?', hint: 'personnes', query: 'question qui français image' },
-      { label: 'Quoi ?', hint: 'objets / actions', query: 'question quoi français image' },
-      { label: 'Où ?', hint: 'lieux', query: 'question où français image' },
-      { label: 'Quand ?', hint: 'temps / dates', query: 'question quand français image' },
-      { label: 'Comment ?', hint: 'manière', query: 'question comment français image' },
-      { label: 'Pourquoi ?', hint: 'raison', query: 'question pourquoi français image' },
-      { label: 'Combien ?', hint: 'nombre / prix', query: 'question combien français image' },
-      { label: 'Quel / Quelle ?', hint: 'choix', query: 'question quel quelle français image' },
-      { label: 'Est-ce que ?', hint: 'oui / non', query: 'question est-ce que français image' },
-      { label: 'Les questions A1', hint: 'révision générale', query: 'questions standards français A1 image' }
-    ];
-    var supportHtml = key === 'unite-0'
-      ? '<div class="comm-support-card comm-image-search-support"><strong>Supports visuels à chercher</strong><p>Ouvrez Google Images, copiez une image, revenez ici, cliquez sur le cadre correspondant puis collez avec Ctrl+V.</p><div class="comm-image-search-grid">'
-        + standardQuestionSearches.map(function(item) {
-          var searchUrl = 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(item.query);
-          return '<div class="comm-image-search-card" tabindex="0" data-image-slot="' + encodeURIComponent(item.label) + '">'
-            + '<span class="comm-image-search-frame" aria-hidden="true"></span>'
-            + '<span class="comm-image-search-label">' + escapeHtml(item.label) + '</span>'
-            + '<span class="comm-image-search-hint">' + escapeHtml(item.hint) + '</span>'
-            + '<span class="comm-image-search-actions">'
-              + '<a href="' + searchUrl + '" target="_blank" rel="noopener">Google Images</a>'
-              + '<button type="button" data-clear-image>Effacer</button>'
-            + '</span>'
-          + '</div>';
+    var SUPPORT_CARDS = (window.COMM_SUPPORTS && window.COMM_SUPPORTS[key]) || [];
+
+    function buildSupportCarousel(cards) {
+      if (!cards.length) return '<div class="support-card"><div class="support-card-body"><h4 class="support-card-title">' + escapeHtml(entry.label) + '</h4><p class="support-card-desc">' + escapeHtml(entry.summary || entry.focus || '') + '</p></div></div>';
+      var html = '<div class="comm-carousel">'
+        + '<div class="comm-carousel-track">'
+        + cards.map(function(s, i) {
+          return '<div class="comm-carousel-slide' + (i === 0 ? ' active' : '') + '" data-slide="' + i + '">'
+            + '<div class="support-card">'
+            + '<div class="support-card-img-wrap">'
+            + '<img class="support-card-img" src="' + escapeHtml(s.img) + '" alt="' + escapeHtml(s.title) + '" tabindex="0" role="button" aria-label="Agrandir l\'image">'
+            + '</div>'
+            + '<div class="support-card-body">'
+            + '<h4 class="support-card-title">' + escapeHtml(s.title) + '</h4>'
+            + (s.consigne ? '<p class="support-card-desc">' + escapeHtml(s.consigne) + '</p>' : '')
+            + '</div>'
+            + '</div>'
+            + '</div>';
         }).join('')
-        + '</div></div>'
-      : '<div class="comm-support-card"><strong>' + escapeHtml(entry.label) + '</strong><p>' + escapeHtml(entry.summary || entry.focus || 'Observez la situation et préparez quelques phrases simples.') + '</p></div>';
+        + '</div>'
+        + (cards.length > 1
+          ? '<div class="comm-carousel-nav">'
+            + '<button type="button" class="comm-carousel-prev" aria-label="Précédent">‹</button>'
+            + '<span class="comm-carousel-counter">1 / ' + cards.length + '</span>'
+            + '<button type="button" class="comm-carousel-next" aria-label="Suivant">›</button>'
+            + '</div>'
+          : '')
+        + '</div>'
+        + '<div class="support-lightbox" hidden>'
+        + '<div class="support-lightbox-backdrop"></div>'
+        + '<div class="support-lightbox-content">'
+        + '<img class="support-lightbox-img" src="" alt="">'
+        + '<button class="support-lightbox-close" type="button" aria-label="Fermer">✕</button>'
+        + '</div>'
+        + '</div>';
+      return html;
+    }
+
+    var supportHtml = buildSupportCarousel(SUPPORT_CARDS);
 
     var reading = unitContent.textAuth
       ? '<div class="textauth-box"><p class="textauth-source">' + escapeHtml(unitContent.textAuth.source || 'Texte') + '</p><blockquote class="textauth-text">' + unitContent.textAuth.text + '</blockquote>'
@@ -420,23 +364,151 @@
           + '</form>' : '');
     }
 
-    var oralProduction = '<div class="unit-practice-box"><strong>Production orale</strong><p>À deux, créez un dialogue court dans une situation réelle liée à : ' + escapeHtml(theme) + '. Utilisez au moins trois expressions du mémo.</p></div>';
-    var writtenProduction = '<div class="unit-practice-box"><strong>Production écrite</strong><p>Écrivez 5 à 8 phrases pour expliquer une situation concrète liée à : ' + escapeHtml(theme) + '. Ajoutez une phrase personnelle.</p></div>';
-    var memo = (chipsHtml ? '<div class="memo-controls"><button class="game-btn game-btn--secondary memo-listen-all" type="button">🔊 Écouter tout</button></div><div class="unite-chips">' + chipsHtml + '</div>' : '')
-      + '<div class="unite-expression-box"><ul class="unite-expression-list unite-expression-list--cols">'
-      + unitContent.examples.map(function(ex) {
-        return '<li><button class="chip-listen" aria-label="Écouter" data-word="' + ex.replace(/"/g,'&quot;') + '">🔊</button>' + ex + '</li>';
+    var oralScenarios = (unitContent.oralProduction && unitContent.oralProduction.scenarios) || [
+      { situation: 'Présentez-vous : dites votre nom, d\'où vous venez et quelle langue vous parlez.', consigne: 'Dites : « Je m\'appelle…, je viens de…, je parle… »' },
+      { situation: 'Décrivez un pays francophone : où il se trouve, quelle est sa capitale, quelle langue on y parle.', consigne: 'Dites : « C\'est en…, la capitale est…, on parle… »' },
+      { situation: 'Expliquez où se trouve la Suisse romande et citez des villes que vous connaissez.', consigne: 'Dites : « La Suisse romande se trouve…, il y a…, à Genève on parle… »' }
+    ];
+    var oralProduction = '<div class="unit-practice-box"><strong>🗣️ Production orale</strong>'
+      + '<p>Choisissez un scénario, cliquez sur 🎙️ et parlez. Le site écoute votre voix et vous aide à corriger.</p>'
+      + '</div>'
+      + '<div class="oral-scenarios">'
+      + oralScenarios.map(function(s, i) {
+        return '<div class="oral-scenario-card" data-scenario="' + i + '">'
+          + '<div class="oral-scenario-num">Scénario ' + (i + 1) + '</div>'
+          + '<p class="oral-scenario-situation">' + escapeHtml(s.situation) + '</p>'
+          + '<p class="oral-scenario-consigne">💡 ' + escapeHtml(s.consigne) + '</p>'
+          + '<div class="oral-recorder">'
+          + '<button type="button" class="oral-rec-btn" data-rec-start><span class="oral-rec-icon">🎙️</span> Enregistrer ma voix</button>'
+          + '<button type="button" class="oral-rec-btn oral-rec-btn--stop" data-rec-stop hidden><span class="oral-rec-icon oral-rec-pulse">⏺</span> Arrêter</button>'
+          + '<div class="oral-transcript" data-rec-transcript hidden>'
+          + '<div class="oral-transcript-label">Ce que vous avez dit :</div>'
+          + '<p class="oral-transcript-text"></p>'
+          + '<div class="oral-correction" data-rec-correction></div>'
+          + '</div>'
+          + '</div>'
+          + '</div>';
       }).join('')
-      + '</ul></div>';
+      + '</div>';
+
+    var writtenScenarios = (unitContent.writtenProduction && unitContent.writtenProduction.scenarios) || [
+      { task: 'Présentez votre pays d\'origine en 5 phrases. Où est-il ? Quelle langue parle-t-on ? Comment s\'appelle la capitale ?', consigne: 'Utilisez : en, au, à, c\'est un pays…' },
+      { task: 'Écrivez un petit texte pour expliquer pourquoi vous apprenez le français en Suisse.', consigne: 'Utilisez : j\'apprends, j\'habite à, je veux…' },
+      { task: 'Décrivez la Suisse romande en quelques phrases : où est-elle, quelles villes connaissez-vous, quelle langue parle-t-on ?', consigne: 'Utilisez le vocabulaire de l\'unité.' }
+    ];
+    var writtenProduction = '<div class="unit-practice-box"><strong>✍️ Production écrite</strong>'
+      + '<p>Écrivez votre texte dans la zone sous chaque sujet.</p>'
+      + '</div>'
+      + '<div class="written-scenarios">'
+      + writtenScenarios.map(function(s, i) {
+        return '<div class="written-scenario-card">'
+          + '<div class="written-scenario-num">Sujet ' + (i + 1) + '</div>'
+          + '<p class="written-scenario-task">' + escapeHtml(s.task) + '</p>'
+          + '<p class="written-scenario-consigne">💡 ' + escapeHtml(s.consigne) + '</p>'
+          + '<div class="written-editor">'
+          + '<textarea class="written-editor-textarea" data-written-idx="' + i + '" rows="6" placeholder="Écrivez ici…" spellcheck="true" lang="fr"></textarea>'
+          + '<div class="written-editor-footer">'
+          + '<span class="written-editor-count">0 mot(s)</span>'
+          + '<button type="button" class="game-btn game-btn--primary written-check-btn" data-check-idx="' + i + '">Corriger mon texte</button>'
+          + '</div>'
+          + '<div class="written-correction" data-correction-idx="' + i + '"></div>'
+          + '</div>'
+          + '</div>';
+      }).join('')
+      + '</div>';
+    var MEMO_KEY = 'ef:memo:' + key;
+    var savedMemo = '';
+    try { savedMemo = localStorage.getItem(MEMO_KEY) || ''; } catch(e) {}
+
+    var memo = '<div class="memo-notepad">'
+      + '<div class="memo-notepad-header">'
+      + '<span class="memo-notepad-title">📝 Mes notes</span>'
+      + '<span class="memo-notepad-hint">Vos notes sont enregistrées automatiquement sur cet appareil.</span>'
+      + '</div>'
+      + '<textarea class="memo-notepad-textarea" id="memoText" rows="10" placeholder="Écrivez vos notes ici : mots importants, règles à retenir, phrases utiles…">' + escapeHtml(savedMemo) + '</textarea>'
+      + '<div class="memo-notepad-footer">'
+      + '<button type="button" class="game-btn game-btn--secondary" id="memoDownload">⬇ Télécharger mes notes</button>'
+      + '</div>'
+      + '</div>';
 
     var readingTextOnly = unitContent.textAuth
       ? '<div class="textauth-box"><p class="textauth-source">' + escapeHtml(unitContent.textAuth.source || '') + '</p><blockquote class="textauth-text">' + unitContent.textAuth.text + '</blockquote></div>'
       : '';
 
-    var comprehensionHtml = '';
-    if (readingMcqHtml) comprehensionHtml += '<h4>Compréhension écrite</h4>' + readingTextOnly + readingMcqHtml;
-    if (listeningHtml) comprehensionHtml += '<h4>Compréhension orale</h4>' + listeningHtml;
-    if (!comprehensionHtml) comprehensionHtml = reading + '<h4>Compréhension orale</h4>' + oralText;
+    var compSteps = [];
+
+    if (readingMcqHtml) {
+      compSteps.push({ title: '📖 Compréhension écrite', body: readingTextOnly + readingMcqHtml });
+    }
+    if (listeningHtml) {
+      compSteps.push({ title: '🔊 Compréhension orale', body: listeningHtml });
+    }
+    if (!compSteps.length) {
+      compSteps.push({ title: '📖 Compréhension', body: reading });
+      compSteps.push({ title: '🔊 Compréhension orale', body: oralText });
+    }
+
+    var extra = unitContent.comprehensionExtra;
+    if (extra) {
+      if (extra.vraiFaux && extra.vraiFaux.length) {
+        compSteps.push({ title: '✅ Vrai ou Faux', body:
+          '<form class="comp-vf-form" data-comp-form="vf">'
+          + extra.vraiFaux.map(function(item, i) {
+            return '<div class="comp-vf-item" data-vf-answer="' + (item.answer ? 'true' : 'false') + '" data-vf-correction="' + escapeHtml(item.correction || '') + '">'
+              + '<p class="comp-vf-statement">' + (i + 1) + '. ' + escapeHtml(item.statement) + '</p>'
+              + '<div class="comp-vf-buttons">'
+              + '<button type="button" class="comp-vf-btn" data-vf-choice="true">Vrai</button>'
+              + '<button type="button" class="comp-vf-btn" data-vf-choice="false">Faux</button>'
+              + '</div>'
+              + '<p class="comp-vf-feedback"></p>'
+              + '</div>';
+          }).join('')
+          + '</form>'
+        });
+      }
+      if (extra.completer && extra.completer.length) {
+        compSteps.push({ title: '✏️ Complétez les phrases', body:
+          '<form class="comp-fill-form" data-comp-form="fill">'
+          + extra.completer.map(function(item, i) {
+            var parts = item.phrase.split('___');
+            return '<div class="comp-fill-item" data-fill-answer="' + escapeHtml(item.answer.toLowerCase()) + '">'
+              + '<label>' + (i + 1) + '. ' + escapeHtml(parts[0]) + '<input type="text" class="comp-fill-input" placeholder="…" autocomplete="off">' + escapeHtml(parts[1] || '') + '</label>'
+              + '<p class="comp-fill-feedback"></p>'
+              + '</div>';
+          }).join('')
+          + '<div class="course-check-actions"><button type="submit" class="game-btn game-btn--primary">Corriger</button></div>'
+          + '</form>'
+        });
+      }
+      if (extra.associer && extra.associer.length) {
+        var shuffled = extra.associer.slice().sort(function() { return Math.random() - 0.5; });
+        compSteps.push({ title: '🔗 Associez', body:
+          '<div class="comp-match-grid">'
+          + '<div class="comp-match-col">' + extra.associer.map(function(item, i) {
+            return '<div class="comp-match-left" data-match-idx="' + i + '">' + escapeHtml(item.left) + '</div>';
+          }).join('') + '</div>'
+          + '<div class="comp-match-col">' + shuffled.map(function(item) {
+            var origIdx = extra.associer.indexOf(item);
+            return '<div class="comp-match-right" data-match-idx="' + origIdx + '">' + escapeHtml(item.right) + '</div>';
+          }).join('') + '</div>'
+          + '</div>'
+        });
+      }
+    }
+
+    var comprehensionHtml = '<div class="comp-steps" data-comp-total="' + compSteps.length + '">'
+      + '<div class="comp-steps-progress"><span class="comp-steps-counter">Exercice 1 / ' + compSteps.length + '</span></div>'
+      + compSteps.map(function(step, i) {
+        return '<div class="comp-step' + (i === 0 ? ' active' : '') + '" data-comp-step="' + i + '"' + (i === 0 ? '' : ' hidden') + '>'
+          + '<h4>' + step.title + '</h4>'
+          + step.body
+          + '</div>';
+      }).join('')
+      + '<div class="comp-steps-nav">'
+      + '<button type="button" class="game-btn game-btn--secondary comp-step-prev" disabled>← Précédent</button>'
+      + '<button type="button" class="game-btn game-btn--primary comp-step-next">Suivant →</button>'
+      + '</div>'
+      + '</div>';
 
     var panels = [
       ['support', '1. Support', supportHtml],
@@ -510,7 +582,6 @@
       ['conjugaison', '🔄', 'Conjugaison'],
       ['vocabulaire', '📖', 'Vocabulaire'],
       ['phonetique', '🔊', 'Phonétique'],
-      ['jeux', '🎮', 'Jeux'],
       ['progression', '📊', 'Progression']
     ];
 
@@ -524,7 +595,8 @@
       + smartObjectives.map(function(obj, i) { return '<li data-final-objective="' + i + '">' + obj + '</li>'; }).join('')
       + '</ul>';
 
-    var communicationBody = buildCommunicationCascade(entry, unitContent, chipsHtml);
+    var communicationBody = '<div class="comm-presential-notice">🏫 Cette partie se fait exclusivement en cours, avec votre enseignant·e.</div>'
+      + buildCommunicationCascade(entry, unitContent, chipsHtml);
 
     // Grammaire + encadré erreur fréquente
     var grammarBody = '<div class="gram-box"><div class="gram-title">' + unitContent.grammarTitle + '</div><div class="gram-rule">'
@@ -535,25 +607,6 @@
     }
     if (unitContent.grammarError) {
       grammarBody += '<div class="gram-error-box"><span class="gram-error-label">Erreur fréquente</span><div class="gram-error-text">' + unitContent.grammarError + '</div></div>';
-    }
-    if (unitContent.grammarFillIn && unitContent.grammarFillIn.length) {
-      grammarBody += '<div class="gram-fillin-box"><strong class="gram-fillin-title">Exercice à trous — Choisissez la bonne préposition</strong>'
-        + '<div class="gram-fillin-items">'
-        + unitContent.grammarFillIn.map(function(q, qi) {
-          return '<div class="gram-fillin-item" data-answer="' + q.answer + '">'
-            + '<p class="gram-fillin-prompt">' + escapeHtml(q.prompt) + '</p>'
-            + '<div class="gram-fillin-choices">'
-            + q.choices.map(function(ch, ci) {
-              return '<label class="gram-fillin-choice"><input type="radio" name="fillin-' + qi + '" value="' + ci + '"><span>' + escapeHtml(ch) + '</span></label>';
-            }).join('')
-            + '</div></div>';
-        }).join('')
-        + '</div>'
-        + '<button class="game-btn game-btn--primary gram-fillin-submit" type="button">Corriger</button>'
-        + '<span class="gram-fillin-result"></span>'
-        + '</div>';
-    } else {
-      grammarBody += '<div class="unit-practice-box"><strong>Exercice grammaire</strong><p>Repérez la structure dans un exemple, puis transformez-la avec une autre information.</p></div>';
     }
 
     var conjCards = verbData.verbs.map(function(v) {
@@ -631,7 +684,18 @@
           + '<p class="phon-pair-note">' + escapeHtml(pair.note) + '</p>'
           + '</div>';
       }).join('');
-      phonetiqueBody = '<div class="unit-practice-box"><strong>Écoute et répétition</strong><p>Cliquez sur les mots pour entendre, puis répétez. Faites attention aux sons nasals et au « r » français.</p></div>'
+      var syllabesHtml = (ph.syllabes || []).map(function(s) {
+        return '<div class="phon-syllabe-card">'
+          + '<button class="phon-syllabe-word chip-listen" type="button" data-word="' + s.word.replace(/"/g, '&quot;') + '">'
+          + '<span class="phon-syllabe-original">' + escapeHtml(s.word) + '</span>'
+          + '<span class="phon-syllabe-split">' + escapeHtml(s.split) + '</span>'
+          + '<span class="phon-syllabe-ipa">' + escapeHtml(s.ipa) + '</span>'
+          + '</button>'
+          + '</div>';
+      }).join('');
+
+      phonetiqueBody = '<div class="unit-practice-box"><strong>Écoute et répétition</strong><p>Cliquez sur les mots pour entendre, puis répétez syllabe par syllabe. Faites attention aux sons nasals et au « r » français.</p></div>'
+        + (syllabesHtml ? '<h4 class="phon-section-title">Prononciation par syllabes</h4><div class="phon-syllabes-grid">' + syllabesHtml + '</div>' : '')
         + (soundsHtml ? '<h4 class="phon-section-title">Sons ciblés</h4><div class="phon-sounds-grid">' + soundsHtml + '</div>' : '')
         + (pairsHtml ? '<h4 class="phon-section-title">Paires minimales</h4><div class="phon-pairs-grid">' + pairsHtml + '</div>' : '');
     } else {
@@ -642,83 +706,18 @@
         + '<div class="phon-chip-grid">' + phonWords + '</div>';
     }
 
-    // Exercice de débat (C1/C2)
-    var debateBody = '';
-    if (unitContent.debat) {
-      var db = unitContent.debat;
-      debateBody = '<div class="debat-box">'
-        + '<p class="debat-question">' + db.question + '</p>'
-        + '<div class="debat-positions">'
-        + '<div class="debat-pour"><strong>Arguments pour</strong><ul>' + db.pour.map(function(p) { return '<li>' + p + '</li>'; }).join('') + '</ul></div>'
-        + '<div class="debat-contre"><strong>Arguments contre / nuances</strong><ul>' + db.contre.map(function(c) { return '<li>' + c + '</li>'; }).join('') + '</ul></div>'
-        + '</div>'
-        + (db.consigne ? '<p class="debat-consigne">' + db.consigne + '</p>' : '')
-        + '</div>';
-    }
-
-    var gamesBody = debateBody;
-    if (entry.level === 'A1') {
-      var u = '?unite=' + encodeURIComponent(entry.badge);
-      var exProgress = readExerciseProgress();
-      var unitKey = pageKeyFromHref(entry.href);
-      var unitExProgress = exProgress[unitKey] || {};
-
-      var gameCompleted = function(gameKey) {
-        return !!(unitExProgress[gameKey] && unitExProgress[gameKey].completed);
-      };
-      var gameCard = function(c) {
-        var done = gameCompleted(c.key);
-        return '<a class="game-card game-card--' + c.color + (done ? ' game-card--done' : '') + '" href="' + resolveUrl(c.href) + '">'
-          + '<span class="game-card-icon" aria-hidden="true">' + c.icon + '</span>'
-          + '<span class="game-card-label">' + c.label + '</span>'
-          + '<span class="game-card-desc">' + c.desc + '</span>'
-          + (done ? '<span class="game-card-badge">✓ Terminé</span>' : '')
-          + '</a>';
-      };
-
-      var comprehensionCards = [
-        { key: 'vrai-faux',   href: 'entrainement-a1-vrai-faux.html'    + u, icon: '✓✗',  label: 'Vrai ou Faux',  desc: 'Évaluer des affirmations sur le thème',    color: 'teal'   },
-        { key: 'ecouter',     href: 'entrainement-a1-ecouter.html'      + u, icon: '🔊',  label: 'Écouter',        desc: 'Comprendre un document oral',               color: 'gold'   },
-        { key: 'quiz',        href: 'entrainement-conjugaison-quiz.html' + u, icon: '🧠',  label: 'Quiz',           desc: 'Vérifier sa compréhension de l\'unité',    color: 'red'    },
-        { key: 'apparier',    href: 'entrainement-a1-apparier.html'     + u, icon: '🔗',  label: 'Associer',       desc: 'Relier chaque mot à sa définition',         color: 'blue'   }
-      ];
-      var productionCards = [
-        { key: 'completer',   href: 'entrainement-a1-completer.html'    + u, icon: '✏️',  label: 'Compléter',      desc: 'Retrouver les mots manquants',              color: 'purple' },
-        { key: 'conjugaison', href: 'entrainement-conjugaison-a1.html'  + u, icon: '🔤',  label: 'Conjugaison',    desc: 'S\'entraîner sur les verbes clés',           color: 'teal'   },
-        { key: 'mots-meles',  href: 'entrainement-a1-mots-meles.html'   + u, icon: '🔍',  label: 'Mots mêlés',     desc: 'Retrouver les mots cachés dans la grille',  color: 'blue'   },
-        { key: 'anagrammes',  href: 'entrainement-a1-anagrammes.html'   + u, icon: '🔀',  label: 'Anagrammes',     desc: 'Reconstituer les mots à partir des lettres', color: 'purple' },
-        { key: 'flashcards',  href: 'entrainement-a1-flashcards.html'   + u, icon: '🃏',  label: 'Flashcards',     desc: 'Mémoriser le vocabulaire avec des cartes',  color: 'teal'   },
-        { key: 'dialogue',    href: 'entrainement-a1-dialogue.html'     + u, icon: '💬',  label: 'Dialogue',       desc: 'Simuler une situation de communication',    color: 'gold'   },
-        { key: 'construire',  href: 'entrainement-a1-construire.html'   + u, icon: '🧩',  label: 'Construire',     desc: 'Remettre les mots d\'une phrase en ordre',  color: 'red'    },
-        { key: 'valider',     href: 'entrainement-a1-validation.html'   + u, icon: '✍️',  label: 'Valider',        desc: 'Tapez le mot correspondant à la définition', color: 'purple' }
-      ];
-
-      gamesBody += '<div class="game-hub-section">'
-        + '<div class="game-hub-section-title">🧩 Compréhension</div>'
-        + '<div class="game-hub">' + comprehensionCards.map(gameCard).join('') + '</div>'
-        + '</div>'
-        + '<div class="game-hub-section">'
-        + '<div class="game-hub-section-title">✍️ Production &amp; entraînement</div>'
-        + '<div class="game-hub">' + productionCards.map(gameCard).join('') + '</div>'
-        + '</div>';
-    }
 
     var progressLabel = getStatusLabel(currentStatus, entry.level);
-    var trainingProgressBody = buildTrainingProgress(entry);
     var finalTestBody = buildFinalTest(entry, unitContent, verbData, smartObjectives);
     var progressionBody = '<div class="unit-progress-animated-grid">'
       + '<div class="unit-progress-animated-card unit-progress-animated-card--status" data-current-status="' + currentStatus + '" style="--progress-i:0">'
       + '<span class="unit-progress-kicker">' + UNIT_PROG.sectionKicker + '</span><strong id="unitProgressStatus">' + progressLabel + '</strong><p>' + UNIT_PROG.sectionBody + '</p>'
       + '<button class="game-btn game-btn--secondary" type="button" data-progress-action="started">' + UNIT_PROG.markStarted + '</button>'
       + '</div>'
-      + '<a class="unit-progress-animated-card unit-progress-animated-card--games" href="' + resolveUrl('entrainement-a1.html') + '?unite=' + encodeURIComponent(entry.badge) + '" style="--progress-i:1">'
-      + '<span class="unit-progress-kicker">Jeux</span><strong>Cartes animées</strong><p>Ouvrir tous les entraînements de l’unité.</p>'
-      + '</a>'
       + '<a class="unit-progress-animated-card unit-progress-animated-card--final" href="#finalUnitTest" style="--progress-i:2">'
       + '<span class="unit-progress-kicker">Validation</span><strong>Test final</strong><p>Répondez aux questions pour remplir les objectifs.</p>'
       + '</a>'
       + '</div>'
-      + trainingProgressBody
       + finalTestBody
       + buildNavigation(entry);
 
@@ -731,8 +730,7 @@
       + tabPanel('conjugaison', '<span class="unite-section-icon" aria-hidden="true">🔄</span>Conjugaison', conjugaisonBody, false, 3)
       + tabPanel('vocabulaire', '<span class="unite-section-icon" aria-hidden="true">📖</span>Vocabulaire', vocabBody, false, 4)
       + tabPanel('phonetique', '<span class="unite-section-icon" aria-hidden="true">🔊</span>Phonétique', phonetiqueBody, false, 5)
-      + tabPanel('jeux', '<span class="unite-section-icon" aria-hidden="true">🎮</span>Jeux', gamesBody, false, 6)
-      + tabPanel('progression', '<span class="unite-section-icon" aria-hidden="true">📊</span>Progression', progressionBody, false, 7);
+      + tabPanel('progression', '<span class="unite-section-icon" aria-hidden="true">📊</span>Progression', progressionBody, false, 6);
   }
 
   function getUnitContent(entry) {
@@ -1469,6 +1467,351 @@
       result.textContent = 'Score : ' + score + ' / ' + fields.length + ' (' + pct + ' %)' + (pct >= 80 ? ' — Excellent !' : pct >= 60 ? ' — Bien !' : ' — Réessayez !');
     });
 
+    // Enregistrement vocal + autocorrection
+    (function initVoiceRecorder() {
+      var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        sectionsWrap.querySelectorAll('.oral-recorder').forEach(function(r) {
+          r.innerHTML = '<p class="oral-correction-tip">⚠️ La reconnaissance vocale n\'est pas disponible sur ce navigateur. Utilisez Chrome ou Edge.</p>';
+        });
+        return;
+      }
+
+      var uc = getUnitContent(entry);
+      var expectedWords = uc.vocabulary.map(function(v) { return v.word.toLowerCase(); })
+        .concat(uc.examples.map(function(e) { return e.toLowerCase(); }));
+
+      sectionsWrap.addEventListener('click', function(e) {
+        var startBtn = e.target.closest('[data-rec-start]');
+        var stopBtn = e.target.closest('[data-rec-stop]');
+
+        if (startBtn) {
+          var card = startBtn.closest('.oral-scenario-card');
+          var stopEl = card.querySelector('[data-rec-stop]');
+          var transcriptWrap = card.querySelector('[data-rec-transcript]');
+          var transcriptText = card.querySelector('.oral-transcript-text');
+          var correctionEl = card.querySelector('[data-rec-correction]');
+
+          var recognition = new SpeechRecognition();
+          recognition.lang = 'fr-FR';
+          recognition.continuous = true;
+          recognition.interimResults = true;
+
+          startBtn.hidden = true;
+          stopEl.hidden = false;
+          transcriptWrap.hidden = true;
+          correctionEl.innerHTML = '';
+          transcriptText.textContent = '';
+
+          var finalText = '';
+
+          recognition.onresult = function(ev) {
+            var text = '';
+            for (var i = 0; i < ev.results.length; i++) {
+              text += ev.results[i][0].transcript;
+            }
+            transcriptText.textContent = text;
+            transcriptWrap.hidden = false;
+            finalText = text;
+          };
+
+          recognition.onerror = function(ev) {
+            startBtn.hidden = false;
+            stopEl.hidden = true;
+            transcriptWrap.hidden = false;
+            if (ev.error === 'not-allowed') {
+              transcriptText.textContent = '⚠️ Autorisez l\'accès au microphone dans votre navigateur.';
+            } else if (ev.error === 'no-speech') {
+              transcriptText.textContent = 'Aucune voix détectée. Parlez plus fort et réessayez.';
+            } else {
+              transcriptText.textContent = 'Erreur : ' + ev.error + '. Réessayez.';
+            }
+          };
+
+          recognition.onend = function() {
+            startBtn.hidden = false;
+            stopEl.hidden = true;
+            if (finalText) analyzeOral(finalText, correctionEl, expectedWords);
+          };
+
+          card._recognition = recognition;
+          recognition.start();
+        }
+
+        if (stopBtn) {
+          var card2 = stopBtn.closest('.oral-scenario-card');
+          if (card2._recognition) card2._recognition.stop();
+        }
+      });
+
+      function analyzeOral(text, el, words) {
+        var spoken = text.toLowerCase().replace(/[.,!?;:]/g, '');
+        var spokenWords = spoken.split(/\s+/);
+
+        var found = [];
+        var suggestions = [];
+
+        words.forEach(function(w) {
+          if (spoken.indexOf(w) !== -1) {
+            found.push(w);
+          }
+        });
+
+        var commonErrors = [
+          { wrong: /\bje suis viens\b/i, fix: 'je viens de…' },
+          { wrong: /\bje habite\b/i, fix: 'j\'habite à…' },
+          { wrong: /\ben le\b/i, fix: 'au (en + le = au)' },
+          { wrong: /\bde le\b/i, fix: 'du (de + le = du)' },
+          { wrong: /\bà le\b/i, fix: 'au (à + le = au)' }
+        ];
+
+        commonErrors.forEach(function(err) {
+          if (err.wrong.test(spoken)) {
+            suggestions.push('💡 Correction : « ' + err.fix + ' »');
+          }
+        });
+
+        var html = '';
+        if (found.length) {
+          html += '<div class="oral-correction-good">✅ Mots et expressions reconnus (' + found.length + ') : <strong>' + found.join(', ') + '</strong></div>';
+        }
+        if (suggestions.length) {
+          html += '<div class="oral-correction-fix">' + suggestions.join('<br>') + '</div>';
+        }
+        if (spokenWords.length < 4) {
+          html += '<div class="oral-correction-tip">💬 Essayez de faire des phrases plus longues.</div>';
+        } else if (!suggestions.length && found.length >= 2) {
+          html += '<div class="oral-correction-good">👏 Très bien ! Vous utilisez le vocabulaire de l\'unité.</div>';
+        }
+        if (!found.length) {
+          html += '<div class="oral-correction-tip">💬 Essayez d\'utiliser les mots de l\'unité : ' + words.slice(0, 5).join(', ') + '…</div>';
+        }
+        el.innerHTML = html;
+      }
+    })();
+
+    // Sauvegarde auto + téléchargement du mémo
+    var memoTextarea = sectionsWrap.querySelector('#memoText');
+    var memoDownload = sectionsWrap.querySelector('#memoDownload');
+    if (memoTextarea) {
+      var memoKey = 'ef:memo:' + pageKeyFromHref(entry.href);
+      memoTextarea.addEventListener('input', function() {
+        try { localStorage.setItem(memoKey, memoTextarea.value); } catch(e) {}
+      });
+      if (memoDownload) {
+        memoDownload.addEventListener('click', function() {
+          var text = memoTextarea.value || '(aucune note)';
+          var blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+          var a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = 'notes-' + pageKeyFromHref(entry.href) + '.txt';
+          a.click();
+          URL.revokeObjectURL(a.href);
+        });
+      }
+    }
+
+    // Correction production écrite (LanguageTool + vocabulaire)
+    (function initWrittenCorrection() {
+      var uc = getUnitContent(entry);
+      var expectedWords = uc.vocabulary.map(function(v) { return v.word.toLowerCase(); });
+
+      sectionsWrap.addEventListener('click', function(e) {
+        var btn = e.target.closest('.written-check-btn');
+        if (!btn) return;
+        var idx = btn.getAttribute('data-check-idx');
+        var textarea = sectionsWrap.querySelector('[data-written-idx="' + idx + '"]');
+        var correctionEl = sectionsWrap.querySelector('[data-correction-idx="' + idx + '"]');
+        var text = textarea.value.trim();
+
+        if (!text) {
+          correctionEl.innerHTML = '<p class="written-corr-tip">Écrivez quelques phrases avant de corriger.</p>';
+          return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Analyse en cours…';
+        correctionEl.innerHTML = '';
+
+        // Analyse locale vocabulaire
+        var spoken = text.toLowerCase();
+        var foundWords = expectedWords.filter(function(w) { return spoken.indexOf(w) !== -1; });
+
+        // LanguageTool API
+        fetch('https://api.languagetool.org/v2/check', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: 'text=' + encodeURIComponent(text) + '&language=fr&enabledOnly=false'
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var html = '';
+          var matches = data.matches || [];
+
+          // Erreurs LanguageTool
+          if (matches.length) {
+            html += '<div class="written-corr-section">'
+              + '<div class="written-corr-heading">🔍 ' + matches.length + ' point' + (matches.length > 1 ? 's' : '') + ' à vérifier</div>';
+            matches.forEach(function(m, i) {
+              var context = m.context || {};
+              var original = text.substring(m.offset, m.offset + m.length);
+              var suggestion = (m.replacements && m.replacements.length) ? m.replacements[0].value : '';
+              html += '<div class="written-corr-item">'
+                + '<span class="written-corr-num">' + (i + 1) + '</span>'
+                + '<div class="written-corr-detail">'
+                + '<p class="written-corr-msg">' + escapeHtml(m.message) + '</p>'
+                + (original ? '<span class="written-corr-wrong">« ' + escapeHtml(original) + ' »</span>' : '')
+                + (suggestion ? ' → <span class="written-corr-fix">« ' + escapeHtml(suggestion) + ' »</span>' : '')
+                + '</div></div>';
+            });
+            html += '</div>';
+          } else {
+            html += '<div class="written-corr-good">✅ Pas d\'erreur détectée. Bravo !</div>';
+          }
+
+          // Vocabulaire
+          html += '<div class="written-corr-section">';
+          if (foundWords.length) {
+            html += '<div class="written-corr-good">📖 Mots de l\'unité utilisés (' + foundWords.length + ') : <strong>' + foundWords.join(', ') + '</strong></div>';
+          } else {
+            html += '<div class="written-corr-tip">💬 Essayez d\'utiliser le vocabulaire de l\'unité : ' + expectedWords.slice(0, 5).join(', ') + '…</div>';
+          }
+
+          // Longueur
+          var wordCount = text.split(/\s+/).filter(Boolean).length;
+          if (wordCount < 5) {
+            html += '<div class="written-corr-tip">📝 Votre texte est court. Essayez d\'écrire au moins 5 phrases.</div>';
+          } else if (wordCount >= 20) {
+            html += '<div class="written-corr-good">👏 Bon travail, votre texte est bien développé (' + wordCount + ' mots).</div>';
+          }
+          html += '</div>';
+
+          correctionEl.innerHTML = html;
+        })
+        .catch(function() {
+          // Fallback si pas d'internet : analyse locale uniquement
+          var html = '<div class="written-corr-tip">⚠️ Correction en ligne indisponible. Analyse locale :</div>';
+          if (foundWords.length) {
+            html += '<div class="written-corr-good">📖 Mots de l\'unité utilisés : <strong>' + foundWords.join(', ') + '</strong></div>';
+          } else {
+            html += '<div class="written-corr-tip">💬 Utilisez le vocabulaire de l\'unité : ' + expectedWords.slice(0, 5).join(', ') + '…</div>';
+          }
+          correctionEl.innerHTML = html;
+        })
+        .finally(function() {
+          btn.disabled = false;
+          btn.textContent = 'Corriger mon texte';
+        });
+      });
+    })();
+
+    // Compteur de mots production écrite
+    sectionsWrap.addEventListener('input', function(e) {
+      var ta = e.target.closest('.written-editor-textarea');
+      if (!ta) return;
+      var counter = ta.closest('.written-editor').querySelector('.written-editor-count');
+      if (counter) {
+        var words = ta.value.trim().split(/\s+/).filter(Boolean).length;
+        counter.textContent = words + ' mot(s)';
+      }
+    });
+
+    // Navigation étapes compréhension
+    (function initCompSteps() {
+      var wrap = sectionsWrap.querySelector('.comp-steps');
+      if (!wrap) return;
+      var steps = wrap.querySelectorAll('.comp-step');
+      var counter = wrap.querySelector('.comp-steps-counter');
+      var prevBtn = wrap.querySelector('.comp-step-prev');
+      var nextBtn = wrap.querySelector('.comp-step-next');
+      var cur = 0;
+      function show(i) {
+        steps.forEach(function(s) { s.classList.remove('active'); s.hidden = true; });
+        steps[i].classList.add('active'); steps[i].hidden = false;
+        cur = i;
+        counter.textContent = 'Exercice ' + (i + 1) + ' / ' + steps.length;
+        prevBtn.disabled = i === 0;
+        nextBtn.textContent = i === steps.length - 1 ? 'Terminé ✓' : 'Suivant →';
+      }
+      prevBtn.addEventListener('click', function() { if (cur > 0) show(cur - 1); });
+      nextBtn.addEventListener('click', function() { if (cur < steps.length - 1) show(cur + 1); });
+    })();
+
+    // Vrai/Faux
+    sectionsWrap.addEventListener('click', function(e) {
+      var btn = e.target.closest('.comp-vf-btn');
+      if (!btn) return;
+      var item = btn.closest('.comp-vf-item');
+      var answer = item.getAttribute('data-vf-answer');
+      var correction = item.getAttribute('data-vf-correction');
+      var feedback = item.querySelector('.comp-vf-feedback');
+      var chosen = btn.getAttribute('data-vf-choice');
+      item.querySelectorAll('.comp-vf-btn').forEach(function(b) { b.classList.remove('selected', 'correct', 'wrong'); });
+      btn.classList.add('selected');
+      if (chosen === answer) {
+        btn.classList.add('correct');
+        item.classList.add('is-correct');
+        item.classList.remove('is-wrong');
+        feedback.textContent = '✓ Correct !';
+      } else {
+        btn.classList.add('wrong');
+        item.classList.add('is-wrong');
+        item.classList.remove('is-correct');
+        feedback.textContent = '✗ ' + (correction || (answer === 'true' ? 'C\'est vrai.' : 'C\'est faux.'));
+      }
+    });
+
+    // Compléter
+    sectionsWrap.addEventListener('submit', function(e) {
+      var form = e.target.closest('.comp-fill-form');
+      if (!form) return;
+      e.preventDefault();
+      form.querySelectorAll('.comp-fill-item').forEach(function(item) {
+        var input = item.querySelector('.comp-fill-input');
+        var expected = item.getAttribute('data-fill-answer');
+        var feedback = item.querySelector('.comp-fill-feedback');
+        var val = input.value.trim().toLowerCase();
+        item.classList.remove('is-correct', 'is-wrong');
+        if (val === expected) {
+          item.classList.add('is-correct');
+          feedback.textContent = '✓ Correct !';
+        } else {
+          item.classList.add('is-wrong');
+          feedback.textContent = '✗ Réponse attendue : ' + expected;
+        }
+      });
+    });
+
+    // Associer
+    (function initMatch() {
+      var grid = sectionsWrap.querySelector('.comp-match-grid');
+      if (!grid) return;
+      var selectedLeft = null;
+      grid.addEventListener('click', function(e) {
+        var left = e.target.closest('.comp-match-left');
+        var right = e.target.closest('.comp-match-right');
+        if (left) {
+          grid.querySelectorAll('.comp-match-left').forEach(function(l) { l.classList.remove('selected'); });
+          left.classList.add('selected');
+          selectedLeft = left;
+        }
+        if (right && selectedLeft) {
+          var leftIdx = selectedLeft.getAttribute('data-match-idx');
+          var rightIdx = right.getAttribute('data-match-idx');
+          if (leftIdx === rightIdx) {
+            selectedLeft.classList.add('matched');
+            right.classList.add('matched');
+            selectedLeft.classList.remove('selected');
+          } else {
+            selectedLeft.classList.add('wrong');
+            right.classList.add('wrong');
+            setTimeout(function() { selectedLeft.classList.remove('wrong', 'selected'); right.classList.remove('wrong'); }, 800);
+          }
+          selectedLeft = null;
+        }
+      });
+    })();
+
     bindAssessment();
     bindFinalUnitTest(entry);
     syncStatusDecorations();
@@ -1520,10 +1863,47 @@
   ef.getUnitContent    = getUnitContent;
   ef.getVerbData       = getVerbData;
   ef.conjugateVerb     = conjugateVerb;
-  ef.getTrainingCards  = getTrainingCards;
+  ef.getTrainingCards  = function() { return []; };
   ef.syncStatusDecorations = syncStatusDecorations;
 
   renderProgressPanel();
   enhanceIndexCards();
   enhanceUnitPage(ef.entryByPage[ef.pageId]);
+
+  /* ── Carrousel supports + lightbox ── */
+  (function initCarousels() {
+    document.querySelectorAll('.comm-carousel').forEach(function(carousel) {
+      var slides = carousel.querySelectorAll('.comm-carousel-slide');
+      var counter = carousel.querySelector('.comm-carousel-counter');
+      var current = 0;
+
+      function showSlide(i) {
+        if (i < 0) i = slides.length - 1;
+        if (i >= slides.length) i = 0;
+        slides.forEach(function(s) { s.classList.remove('active'); });
+        slides[i].classList.add('active');
+        current = i;
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+      }
+
+      var prevBtn = carousel.querySelector('.comm-carousel-prev');
+      var nextBtn = carousel.querySelector('.comm-carousel-next');
+      if (prevBtn) prevBtn.addEventListener('click', function() { showSlide(current - 1); });
+      if (nextBtn) nextBtn.addEventListener('click', function() { showSlide(current + 1); });
+
+      var lightbox = carousel.parentElement.querySelector('.support-lightbox');
+      if (lightbox) {
+        var lbImg = lightbox.querySelector('.support-lightbox-img');
+        carousel.addEventListener('click', function(e) {
+          var img = e.target.closest('.support-card-img');
+          if (!img) return;
+          lbImg.src = img.src;
+          lbImg.alt = img.alt;
+          lightbox.hidden = false;
+        });
+        lightbox.querySelector('.support-lightbox-close').addEventListener('click', function() { lightbox.hidden = true; });
+        lightbox.querySelector('.support-lightbox-backdrop').addEventListener('click', function() { lightbox.hidden = true; });
+      }
+    });
+  })();
 }());

@@ -5,7 +5,11 @@
   const slotSidebar = document.getElementById('sidebar-slot');
   const slotFooter = document.getElementById('footer-slot');
   const file = window.location.pathname.split('/').pop() || 'index.html';
-  const pageId = file.replace(/\.html$/i, '');
+  var pageId = file.replace(/\.html$/i, '');
+  var _qs = new URLSearchParams(window.location.search);
+  if (pageId === 'contenu') {
+    pageId = _qs.get('page') || 'grammaire';
+  }
 
   // Depth below cours/ — unit pages are one level deeper (cours/a2/), tools at root (cours/)
   const _pathParts = window.location.pathname.split('/').filter(Boolean);
@@ -55,7 +59,7 @@
     titleBlueHtml: 'Cours',
     titlePurpleHtml: 'de français',
     subtitle: 'Choisissez une unité dans le sommaire pour accéder aux leçons, exercices et points de langue.',
-    progressLinkLabel: '📊 Voir mon tableau de progression →'
+    progressLinkLabel: ''
   };
   const COURSE_SIDEBAR_TEXT = COURSE_TEXT.sidebar || {
     title: 'Sommaire'
@@ -129,6 +133,22 @@
     return level || UNIT_STATUS.idle;
   }
 
+  function getIndexCardProgress(entry) {
+    var page = pageKeyFromHref(entry.href);
+    var status = getProgressState(page);
+    var unit = UNIT_CONTENT[page] || {};
+    var objectiveCount = Array.isArray(unit.objectives) ? unit.objectives.length : 0;
+    var assessmentCount = Array.isArray(entry.assessment) ? entry.assessment.length : 0;
+    var pct = status === 'completed' ? 100 : status === 'started' ? 42 : 0;
+    return {
+      status: status,
+      statusLabel: status === 'idle' ? UNIT_STATUS.idle : getStatusLabel(status, entry.level),
+      pct: pct,
+      objectiveCount: objectiveCount,
+      assessmentCount: assessmentCount
+    };
+  }
+
   function getLevelProgress(levelKey) {
     var progress = readProgress();
     var section = sections.find(function(item) { return item.cls === levelKey; });
@@ -191,12 +211,6 @@
 
   function renderSidebar() {
     if (!slotSidebar) return;
-    if (pageId.indexOf('entrainement') === 0) {
-      var trainingWrap = document.querySelector('.page-wrap');
-      if (trainingWrap) trainingWrap.classList.add('page-wrap--no-sidebar');
-      slotSidebar.remove();
-      return;
-    }
     var storedLevel = getStoredLevel();
     slotSidebar.innerHTML = [
       '<aside class="sommaire" aria-label="Sommaire des cours">',
@@ -248,13 +262,16 @@
     if (sub) sub.textContent = COURSE_INDEX_TEXT.subtitle;
     if (COURSE_INDEX_TEXT.documentTitle) document.title = COURSE_INDEX_TEXT.documentTitle;
     var storedLevel = getStoredLevel();
-    var visibleSections = sections;
+    var visibleSections = storedLevel
+      ? sections.filter(function(section) { return section.cls === storedLevel; })
+      : sections;
+    if (!visibleSections.length) visibleSections = sections;
 
     slot.innerHTML = visibleSections.map(function(section) {
       var levelId = 'level-' + section.cls;
       var isA1 = section.cls === 'a1';
       var isMyLevel = storedLevel && section.cls === storedLevel;
-      var openAttr = isMyLevel ? ' open' : '';
+      var openAttr = storedLevel ? ' open' : '';
       var myLevelBanner = isMyLevel
         ? '<div class="idx-my-level-banner">Mon niveau</div>'
         : '';
@@ -270,22 +287,31 @@
         '  </summary>',
         '  <div class="idx-list idx-card-grid">',
         section.entries.map(function(entry) {
-          return '    <a class="idx-item idx-unit-card ' + (section.idxItemCls || entry.tone) + '" href="' + resolveUrl(entry.href) + '">'
-            + '<span class="idx-card-top"><span class="idx-num">' + entry.badge + '</span><span class="idx-card-icon">' + (entry.iconSymbol || section.icon || '') + '</span></span>'
+          var cardProgress = getIndexCardProgress(entry);
+          var tone = section.idxItemCls || entry.tone;
+          var focus = entry.focus || entry.summary || '';
+          var summary = entry.summary || '';
+          return '    <a class="idx-item idx-unit-card ' + tone + '" href="' + resolveUrl(entry.href) + '" data-status="' + cardProgress.status + '" style="--idx-progress:' + cardProgress.pct + '%">'
+            + '<span class="idx-card-top"><span class="idx-num"><span>Unité</span><strong>' + entry.badge + '</strong></span><span class="idx-card-icon">' + (entry.iconSymbol || section.icon || '') + '</span></span>'
+            + '<span class="idx-card-main">'
             + '<span class="idx-title">' + entry.label + '</span>'
-            + '<span class="idx-card-summary">' + (entry.summary || entry.focus || '') + '</span>'
+            + (summary ? '<span class="idx-card-summary">' + summary + '</span>' : '')
+            + (focus ? '<span class="idx-card-focus">' + focus + '</span>' : '')
+            + '</span>'
+            + '<span class="idx-card-footer">'
+            + '<span class="idx-progress-line"><span></span></span>'
+            + '<span class="idx-card-state-row"><span class="idx-card-status">' + cardProgress.statusLabel + '</span><span class="idx-card-progress-value">' + cardProgress.pct + '%</span></span>'
+            + '<span class="idx-card-meta">'
+            + (cardProgress.objectiveCount ? '<span>' + cardProgress.objectiveCount + ' objectifs</span>' : '')
+            + (cardProgress.assessmentCount ? '<span>' + cardProgress.assessmentCount + ' questions</span>' : '')
+            + '</span>'
+            + '</span>'
             + '</a>';
         }).join('\n'),
         '  </div>',
         '</details>'
       ].join('\n');
     }).join('\n');
-
-    // Append progression link
-    var progBanner = document.createElement('div');
-    progBanner.className = 'idx-prog-banner';
-    progBanner.innerHTML = '<a class="idx-prog-link" href="' + resolveUrl('progression.html') + '">' + COURSE_INDEX_TEXT.progressLinkLabel + '</a>';
-    slot.appendChild(progBanner);
 
     var ref = document.referrer;
     if (ref) {
@@ -309,8 +335,17 @@
     if (!slotFooter) return;
     slotFooter.innerHTML = [
       '<footer class="footer footer--cours">',
-      '  <span>' + COURSE_FOOTER[0] + '</span>',
-      '  <span>' + COURSE_FOOTER[1] + '</span>',
+      '  <div class="footer-brand">École Francophone</div>',
+      '  <div class="footer-contact">',
+      '    <span>📍 Rue du Lac 41, 1815 Clarens</span>',
+      '    <span>📱 +41 21 558 59 11 / +41 76 767 89 91</span>',
+      '    <span>✉︎ <a href="mailto:ecole.francophone@icloud.com">ecole.francophone@icloud.com</a></span>',
+      '  </div>',
+      '  <div class="footer-social">',
+      '    <a href="https://www.instagram.com/ecole_francophone.ch/" target="_blank" rel="noopener">Instagram</a>',
+      '    <a href="https://www.facebook.com/people/%C3%89cole-Francophone/61573439002399/" target="_blank" rel="noopener">Facebook</a>',
+      '    <a href="https://www.linkedin.com/company/%C3%A9cole-francophone/" target="_blank" rel="noopener">LinkedIn</a>',
+      '  </div>',
       '</footer>'
     ].join('');
   }

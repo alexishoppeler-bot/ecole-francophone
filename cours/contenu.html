@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr-CH">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>learning progress | Contenu</title>
+  <link rel="stylesheet" href="../css/cours.css">
+  <script>
+    (function() {
+      var CONTENT_META = {
+        'grammaire':   { title: 'Grammaire',    color: 'blue',   sub: 'Points de langue et structures essentiels' },
+        'vocabulaire': { title: 'Vocabulaire',   color: 'purple', sub: 'Mots et expressions par thème' },
+        'conjugaison': { title: 'Conjugaison',   color: 'teal',   sub: 'Temps, modes et formes verbales' },
+        'orthographe': { title: 'Orthographe',   color: 'gold',   sub: 'Règles et pièges courants' },
+        'annexes':     { title: 'Annexes',       color: 'red',    sub: 'Ressources complémentaires' }
+      };
+      var page = new URLSearchParams(window.location.search).get('page') || 'grammaire';
+      var m = CONTENT_META[page] || CONTENT_META['grammaire'];
+      document.addEventListener('DOMContentLoaded', function() {
+        document.title = 'learning progress | ' + m.title;
+        var hero = document.querySelector('.unite-hero');
+        if (hero) hero.className = 'unite-hero ' + m.color;
+        var h2 = document.querySelector('.unite-hero-title');
+        if (h2) h2.textContent = m.title;
+        var sub = document.querySelector('.unite-hero-sub');
+        if (sub) sub.textContent = m.sub;
+      });
+    })();
+  </script>
+</head>
+<body>
+  <div id="header-slot"></div>
+  <div class="page-wrap">
+    <div id="sidebar-slot"></div>
+    <main class="unite-main">
+      <a class="cours-back" href="index.html">← Cours</a>
+      <div class="unite-hero blue">
+        <div class="unite-hero-copy">
+          <h2 class="unite-hero-title">Contenu</h2>
+          <p class="unite-hero-sub"></p>
+        </div>
+      </div>
+      <div class="unite-sections"></div>
+    </main>
+    <div id="footer-slot" class="page-footer"></div>
+  </div>
+  <script>window.EF_ROOT = '../';</script>
+  <script src="../js/site-text.js?v=4"></script>
+  <script src="../js/site-core.js?v=4"></script>
+  <script src="../js/course-data/a1.js?v=3"></script>
+  <script src="../js/course-data/a2.js?v=3"></script>
+  <script src="../js/course-data/b1.js?v=3"></script>
+  <script src="../js/course-data/b2.js?v=3"></script>
+  <script src="../js/course-data/c1c2.js?v=3"></script>
+  <script src="../js/content.js?v=3"></script>
+  <script src="../js/course-layout.js?v=4"></script>
+  <script src="../js/course-unit.js?v=3"></script>
+  <script src="../js/course-ai.js?v=3"></script>
+</body>
+</html>

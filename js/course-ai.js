@@ -472,10 +472,10 @@
           ['review', 'Révision rapide']
         ],
         games: [
-          ['progress', 'Voir ma progression'],
+          ['current', 'Retour unité'],
           ['review', 'Préparer le jeu'],
           ['vocab', 'Revoir les mots'],
-          ['current', 'Retour unité']
+          ['five', 'J’ai 5 minutes']
         ],
         progress: [
           ['games', 'Prochain jeu'],

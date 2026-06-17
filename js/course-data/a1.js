@@ -930,10 +930,10 @@
             "sound": "[ɔ̃]",
             "label": "son « on »",
             "examples": [
-              "francophone",
               "mon",
               "canton",
-              "frontière"
+              "bon",
+              "nom"
             ]
           },
           {
@@ -952,32 +952,44 @@
             "examples": [
               "région",
               "romanche",
-              "fréquent",
-              "frà"
+              "français",
+              "frontière"
             ]
           }
+        ],
+        "syllabes": [
+          { "word": "Suisse", "split": "Suis-se", "ipa": "[sɥis]" },
+          { "word": "canton", "split": "can-ton", "ipa": "[kɑ̃.tɔ̃]" },
+          { "word": "capitale", "split": "ca-pi-ta-le", "ipa": "[ka.pi.tal]" },
+          { "word": "frontière", "split": "fron-tiè-re", "ipa": "[fʁɔ̃.tjɛʁ]" },
+          { "word": "habitant", "split": "ha-bi-tant", "ipa": "[a.bi.tɑ̃]" },
+          { "word": "bilingue", "split": "bi-lin-gue", "ipa": "[bi.lɛ̃g]" },
+          { "word": "nationalité", "split": "na-tio-na-li-té", "ipa": "[na.sjɔ.na.li.te]" },
+          { "word": "francophone", "split": "fran-co-pho-ne", "ipa": "[fʁɑ̃.kɔ.fɔn]" },
+          { "word": "international", "split": "in-ter-na-tio-nal", "ipa": "[ɛ̃.tɛʁ.na.sjɔ.nal]" },
+          { "word": "romanche", "split": "ro-man-che", "ipa": "[ʁɔ.mɑ̃ʃ]" }
         ],
         "minimalPairs": [
           {
             "a": "pays",
-            "ipa_a": "[pei]",
+            "ipa_a": "[pɛ.i]",
             "b": "paix",
             "ipa_b": "[pɛ]",
-            "note": "Même prononciation ! Les deux se disent [pɛ]."
+            "note": "« pays » a deux syllabes, « paix » n'en a qu'une."
           },
           {
             "a": "langue",
             "ipa_a": "[lɑ̃g]",
             "b": "longue",
             "ipa_b": "[lɔ̃g]",
-            "note": "Attention au son nasale : [ɑ̃] vs [ɔ̃]."
+            "note": "Attention au son nasal : [ɑ̃] vs [ɔ̃]."
           },
           {
             "a": "franc",
             "ipa_a": "[fʁɑ̃]",
             "b": "front",
             "ipa_b": "[fʁɔ̃]",
-            "note": "[ɑ̃] comme dans \"blanc\", [ɔ̃] comme dans \"bon\"."
+            "note": "[ɑ̃] comme dans « blanc », [ɔ̃] comme dans « bon »."
           }
         ]
       },
@@ -1111,6 +1123,34 @@
             "answer": 0,
             "explanation": "Genève est francophone et internationale : cela correspond au thème de la francophonie."
           }
+        ]
+      },
+      "comprehensionExtra": {
+        "vraiFaux": [
+          { "statement": "La Suisse a trois langues officielles.", "answer": false, "correction": "La Suisse a quatre langues officielles : français, allemand, italien et romanche." },
+          { "statement": "Genève se trouve en Suisse romande.", "answer": true },
+          { "statement": "La capitale de la Suisse est Genève.", "answer": false, "correction": "La capitale de la Suisse est Berne." },
+          { "statement": "Le français est une langue officielle en Suisse.", "answer": true },
+          { "statement": "La Suisse romande est dans l'est de la Suisse.", "answer": false, "correction": "La Suisse romande est dans l'ouest de la Suisse." },
+          { "statement": "On parle français en Belgique.", "answer": true },
+          { "statement": "Le romanche est parlé à Genève.", "answer": false, "correction": "Le romanche est parlé dans les Grisons." },
+          { "statement": "Lausanne est au bord du lac Léman.", "answer": true }
+        ],
+        "completer": [
+          { "phrase": "La Suisse a ___ langues officielles.", "answer": "quatre" },
+          { "phrase": "Genève est une ville ___.", "answer": "internationale" },
+          { "phrase": "La Suisse romande est la région où l'on parle ___.", "answer": "français" },
+          { "phrase": "Berne est la ___ de la Suisse.", "answer": "capitale" },
+          { "phrase": "Un pays ___ est un pays où l'on parle français.", "answer": "francophone" },
+          { "phrase": "Vaud est un ___ de Suisse romande.", "answer": "canton" }
+        ],
+        "associer": [
+          { "left": "Genève", "right": "Suisse romande" },
+          { "left": "Berne", "right": "capitale de la Suisse" },
+          { "left": "le français", "right": "langue officielle à Genève" },
+          { "left": "la francophonie", "right": "ensemble des pays francophones" },
+          { "left": "un canton", "right": "division administrative suisse" },
+          { "left": "bilingue", "right": "qui parle deux langues" }
         ]
       },
       "listeningMcq": {
