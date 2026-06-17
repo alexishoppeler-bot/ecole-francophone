@@ -79,6 +79,43 @@ window.SITE_TEXT = {
     ]
   },
 
+  unit: {
+    status: {
+      completed: 'Terminée',
+      started:   'En cours',
+      idle:      'À faire',
+      cardCompleted: 'Terminé',
+      cardStarted:   'En cours',
+      cardIdle:      'À faire'
+    },
+    nav: {
+      prev:        'Unité précédente',
+      next:        'Unité suivante',
+      courseStart: 'Début du parcours',
+      courseEnd:   'Fin du parcours',
+      courseEndMsg:'Bravo'
+    },
+    progress: {
+      sectionKicker:   'Statut actuel',
+      sectionBody:     'Votre parcours dans cette unité.',
+      markStarted:     'Marquer en cours',
+      markCompleted:   'Terminée ✓',
+      gamesKicker:     'Entraînements',
+      gamesLabel:      'Tous les jeux',
+      gamesDone:       'jeux terminés',
+      hubComprehension:'🧩 Compréhension',
+      hubProduction:   '✍️ Production & entraînement'
+    },
+    bot: {
+      idle:    'Je suis là. Pose-moi une question sur un mot, une règle, une conjugaison ou une unité.',
+      greet:   'Bonjour, ravi de t\'aider. Dis-moi ce que tu veux travailler: vocabulaire, grammaire, conjugaison, phonétique, jeux ou progression.',
+      diagDefault: 'Commencez par Communication, puis faites un jeu.',
+      diagDone:    'Cette unité est terminée : passez à la suite.',
+      diagGood:    'Bonne base : faites le test final ou complétez les jeux restants.',
+      diagStarted: 'Vous avez commencé : terminez un jeu court avant de changer d\'unité.'
+    }
+  },
+
   exercises: {
     headerAriaLabel: 'Accueil et suivi',
     sidebarHeadingTitle: 'Activités',

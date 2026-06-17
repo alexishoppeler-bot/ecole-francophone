@@ -3,9 +3,9 @@ const AU = {
   A1_1: "AUDIO_URL_A1_1",
   A2_1: "AUDIO_URL_A2_1",
   B1_1: "AUDIO_URL_B1_1",
-  B2_1: "assets/audio/test-audio-B2_1.mp3",
-  C1_1: "assets/audio/test-audio-C1_1.mp3",
-  C2_1: "assets/audio/test-audio-C2_1.mp3",
+  B2_1: "../assets/audio/test-audio-B2_1.mp3",
+  C1_1: "../assets/audio/test-audio-C1_1.mp3",
+  C2_1: "../assets/audio/test-audio-C2_1.mp3",
 };
 
 /* ══ DESCRIPTIONS NIVEAUX ══ */

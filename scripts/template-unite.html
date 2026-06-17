@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr-CH">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" href="{{ASSET_BASE}}assets/favicon.svg" type="image/svg+xml">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>École Francophone | Cours</title>
+  <link rel="stylesheet" href="{{ASSET_BASE}}css/cours.css">
+</head>
+<body>
+  <div id="header-slot"></div>
+  <div class="page-wrap">
+    <div id="sidebar-slot"></div>
+    <main class="unite-main">
+      <a class="cours-back" href="{{COURS_INDEX}}">← Cours</a>
+      <div class="unite-hero">
+        <div class="unite-hero-badge">
+          <span class="unite-hero-badge-label">Unité</span>
+          <span class="unite-hero-badge-num">—</span>
+        </div>
+        <div class="unite-hero-copy">
+          <div class="unite-hero-tag">— · —</div>
+          <h2 class="unite-hero-title">Chargement…</h2>
+        </div>
+        <span class="unite-hero-icon" aria-hidden="true">📘</span>
+      </div>
+      <div class="unite-sections"></div>
+    </main>
+    <div id="footer-slot" class="page-footer"></div>
+  </div>
+  <script src="{{ASSET_BASE}}js/site-text.js"></script>
+  <script src="{{ASSET_BASE}}js/course-data/{{LEVEL}}.js"></script>
+  <script src="{{ASSET_BASE}}js/content.js"></script>
+  <script src="{{ASSET_BASE}}js/course-layout.js"></script>
+  <script src="{{ASSET_BASE}}js/course-unit.js"></script>
+  <script src="{{ASSET_BASE}}js/course-ai.js"></script>
+  <script src="{{ASSET_BASE}}js/focus-mode.js"></script>
+</body>
+</html>

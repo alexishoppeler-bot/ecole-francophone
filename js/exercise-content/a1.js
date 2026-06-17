@@ -1,7 +1,7 @@
 'use strict';
 
-window.EXERCISE_CONTENT_PARTS = window.EXERCISE_CONTENT_PARTS || {};
-window.EXERCISE_CONTENT_PARTS["a1"] = {
+(function() {
+  var part = {
   "title": "A1",
   "units": {
     "unite-0": {
@@ -6615,4 +6615,11 @@ window.EXERCISE_CONTENT_PARTS["a1"] = {
       ]
     }
   }
-};
+
+  };
+  var ec = window.EXERCISE_CONTENT = window.EXERCISE_CONTENT || { byUnit: {}, parts: {} };
+  if (part && part.units) {
+    Object.assign(ec.byUnit, part.units);
+    ec.parts["a1"] = part;
+  }
+}());

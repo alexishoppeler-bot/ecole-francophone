@@ -1,7 +1,7 @@
 'use strict';
 
-window.EXERCISE_CONTENT_PARTS = window.EXERCISE_CONTENT_PARTS || {};
-window.EXERCISE_CONTENT_PARTS["c1c2"] = {
+(function() {
+  var part = {
   "title": "C1/C2",
   "units": {
     "c1c2-unite-1": {
@@ -5882,4 +5882,11 @@ window.EXERCISE_CONTENT_PARTS["c1c2"] = {
       "dialogues": null
     }
   }
-};
+
+  };
+  var ec = window.EXERCISE_CONTENT = window.EXERCISE_CONTENT || { byUnit: {}, parts: {} };
+  if (part && part.units) {
+    Object.assign(ec.byUnit, part.units);
+    ec.parts["c1c2"] = part;
+  }
+}());
