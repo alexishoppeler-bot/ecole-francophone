@@ -1,6 +1,6 @@
 ﻿/* ===== THEME.CSS — Variables & thème global ===== */
 
-/* Nunito — police arrondie École Francophone */
+/* Nunito — police arrondie learning progress */
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
 
 /* Open Sans — fallback local */
@@ -30,7 +30,7 @@
 
 :root {
   color-scheme: light;
-  /* Palette École Francophone */
+  /* Palette learning progress */
   --bg:          #f5f3ff;
   --bg2:         #ede9fe;
   --bg3:         #ddd6fe;
@@ -411,6 +411,7 @@ body.accessible-ui .focus-mode-toggle {
   color: var(--text);
 }
 .header-logo-text strong { color: var(--accent); font-weight: 900; }
+.header-logo-text { color: var(--accent2); font-weight: 900; }
 .header-logo-blue   { color: var(--accent); }
 .header-logo-purple { color: var(--accent2); }
 
@@ -1353,6 +1354,75 @@ body.accessible-ui .footer {
   .header-progress { width: 82px; }
   .hp-meta strong { display: none; }
   .hp-meta { grid-template-columns: 1fr; }
+}
+
+@media (min-width: 1024px) {
+  :root { --header-h: 84px; }
+
+  .header {
+    padding: 0 clamp(28px, 4vw, 56px);
+  }
+
+  .header-row1 {
+    width: min(1280px, 100%);
+    margin: 0 auto;
+    gap: 28px;
+  }
+
+  .header-logo {
+    flex: 1 1 auto;
+    max-width: none;
+    gap: 14px;
+  }
+
+  .header-logo-img {
+    height: 48px;
+  }
+
+  .header-logo-text {
+    font-size: 22px;
+    letter-spacing: 0;
+  }
+
+  .header-right {
+    gap: 14px;
+  }
+
+  .header-level-card {
+    min-height: 52px;
+    min-width: 190px;
+    padding: 7px 16px 7px 7px;
+    border-radius: 18px;
+  }
+
+  .header-level-card .hlc-badge {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    font-size: 13px;
+  }
+
+  .hlc-copy strong {
+    font-size: 14px;
+  }
+
+  .hlc-copy span {
+    font-size: 12px;
+  }
+
+  .header-progress {
+    width: 210px;
+    padding: 10px 12px;
+    border-radius: 18px;
+  }
+
+  .hp-meta {
+    font-size: 12px;
+  }
+
+  .hp-track {
+    height: 7px;
+  }
 }
 ﻿body {
   min-height: 100vh;

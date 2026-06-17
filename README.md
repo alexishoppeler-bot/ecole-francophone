@@ -1,4 +1,4 @@
-# École Francophone
+# learning progress
 
 Site statique de cours, entraînements et test de niveau en français.
 

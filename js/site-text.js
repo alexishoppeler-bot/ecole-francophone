@@ -5,19 +5,19 @@
 // et les textes de navigation sans parcourir plusieurs pages HTML.
 window.SITE_TEXT = {
   brand: {
-    alt: 'École Francophone',
+    alt: 'learning progress',
     homeHref: '../index.html',
     blueHtml: 'learning',
     purpleHtml: 'progress',
-    courseTitlePrefix: 'École Francophone'
+    courseTitlePrefix: 'learning progress'
   },
 
   home: {
-    documentTitle: 'École Francophone | Plateforme de français prête à déployer',
+    documentTitle: 'learning progress | Plateforme de français prête à déployer',
     metaDescription: 'Plateforme pédagogique de français adaptable aux vocabulaires, scénarios et contextes de chaque établissement, avec parcours CECRL A1 à C2 et version locale possible.',
-    ogTitle: 'École Francophone | Plateforme de français prête à déployer',
+    ogTitle: 'learning progress | Plateforme de français prête à déployer',
     ogDescription: 'Solution pédagogique de français adaptable aux vocabulaires, scénarios et contextes de chaque établissement, avec version locale possible sans internet.',
-    schemaName: 'École Francophone',
+    schemaName: 'learning progress',
     schemaDescription: 'Plateforme pédagogique de français adaptable aux vocabulaires, scénarios et contextes de chaque établissement, avec cours CECRL et version locale possible.',
     heroLabel: 'Solution pédagogique prête à déployer',
     heroTitleBlueHtml: 'learning',
@@ -66,7 +66,7 @@ window.SITE_TEXT = {
       unit: '← Cours'
     },
     index: {
-      documentTitle: 'École Francophone | Cours',
+      documentTitle: 'learning progress | Cours',
       backLabel: '← Accueil',
       titleBlueHtml: 'Cours',
       titlePurpleHtml: 'de français',
@@ -74,7 +74,7 @@ window.SITE_TEXT = {
       progressLinkLabel: '📊 Voir mon tableau de progression →'
     },
     footer: [
-      'École Francophone · cours et repères pratiques',
+      'learning progress · cours et repères pratiques',
       'Progression et contenus pensés pour la Suisse romande'
     ]
   },

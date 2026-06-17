@@ -36,11 +36,11 @@
   const UNIT_PROG    = UNIT_TEXT.progress || { sectionKicker:'Statut actuel', sectionBody:'Votre parcours dans cette unité.', markStarted:'Marquer en cours', markCompleted:'Terminée ✓', gamesKicker:'Entraînements', gamesLabel:'Tous les jeux', gamesDone:'jeux terminés', hubComprehension:UNIT_PROG.hubComprehension, hubProduction:'✍️ Production & entraînement' };
   const UNIT_BOT     = UNIT_TEXT.bot      || { idle:'Je suis là. Pose-moi une question.', greet:'Bonjour, ravi de t\'aider.', diagDefault:'Commencez par Communication, puis faites un jeu.', diagDone:'Cette unité est terminée : passez à la suite.', diagGood:'Bonne base : faites le test final ou complétez les jeux restants.', diagStarted:'Vous avez commencé : terminez un jeu court avant de changer d\'unité.' };
   const BRAND = SITE_TEXT.brand || {
-    alt: 'École Francophone',
+    alt: 'learning progress',
     homeHref: ROOT + 'index.html',
     blueHtml: 'learning',
     purpleHtml: 'progress',
-    courseTitlePrefix: 'École Francophone'
+    courseTitlePrefix: 'learning progress'
   };
   const COURSE_TEXT = SITE_TEXT.course || {};
   const COURSE_NAV = COURSE_TEXT.nav || {
@@ -50,7 +50,7 @@
     autoeval: 'Auto-évaluation'
   };
   const COURSE_INDEX_TEXT = COURSE_TEXT.index || {
-    documentTitle: 'École Francophone | Cours',
+    documentTitle: 'learning progress | Cours',
     backLabel: '← Accueil',
     titleBlueHtml: 'Cours',
     titlePurpleHtml: 'de français',
@@ -61,7 +61,7 @@
     title: 'Sommaire'
   };
   const COURSE_FOOTER = COURSE_TEXT.footer || [
-    'École Francophone · cours et repères pratiques',
+    'learning progress · cours et repères pratiques',
     'Progression et contenus pensés pour la Suisse romande'
   ];
   const COURSE_BACK = COURSE_TEXT.back || {
@@ -172,7 +172,7 @@
       '  <div class="header-row1">',
       '    <a href="' + BRAND.homeHref + '" class="header-logo">',
       '      <img src="' + ROOT + 'assets/logo.png" class="header-logo-img" alt="' + BRAND.alt + '" />',
-      '      <span class="header-logo-text"><strong>École</strong> Francophone</span>',
+      '      <span class="header-logo-text"><strong>learning</strong> progress</span>',
       '    </a>',
       '    <div class="header-right">',
       levelChipHtml,
