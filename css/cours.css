@@ -3006,6 +3006,87 @@ body.accessible-ui .footer {
 .written-corr-good { font-size: 13px; color: #16a34a; font-weight: 600; line-height: 1.5; }
 .written-corr-tip { font-size: 13px; color: var(--text2); font-weight: 600; line-height: 1.5; }
 
+/* ── Progression objectifs ── */
+.prog-objectives-wrap {
+  margin-bottom: 24px;
+}
+.prog-objectives-wrap h4 { margin: 0 0 4px; }
+
+.prog-obj-instruction {
+  font-size: 13px;
+  color: var(--text2);
+  margin: 0 0 12px;
+}
+
+.prog-obj-bar {
+  height: 8px;
+  background: rgba(90,171,240,0.12);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.prog-obj-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #8800ff);
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.prog-obj-counter {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text2);
+  margin-bottom: 12px;
+}
+
+.prog-obj-checklist {
+  display: grid;
+  gap: 8px;
+}
+
+.prog-obj-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid rgba(90,171,240,0.12);
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text1);
+}
+.prog-obj-item:hover { border-color: rgba(90,171,240,0.3); }
+
+.prog-obj-item input[type="checkbox"] {
+  flex-shrink: 0;
+  margin-top: 3px;
+  width: 18px;
+  height: 18px;
+  accent-color: #22c55e;
+}
+
+.prog-obj-done {
+  background: rgba(34,197,94,0.06);
+  border-color: rgba(34,197,94,0.25);
+}
+.prog-obj-done span { text-decoration: line-through; color: var(--text3); }
+
+.prog-obj-bravo {
+  margin-top: 14px;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(90,171,240,0.06));
+  border: 1px solid rgba(34,197,94,0.2);
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 15px;
+  color: #16a34a;
+  text-align: center;
+}
+
 /* ── Étapes compréhension ── */
 .comp-steps-progress {
   display: flex;

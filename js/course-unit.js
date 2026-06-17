@@ -708,17 +708,35 @@
 
 
     var progressLabel = getStatusLabel(currentStatus, entry.level);
-    var finalTestBody = buildFinalTest(entry, unitContent, verbData, smartObjectives);
-    var progressionBody = '<div class="unit-progress-animated-grid">'
+    var OBJ_KEY = 'ef:obj:' + pageKeyFromHref(entry.href);
+    var savedObj = {};
+    try { savedObj = JSON.parse(localStorage.getItem(OBJ_KEY) || '{}'); } catch(e) {}
+    var objDone = 0;
+    var objChecklistHtml = smartObjectives.map(function(obj, i) {
+      var done = !!savedObj[i];
+      if (done) objDone++;
+      return '<label class="prog-obj-item' + (done ? ' prog-obj-done' : '') + '">'
+        + '<input type="checkbox" data-obj-check="' + i + '"' + (done ? ' checked' : '') + '>'
+        + '<span>' + obj + '</span>'
+        + '</label>';
+    }).join('');
+    var objPct = smartObjectives.length ? Math.round(objDone / smartObjectives.length * 100) : 0;
+
+    var progressionBody = '<div class="prog-objectives-wrap">'
+      + '<h4>🎯 Objectifs de l\'unité</h4>'
+      + '<p class="prog-obj-instruction">Cochez les objectifs que vous avez atteints en faisant les exercices des onglets précédents.</p>'
+      + '<div class="prog-obj-bar"><div class="prog-obj-bar-fill" style="width:' + objPct + '%"></div></div>'
+      + '<div class="prog-obj-counter" id="progObjCounter">' + objDone + ' / ' + smartObjectives.length + ' objectifs atteints</div>'
+      + '<div class="prog-obj-checklist">' + objChecklistHtml + '</div>'
+      + (objPct === 100 ? '<div class="prog-obj-bravo">🎉 Bravo ! Vous avez atteint tous les objectifs de cette unité.</div>' : '')
+      + '</div>'
+      + '<div class="unit-progress-animated-grid">'
       + '<div class="unit-progress-animated-card unit-progress-animated-card--status" data-current-status="' + currentStatus + '" style="--progress-i:0">'
       + '<span class="unit-progress-kicker">' + UNIT_PROG.sectionKicker + '</span><strong id="unitProgressStatus">' + progressLabel + '</strong><p>' + UNIT_PROG.sectionBody + '</p>'
       + '<button class="game-btn game-btn--secondary" type="button" data-progress-action="started">' + UNIT_PROG.markStarted + '</button>'
+      + '<button class="game-btn game-btn--primary" type="button" data-progress-action="completed">' + UNIT_PROG.markCompleted + '</button>'
       + '</div>'
-      + '<a class="unit-progress-animated-card unit-progress-animated-card--final" href="#finalUnitTest" style="--progress-i:2">'
-      + '<span class="unit-progress-kicker">Validation</span><strong>Test final</strong><p>Répondez aux questions pour remplir les objectifs.</p>'
-      + '</a>'
       + '</div>'
-      + finalTestBody
       + buildNavigation(entry);
 
     return '<nav class="unit-tabs" role="tablist" aria-label="Menu de l\'unité">'
@@ -1588,6 +1606,29 @@
         }
         el.innerHTML = html;
       }
+    })();
+
+    // Objectifs cochables
+    (function initObjChecklist() {
+      var objKey = 'ef:obj:' + pageKeyFromHref(entry.href);
+      sectionsWrap.addEventListener('change', function(e) {
+        var cb = e.target.closest('[data-obj-check]');
+        if (!cb) return;
+        var idx = cb.getAttribute('data-obj-check');
+        var data = {};
+        try { data = JSON.parse(localStorage.getItem(objKey) || '{}'); } catch(ex) {}
+        if (cb.checked) { data[idx] = true; } else { delete data[idx]; }
+        localStorage.setItem(objKey, JSON.stringify(data));
+        var item = cb.closest('.prog-obj-item');
+        if (item) item.classList.toggle('prog-obj-done', cb.checked);
+        var total = sectionsWrap.querySelectorAll('[data-obj-check]').length;
+        var done = sectionsWrap.querySelectorAll('[data-obj-check]:checked').length;
+        var pct = total ? Math.round(done / total * 100) : 0;
+        var bar = sectionsWrap.querySelector('.prog-obj-bar-fill');
+        var counter = sectionsWrap.querySelector('#progObjCounter');
+        if (bar) bar.style.width = pct + '%';
+        if (counter) counter.textContent = done + ' / ' + total + ' objectifs atteints';
+      });
     })();
 
     // Sauvegarde auto + téléchargement du mémo
