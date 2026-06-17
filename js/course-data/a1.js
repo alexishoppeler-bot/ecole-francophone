@@ -737,11 +737,11 @@
     "unite-0": {
       "swissContextHtml": "<p class=\"unite-info-text\">La Suisse possède quatre langues nationales : le français, l'allemand, l'italien et le romanche.</p><p class=\"unite-info-text\">La région où l'on parle principalement français s'appelle la <strong>Suisse romande</strong>. Elle comprend notamment les cantons de Vaud, Genève, Neuchâtel et Jura.</p><p class=\"unite-info-text\">En Suisse romande, le français est utilisé dans la vie quotidienne, à l'école, au travail et dans les administrations.</p><p class=\"unite-info-text\">La Suisse romande fait partie de la <strong>francophonie</strong>, c'est-à-dire l'ensemble des pays et des régions où le français est utilisé.</p>",
       "objectives": [
-        "💬 <strong>Communication</strong> — Dire d'où on vient et où on habite (<em>Je viens de…, J'habite à…</em>)",
-        "📐 <strong>Grammaire</strong> — Utiliser les prépositions avec les pays (<em>en, au, aux, à</em>)",
-        "🔄 <strong>Conjugaison</strong> — Conjuguer <em>être</em> et <em>parler</em> au présent",
-        "📖 <strong>Vocabulaire</strong> — Comprendre les mots essentiels de la francophonie (<em>pays, capitale, canton, francophone…</em>)",
-        "🔊 <strong>Phonétique</strong> — Prononcer les noms de pays et de villes francophones"
+        "Dire d'où on vient et où on habite (<em>Je viens de…, J'habite à…</em>)",
+        "Utiliser les prépositions avec les pays (<em>en, au, aux, à</em>)",
+        "Conjuguer <em>être</em> et <em>parler</em> au présent",
+        "Comprendre les mots essentiels de la francophonie (<em>pays, capitale, canton, francophone…</em>)",
+        "Prononcer les noms de pays et de villes francophones"
       ],
       "vocabulary": [
         {
@@ -828,15 +828,38 @@
       "vocabGroups": [
         {
           "label": "Géographie",
-          "words": ["un pays", "une ville", "une capitale", "une région", "continent", "frontière", "la Suisse romande", "un canton"]
+          "words": [
+            "un pays",
+            "une ville",
+            "une capitale",
+            "une région",
+            "continent",
+            "frontière",
+            "la Suisse romande",
+            "un canton"
+          ]
         },
         {
           "label": "Langues & culture",
-          "words": ["la francophonie", "une langue officielle", "langue", "francophone", "bilingue", "plurilingue", "romanche", "alémanique", "un locuteur", "officiel"]
+          "words": [
+            "la francophonie",
+            "une langue officielle",
+            "langue",
+            "francophone",
+            "bilingue",
+            "plurilingue",
+            "romanche",
+            "alémanique",
+            "un locuteur",
+            "officiel"
+          ]
         },
         {
           "label": "Identité & personnes",
-          "words": ["nationalité", "habitant"]
+          "words": [
+            "nationalité",
+            "habitant"
+          ]
         }
       ],
       "examples": [
@@ -870,20 +893,92 @@
       "grammarExtra": "<div class=\"gram-country-table\"><div class=\"gram-country-col\"><div class=\"gram-country-head fem\">🔵 Féminin — <em>en</em></div><ul><li>en Suisse</li><li>en Belgique</li><li>en France</li><li>en Espagne</li><li>en Italie</li><li>en Allemagne</li><li>en Chine</li><li>en Tunisie</li></ul></div><div class=\"gram-country-col\"><div class=\"gram-country-head masc\">🟠 Masculin — <em>au</em></div><ul><li>au Canada</li><li>au Maroc</li><li>au Portugal</li><li>au Japon</li><li>au Brésil</li><li>au Mexique</li><li>au Sénégal</li><li>au Cameroun</li></ul></div><div class=\"gram-country-col\"><div class=\"gram-country-head plur\">🟢 Pluriel — <em>aux</em></div><ul><li>aux États-Unis</li><li>aux Pays-Bas</li><li>aux Philippines</li></ul></div></div>",
       "grammarError": "<span class=\"gram-wrong\">Je vais au Suisse.</span> → <span class=\"gram-right\">Je vais en Suisse.</span> — La Suisse est féminin, on utilise <em>en</em>, pas <em>au</em>.",
       "grammarFillIn": [
-        { "prompt": "Je vais ___ Canada.", "choices": ["au", "en", "à", "aux"], "answer": 0 },
-        { "prompt": "Elle habite ___ Paris.", "choices": ["à", "en", "au", "aux"], "answer": 0 },
-        { "prompt": "Nous allons ___ États-Unis.", "choices": ["aux", "au", "en", "à"], "answer": 0 }
+        {
+          "prompt": "Je vais ___ Canada.",
+          "choices": [
+            "au",
+            "en",
+            "à",
+            "aux"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "Elle habite ___ Paris.",
+          "choices": [
+            "à",
+            "en",
+            "au",
+            "aux"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "Nous allons ___ États-Unis.",
+          "choices": [
+            "aux",
+            "au",
+            "en",
+            "à"
+          ],
+          "answer": 0
+        }
       ],
       "phonetique": {
         "targetSounds": [
-          { "sound": "[ɔ̃]", "label": "son « on »", "examples": ["francophone", "mon", "canton", "frontière"] },
-          { "sound": "[y]", "label": "son « u »", "examples": ["Suisse", "une", "plurilingue", "tu"] },
-          { "sound": "[ʁ]", "label": "son « r »", "examples": ["région", "romanche", "fréquent", "frà"] }
+          {
+            "sound": "[ɔ̃]",
+            "label": "son « on »",
+            "examples": [
+              "francophone",
+              "mon",
+              "canton",
+              "frontière"
+            ]
+          },
+          {
+            "sound": "[y]",
+            "label": "son « u »",
+            "examples": [
+              "Suisse",
+              "une",
+              "plurilingue",
+              "tu"
+            ]
+          },
+          {
+            "sound": "[ʁ]",
+            "label": "son « r »",
+            "examples": [
+              "région",
+              "romanche",
+              "fréquent",
+              "frà"
+            ]
+          }
         ],
         "minimalPairs": [
-          { "a": "pays", "ipa_a": "[pei]", "b": "paix", "ipa_b": "[pɛ]", "note": "Même prononciation ! Les deux se disent [pɛ]." },
-          { "a": "langue", "ipa_a": "[lɑ̃g]", "b": "longue", "ipa_b": "[lɔ̃g]", "note": "Attention au son nasale : [ɑ̃] vs [ɔ̃]." },
-          { "a": "franc", "ipa_a": "[fʁɑ̃]", "b": "front", "ipa_b": "[fʁɔ̃]", "note": "[ɑ̃] comme dans \"blanc\", [ɔ̃] comme dans \"bon\"." }
+          {
+            "a": "pays",
+            "ipa_a": "[pei]",
+            "b": "paix",
+            "ipa_b": "[pɛ]",
+            "note": "Même prononciation ! Les deux se disent [pɛ]."
+          },
+          {
+            "a": "langue",
+            "ipa_a": "[lɑ̃g]",
+            "b": "longue",
+            "ipa_b": "[lɔ̃g]",
+            "note": "Attention au son nasale : [ɑ̃] vs [ɔ̃]."
+          },
+          {
+            "a": "franc",
+            "ipa_a": "[fʁɑ̃]",
+            "b": "front",
+            "ipa_b": "[fʁɔ̃]",
+            "note": "[ɑ̃] comme dans \"blanc\", [ɔ̃] comme dans \"bon\"."
+          }
         ]
       },
       "expressionsPlus": [
@@ -952,37 +1047,67 @@
         "mcq": [
           {
             "prompt": "Dans quelle région de Suisse se trouve Genève ?",
-            "choices": ["En Suisse alémanique", "En Suisse romande", "Au Tessin", "Dans les Grisons"],
+            "choices": [
+              "En Suisse alémanique",
+              "En Suisse romande",
+              "Au Tessin",
+              "Dans les Grisons"
+            ],
             "answer": 1,
             "explanation": "Le texte dit que Genève est située en Suisse romande."
           },
           {
             "prompt": "Quelle est la langue officielle à Genève ?",
-            "choices": ["L'allemand", "L'italien", "Le français", "L'anglais"],
+            "choices": [
+              "L'allemand",
+              "L'italien",
+              "Le français",
+              "L'anglais"
+            ],
             "answer": 2,
             "explanation": "La phrase clé est : « La langue officielle de Genève est le français. »"
           },
           {
             "prompt": "Quelle organisation internationale est citée dans le texte ?",
-            "choices": ["L'Union européenne", "L'OTAN", "La Croix-Rouge", "Le G20"],
+            "choices": [
+              "L'Union européenne",
+              "L'OTAN",
+              "La Croix-Rouge",
+              "Le G20"
+            ],
             "answer": 2,
             "explanation": "Le texte cite la Croix-Rouge et l'ONU."
           },
           {
             "prompt": "Près de quel lieu naturel se trouve Genève ?",
-            "choices": ["Au bord du Rhin", "Au bord du lac Léman", "Au bord du lac de Constance", "En montagne"],
+            "choices": [
+              "Au bord du Rhin",
+              "Au bord du lac Léman",
+              "Au bord du lac de Constance",
+              "En montagne"
+            ],
             "answer": 1,
             "explanation": "Le texte indique : « au bord du lac Léman »."
           },
           {
             "prompt": "Qui vient à Genève chaque année selon le texte ?",
-            "choices": ["Seulement des touristes", "Des visiteurs, des étudiants et des travailleurs", "Seulement des diplomates", "Seulement des habitants de Suisse"],
+            "choices": [
+              "Seulement des touristes",
+              "Des visiteurs, des étudiants et des travailleurs",
+              "Seulement des diplomates",
+              "Seulement des habitants de Suisse"
+            ],
             "answer": 1,
             "explanation": "Le texte mentionne des visiteurs, des étudiants et des travailleurs."
           },
           {
             "prompt": "Pourquoi Genève est-elle un bon exemple pour cette unité ?",
-            "choices": ["Parce qu'on y parle français et que la ville est internationale", "Parce qu'elle est la capitale de la France", "Parce qu'on y parle seulement anglais", "Parce qu'elle est en Suisse alémanique"],
+            "choices": [
+              "Parce qu'on y parle français et que la ville est internationale",
+              "Parce qu'elle est la capitale de la France",
+              "Parce qu'on y parle seulement anglais",
+              "Parce qu'elle est en Suisse alémanique"
+            ],
             "answer": 0,
             "explanation": "Genève est francophone et internationale : cela correspond au thème de la francophonie."
           }
@@ -992,38 +1117,77 @@
         "title": "La Suisse romande",
         "context": "Écoutez le texte, puis répondez aux questions.",
         "script": [
-          { "text": "Je m'appelle Lea. Je travaille comme guide touristique a Lausanne, en Suisse romande." },
-          { "text": "Lausanne est une belle ville situee au bord du lac Leman." },
-          { "text": "La Suisse a quatre langues officielles : le francais, l'allemand, l'italien et le romanche." },
-          { "text": "En Suisse romande, on parle francais. C'est la region ouest de la Suisse." },
-          { "text": "La capitale de la Suisse s'appelle Berne. Ce n'est pas la plus grande ville." },
-          { "text": "Geneve est une grande ville internationale. Elle est connue dans le monde entier." },
-          { "text": "Si vous voulez apprendre le francais, la Suisse romande est un excellent choix !" }
+          {
+            "text": "Je m'appelle Lea. Je travaille comme guide touristique a Lausanne, en Suisse romande."
+          },
+          {
+            "text": "Lausanne est une belle ville situee au bord du lac Leman."
+          },
+          {
+            "text": "La Suisse a quatre langues officielles : le francais, l'allemand, l'italien et le romanche."
+          },
+          {
+            "text": "En Suisse romande, on parle francais. C'est la region ouest de la Suisse."
+          },
+          {
+            "text": "La capitale de la Suisse s'appelle Berne. Ce n'est pas la plus grande ville."
+          },
+          {
+            "text": "Geneve est une grande ville internationale. Elle est connue dans le monde entier."
+          },
+          {
+            "text": "Si vous voulez apprendre le francais, la Suisse romande est un excellent choix !"
+          }
         ],
         "mcq": [
           {
             "prompt": "Quel est le metier de Lea ?",
-            "choices": ["Professeure", "Guide touristique", "Journaliste", "Traductrice"],
+            "choices": [
+              "Professeure",
+              "Guide touristique",
+              "Journaliste",
+              "Traductrice"
+            ],
             "answer": 1
           },
           {
             "prompt": "Au bord de quel lac se trouve Lausanne ?",
-            "choices": ["Le lac de Constance", "Le lac de Neuchatel", "Le lac Leman", "Le lac Majeur"],
+            "choices": [
+              "Le lac de Constance",
+              "Le lac de Neuchatel",
+              "Le lac Leman",
+              "Le lac Majeur"
+            ],
             "answer": 2
           },
           {
             "prompt": "Combien de langues officielles y a-t-il en Suisse ?",
-            "choices": ["Deux", "Trois", "Quatre", "Cinq"],
+            "choices": [
+              "Deux",
+              "Trois",
+              "Quatre",
+              "Cinq"
+            ],
             "answer": 2
           },
           {
             "prompt": "Quelle est la capitale de la Suisse ?",
-            "choices": ["Geneve", "Lausanne", "Zurich", "Berne"],
+            "choices": [
+              "Geneve",
+              "Lausanne",
+              "Zurich",
+              "Berne"
+            ],
             "answer": 3
           },
           {
             "prompt": "Pourquoi Geneve est-elle connue ?",
-            "choices": ["C'est la capitale", "C'est la ville la plus grande", "C'est une ville internationale", "C'est une ville universitaire"],
+            "choices": [
+              "C'est la capitale",
+              "C'est la ville la plus grande",
+              "C'est une ville internationale",
+              "C'est une ville universitaire"
+            ],
             "answer": 2
           }
         ]
@@ -1031,32 +1195,56 @@
       "finalTest": [
         {
           "prompt": "💬 Communication — Comment dit-on où l'on habite ?",
-          "choices": ["J'habite à…", "Je suis à…", "Je reste à…"],
+          "choices": [
+            "J'habite à…",
+            "Je suis à…",
+            "Je reste à…"
+          ],
           "answer": 0
         },
         {
           "prompt": "📐 Grammaire — Quelle préposition utilise-t-on avec un pays féminin comme la Suisse ?",
-          "choices": ["en", "au", "à"],
+          "choices": [
+            "en",
+            "au",
+            "à"
+          ],
           "answer": 0
         },
         {
           "prompt": "🔄 Conjugaison — Quelle est la forme correcte de « être » avec « je » ?",
-          "choices": ["je suis", "je es", "je est"],
+          "choices": [
+            "je suis",
+            "je es",
+            "je est"
+          ],
           "answer": 0
         },
         {
           "prompt": "📖 Vocabulaire — Que signifie « francophone » ?",
-          "choices": ["qui parle ou utilise le français", "qui vit en France", "qui apprend le français"],
+          "choices": [
+            "qui parle ou utilise le français",
+            "qui vit en France",
+            "qui apprend le français"
+          ],
           "answer": 0
         },
         {
           "prompt": "🔊 Phonétique — Dans quel mot entend-on le son [ɔ̃] comme dans « bon » ?",
-          "choices": ["francophone", "Suisse", "pays"],
+          "choices": [
+            "francophone",
+            "Suisse",
+            "pays"
+          ],
           "answer": 0
         },
         {
           "prompt": "🔄 Conjugaison — Quelle est la forme correcte de « être » avec « il » ?",
-          "choices": ["il est", "il suis", "il êtes"],
+          "choices": [
+            "il est",
+            "il suis",
+            "il êtes"
+          ],
           "answer": 0
         }
       ]
@@ -3183,8 +3371,7 @@
       }
     ]
   }
-
-  };
+};
   var cd = window.COURSE_DATA = window.COURSE_DATA || { sections: [], unitContent: {}, verbData: {}, dialogues: {} };
   if (part.section) cd.sections.push(part.section);
   Object.assign(cd.unitContent, part.units || {});
