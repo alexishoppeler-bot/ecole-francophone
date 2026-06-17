@@ -7,6 +7,33 @@ body {
     linear-gradient(160deg, #edf6ff 0%, #f5f0ff 55%, #f0e8ff 100%);
 }
 
+/* ── Header partagé ── */
+:root { --header-h: 64px; }
+.header {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: var(--header-h);
+  background: linear-gradient(135deg, #0d1e52 0%, #1060a0 42%, #6600cc 100%);
+  border-bottom: 1px solid rgba(90,171,240,0.22);
+  box-shadow: 0 4px 32px rgba(136,0,255,0.28);
+  display: flex; align-items: center;
+  padding: 0 clamp(16px, 2vw, 28px);
+  z-index: 1000;
+}
+.header-row1 { display: flex; align-items: center; gap: 12px; width: 100%; }
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.header-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.header-logo-img { height: 36px; width: auto; max-width: 160px; object-fit: contain; display: block; flex-shrink: 0; }
+.header-logo-text { font-family: 'Nunito', 'Open Sans', sans-serif; font-weight: 800; font-size: 18px; line-height: 1; white-space: nowrap; }
+.header-logo-blue   { color: #5AABF0; }
+.header-logo-purple { color: #ffffff; }
+.header-level-chip {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.08); color: #fff; cursor: pointer; font-size: 13px;
+}
+.hlc-badge { border-radius: 6px; padding: 2px 7px; font-weight: 800; font-size: 11px; color: #fff; }
+.hlc-name  { font-weight: 600; }
+
 .platform-shell {
   min-height: 100vh;
   display: grid;

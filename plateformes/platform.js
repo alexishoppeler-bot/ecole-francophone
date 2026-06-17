@@ -56,6 +56,8 @@
   }
 
   function getLevelSection() {
+    var cd = window.COURSE_DATA;
+    if (cd && cd.sections && cd.sections.length) return cd.sections[0];
     var parts = window.COURSE_DATA_PARTS || {};
     return parts[levelKey] && parts[levelKey].section ? parts[levelKey].section : null;
   }
