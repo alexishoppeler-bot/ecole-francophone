@@ -24,7 +24,9 @@
       "Read(//tmp/**)",
       "Bash(cp /tmp/cours-merged.css /workspaces/ecole-francophone/css/cours.css && rm /workspaces/ecole-francophone/css/theme.css /workspaces/ecole-francophone/css/layout.css /workspaces/ecole-francophone/css/components.css /workspaces/ecole-francophone/css/utilities.css && echo \"Done\")",
       "Bash(xargs sed -i '/theme\\\\.css\\\\|layout\\\\.css/d')",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(git pull *)",
+      "Bash(git stash *)"
     ],
     "additionalDirectories": [
       "/tmp"
