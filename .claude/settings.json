@@ -26,7 +26,9 @@
       "Bash(xargs sed -i '/theme\\\\.css\\\\|layout\\\\.css/d')",
       "Bash(node -e ' *)",
       "Bash(git pull *)",
-      "Bash(git stash *)"
+      "Bash(git stash *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://127.0.0.1:5501/assets/logo.png)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://127.0.0.1:5501/cours/a1/unite-0.html)"
     ],
     "additionalDirectories": [
       "/tmp"

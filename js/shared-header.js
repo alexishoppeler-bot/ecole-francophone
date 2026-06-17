@@ -16,14 +16,7 @@
     try { return localStorage.getItem('ef_level') || null; } catch(e) { return null; }
   }
 
-  function resolveRoot() {
-    var depth = window.location.pathname.split('/').filter(Boolean).length - 1;
-    var prefix = '';
-    for (var i = 0; i < depth; i++) prefix += '../';
-    return prefix || './';
-  }
-
-  var root = resolveRoot();
+  var root = window.EF_ROOT || './';
   var level = getLevel();
   var lv = level ? LEVELS[level] : null;
 
