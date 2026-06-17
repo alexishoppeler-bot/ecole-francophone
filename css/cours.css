@@ -89,7 +89,7 @@
 
   /* Sidebar */
   --sidebar-w: 300px;
-  --header-h:  96px;
+  --header-h:  72px;
 }
 
 /* MODE SOMBRE */
@@ -218,7 +218,7 @@ input:focus, textarea:focus, select:focus {
 body.accessible-ui input,
 body.accessible-ui textarea,
 body.accessible-ui select {
-  min-height: 52px;
+  min-height: 42px;
   padding: 14px 18px;
   font-size: 18px;
   border-width: 2px;
@@ -332,17 +332,17 @@ body.accessible-ui .focus-mode-toggle {
   position: fixed;
   top: 0; left: 0; right: 0;
   height: var(--header-h);
-  background: linear-gradient(135deg, #0d1e52 0%, #1060a0 42%, #6600cc 100%);
+  background: rgba(255,255,255,0.94);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid rgba(90,171,240,0.22);
-  box-shadow: 0 4px 32px rgba(136,0,255,0.28);
+  border-bottom: 1px solid rgba(90,171,240,0.18);
+  box-shadow: 0 8px 30px rgba(15,23,42,0.08);
   display: flex;
   flex-direction: column;
   justify-content: center;
   padding: 0 clamp(16px, 2vw, 28px);
   z-index: 1000;
-  gap: 7px;
+  gap: 0;
 }
 
 .header::after {
@@ -351,9 +351,9 @@ body.accessible-ui .focus-mode-toggle {
   left: 0;
   right: 0;
   bottom: -1px;
-  height: 2px;
-  background: linear-gradient(90deg, #5AABF0, #8800FF, #5AABF0);
-  opacity: 0.9;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(90,171,240,0.4), rgba(136,0,255,0.36), rgba(90,171,240,0.4));
+  opacity: 1;
 }
 
 /* Row 1 : logo + XP chip + toggle */
@@ -386,7 +386,7 @@ body.accessible-ui .focus-mode-toggle {
   text-decoration: none;
   flex: 1 1 190px;
   min-width: 0;
-  max-width: 320px;
+  max-width: 360px;
   transition: color 0.18s ease, transform 0.18s ease;
 }
 
@@ -395,7 +395,7 @@ body.accessible-ui .focus-mode-toggle {
   transform: translateY(-1px);
 }
 .header-logo-img {
-  height: 52px;
+  height: 42px;
   width: auto;
   max-width: 180px;
   object-fit: contain;
@@ -403,14 +403,16 @@ body.accessible-ui .focus-mode-toggle {
   flex-shrink: 0;
 }
 .header-logo-text {
-  font-family: 'Nunito', 'Open Sans', sans-serif;
-  font-weight: 800;
-  font-size: 22px;
+  font-family: var(--font-head);
+  font-weight: 750;
+  font-size: 18px;
   line-height: 1;
   white-space: nowrap;
+  color: var(--text);
 }
-.header-logo-blue   { color: #5AABF0; }
-.header-logo-purple { color: #ffffff; }
+.header-logo-text strong { color: var(--accent); font-weight: 900; }
+.header-logo-blue   { color: var(--accent); }
+.header-logo-purple { color: var(--accent2); }
 
 /* ============================================================
    XP CHIP  —  floating pill
@@ -1026,9 +1028,7 @@ body.accessible-ui .footer {
     display: none;
   }
 
-  .header-logo span:not(.header-logo-icon) {
-    display: none;
-  }
+  .header-logo-text { font-size: 16px; }
 
   .header-nav {
     max-width: min(48vw, 190px);
@@ -1039,6 +1039,27 @@ body.accessible-ui .footer {
   .header-level-progress {
     width: 128px;
     padding: 6px 8px;
+  }
+
+  .header-level-card {
+    padding-right: 8px;
+  }
+
+  .hlc-copy span {
+    display: none;
+  }
+
+  .header-progress {
+    width: 112px;
+    padding: 7px 8px;
+  }
+
+  .hp-meta {
+    grid-template-columns: auto 1fr;
+  }
+
+  .hp-meta em {
+    display: none;
   }
 
   .hlp-count {
@@ -1202,6 +1223,109 @@ body.accessible-ui .footer {
   line-height: 1;
 }
 
+.header-level-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 6px 12px 6px 6px;
+  border: 1px solid rgba(90,171,240,0.20);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--text);
+  box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+
+.header-level-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(90,171,240,0.42);
+  box-shadow: 0 10px 24px rgba(15,23,42,0.10);
+}
+
+.header-level-card .hlc-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: var(--accent);
+  font-size: 12px;
+}
+
+.hlc-copy {
+  display: grid;
+  gap: 1px;
+  text-align: left;
+  line-height: 1.1;
+}
+
+.hlc-copy strong {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.hlc-copy span {
+  color: var(--text3);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.header-progress {
+  display: grid;
+  gap: 5px;
+  width: clamp(132px, 14vw, 180px);
+  padding: 8px 10px;
+  border: 1px solid rgba(90,171,240,0.18);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(15,23,42,0.05);
+  flex-shrink: 0;
+}
+
+.hp-meta {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  align-items: center;
+  gap: 7px;
+  color: var(--text2);
+  font-size: 11px;
+  line-height: 1;
+}
+
+.hp-meta strong {
+  color: var(--accent);
+  font-weight: 950;
+}
+
+.hp-meta span {
+  color: var(--text);
+  font-weight: 900;
+}
+
+.hp-meta em {
+  color: var(--text3);
+  font-style: normal;
+  font-weight: 800;
+  justify-self: end;
+}
+
+.hp-track {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(90,171,240,0.14);
+}
+
+.hp-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  transition: width .3s ease;
+}
+
 /* ── Index page: mon niveau ── */
 .idx-level-active > summary { background: rgba(90,171,240,0.06); }
 .idx-my-level-banner {
@@ -1223,114 +1347,12 @@ body.accessible-ui .footer {
   border-radius: var(--r-md);
 }
 
-/* ============================================================
-   LEVEL PICKER OVERLAY
-   ============================================================ */
-#levelPickerOverlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 2000;
-}
-#levelPickerOverlay.open { display: block; }
-
-.lpo-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(26,26,46,0.45);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  animation: lpoFadeIn 0.2s ease both;
-}
-@keyframes lpoFadeIn { from { opacity:0; } to { opacity:1; } }
-
-.lpo-panel {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: min(680px, calc(100vw - 32px));
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.22);
-  padding: clamp(24px, 4vw, 40px);
-  animation: lpoPanelIn 0.25s cubic-bezier(0.22,1,0.36,1) both;
-}
-@keyframes lpoPanelIn {
-  from { opacity:0; transform: translate(-50%, calc(-50% + 16px)) scale(0.97); }
-  to   { opacity:1; transform: translate(-50%, -50%) scale(1); }
-}
-
-.lpo-close {
-  position: absolute;
-  top: 14px; right: 16px;
-  background: none; border: none;
-  font-size: 18px; cursor: pointer;
-  color: var(--text3);
-  padding: 4px 8px;
-  border-radius: var(--r-sm);
-  transition: color 0.15s, background 0.15s;
-}
-.lpo-close:hover { color: var(--text); background: var(--bg2); }
-
-.lpo-title {
-  font-family: var(--font-head);
-  font-weight: 800;
-  font-size: 18px;
-  color: var(--text);
-  margin-bottom: 18px;
-  text-align: center;
-}
-
-.lpo-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 12px;
-}
-
-.lpo-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  padding: 16px 10px 14px;
-  border: 2px solid var(--border);
-  border-radius: 12px;
-  background: var(--bg);
-  cursor: pointer;
-  text-align: center;
-  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
-  font-family: var(--font-body);
-  color: var(--text);
-}
-.lpo-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.10);
-  border-color: rgba(90,171,240,0.4);
-}
-.lpo-card:active { transform: scale(0.97); }
-
-.lpo-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px; height: 40px;
-  border-radius: 50%;
-  font-family: var(--font-head);
-  font-weight: 800;
-  font-size: 12px;
-  color: #fff;
-  margin-bottom: 2px;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
-}
-.lpo-icon { font-size: 18px; line-height: 1; }
-.lpo-name { font-weight: 700; font-size: 13px; color: var(--text); }
-.lpo-desc { font-size: 11px; color: var(--text2); line-height: 1.35; }
-
 @media (max-width: 520px) {
-  .hlc-name { display: none; }
-  .lpo-grid { grid-template-columns: repeat(3, 1fr); }
+  .header-logo-text { display: none; }
+  .hlc-copy { display: none; }
+  .header-progress { width: 82px; }
+  .hp-meta strong { display: none; }
+  .hp-meta { grid-template-columns: 1fr; }
 }
 ﻿body {
   min-height: 100vh;

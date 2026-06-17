@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Connexion — École Francophone</title>
   <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="css/theme.css">
   <style>
     body {
       min-height: 100vh;
@@ -118,13 +119,6 @@
     .level-card-name { font-weight: 700; font-size: 14px; color: var(--text); }
     .level-card-desc { font-size: 12px; color: var(--text2); line-height: 1.4; }
 
-    /* couleurs par niveau */
-    .level-card--a1   { --lc: #1D4ED8; }
-    .level-card--a2   { --lc: #0ea5e9; }
-    .level-card--b1   { --lc: #f59e0b; }
-    .level-card--b2   { --lc: #7C3AED; }
-    .level-card--c1c2 { --lc: #f43f5e; }
-
     .level-card { border-color: rgba(0,0,0,0.06); }
     .level-card:hover { border-color: var(--lc); }
     .level-card-badge { background: var(--lc); }
@@ -150,42 +144,12 @@
       <p>Le site s'adaptera entièrement à votre choix.</p>
     </div>
 
-    <div class="level-grid" id="levelGrid">
-      <button class="level-card level-card--a1" data-level="a1" type="button">
-        <span class="level-card-badge">A1</span>
-        <span class="level-card-icon">🌱</span>
-        <span class="level-card-name">Débutant</span>
-        <span class="level-card-desc">Je découvre le français et les repères essentiels.</span>
-      </button>
-      <button class="level-card level-card--a2" data-level="a2" type="button">
-        <span class="level-card-badge">A2</span>
-        <span class="level-card-icon">🌿</span>
-        <span class="level-card-name">Élémentaire</span>
-        <span class="level-card-desc">Je m'exprime sur des sujets familiers du quotidien.</span>
-      </button>
-      <button class="level-card level-card--b1" data-level="b1" type="button">
-        <span class="level-card-badge">B1</span>
-        <span class="level-card-icon">🌳</span>
-        <span class="level-card-name">Intermédiaire</span>
-        <span class="level-card-desc">Je comprends et m'exprime dans des situations variées.</span>
-      </button>
-      <button class="level-card level-card--b2" data-level="b2" type="button">
-        <span class="level-card-badge">B2</span>
-        <span class="level-card-icon">🌟</span>
-        <span class="level-card-name">Avancé</span>
-        <span class="level-card-desc">Je communique avec aisance sur des sujets complexes.</span>
-      </button>
-      <button class="level-card level-card--c1c2" data-level="c1c2" type="button">
-        <span class="level-card-badge">C1/C2</span>
-        <span class="level-card-icon">🎓</span>
-        <span class="level-card-name">Maîtrise</span>
-        <span class="level-card-desc">Je maîtrise le français avec fluidité et nuance.</span>
-      </button>
-    </div>
+    <div class="level-grid" id="levelGrid"></div>
 
     <p class="level-note">Vous pourrez changer de niveau à tout moment depuis le menu.</p>
   </div>
 
+  <script src="js/site-core.js"></script>
   <script src="js/auth.js"></script>
   <script>
     if (efAuth.getLevel()) {
@@ -193,6 +157,17 @@
     } else {
       document.getElementById('step2').classList.add('visible');
     }
+
+    var levels = efAuth.getAllLevels();
+    document.getElementById('levelGrid').innerHTML = Object.keys(levels).map(function(key) {
+      var level = levels[key];
+      return '<button class="level-card" style="--lc:' + level.color + '" data-level="' + key + '" type="button">'
+        + '<span class="level-card-badge">' + level.label + '</span>'
+        + '<span class="level-card-icon">' + level.icon + '</span>'
+        + '<span class="level-card-name">' + level.name + '</span>'
+        + '<span class="level-card-desc">' + level.desc + '</span>'
+        + '</button>';
+    }).join('');
 
     document.getElementById('levelGrid').addEventListener('click', function (e) {
       var btn = e.target.closest('[data-level]');

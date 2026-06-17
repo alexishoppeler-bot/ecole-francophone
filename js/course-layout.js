@@ -13,6 +13,7 @@
   const _depth = _coursIdx >= 0 ? _pathParts.length - _coursIdx - 2 : 0;
   const hrefBase = '../'.repeat(Math.max(0, _depth));
   const ROOT = window.EF_ROOT || hrefBase + '../';
+  const SITE_CORE = window.EF_SITE;
 
   function pageKeyFromHref(href) {
     return href.split('/').pop().replace(/\.html$/i, '');
@@ -24,21 +25,10 @@
   const PROGRESS_KEY = 'ah:cours:progress:v1';
   const EXERCISE_PROGRESS_KEY = 'ah:cours:exercise-progress:v1';
 
-  const EF_LEVELS = {
-    a1:   { label: 'A1',    icon: '🌱', color: '#5AABF0', name: 'Débutant',      desc: 'Je découvre le français et les repères essentiels.' },
-    a2:   { label: 'A2',    icon: '🌿', color: '#3db8b0', name: 'Élémentaire',   desc: 'Je m\'exprime sur des sujets familiers du quotidien.' },
-    b1:   { label: 'B1',    icon: '🌳', color: '#b8a055', name: 'Intermédiaire', desc: 'Je comprends et m\'exprime dans des situations variées.' },
-    b2:   { label: 'B2',    icon: '🌟', color: '#9B35EC', name: 'Avancé',        desc: 'Je communique avec aisance sur des sujets complexes.' },
-    c1c2: { label: 'C1/C2', icon: '🎓', color: '#e84b6c', name: 'Maîtrise',     desc: 'Je maîtrise le français avec fluidité et nuance.' }
-  };
-
   function getStoredLevel() {
-    try { return localStorage.getItem('ef_level') || null; } catch(e) { return null; }
+    return SITE_CORE ? SITE_CORE.getLevel() : null;
   }
 
-  function setStoredLevel(key) {
-    try { localStorage.setItem('ef_level', key); } catch(e) {}
-  }
   const SITE_TEXT = window.SITE_TEXT || {};
   const UNIT_TEXT = SITE_TEXT.unit || {};
   const UNIT_STATUS  = UNIT_TEXT.status   || { completed:'Terminée', started:'En cours', cardCompleted:'Terminé', cardStarted:'En cours', cardIdle:'À faire', idle:'À faire' };
@@ -156,73 +146,25 @@
     };
   }
 
-  function renderLevelPickerOverlay() {
-    var overlay = document.createElement('div');
-    overlay.id = 'levelPickerOverlay';
-    overlay.setAttribute('role', 'dialog');
-    overlay.setAttribute('aria-modal', 'true');
-    overlay.setAttribute('aria-label', 'Changer de niveau');
-    overlay.innerHTML = [
-      '<div class="lpo-backdrop"></div>',
-      '<div class="lpo-panel">',
-      '  <button class="lpo-close" aria-label="Fermer">✕</button>',
-      '  <p class="lpo-title">Mon niveau de français</p>',
-      '  <div class="lpo-grid">',
-      Object.keys(EF_LEVELS).map(function(key) {
-        var lv = EF_LEVELS[key];
-        return [
-          '<button class="lpo-card lpo-card--' + key + '" data-level="' + key + '" type="button">',
-          '  <span class="lpo-badge" style="background:' + lv.color + '">' + lv.label + '</span>',
-          '  <span class="lpo-icon">' + lv.icon + '</span>',
-          '  <span class="lpo-name">' + lv.name + '</span>',
-          '  <span class="lpo-desc">' + lv.desc + '</span>',
-          '</button>'
-        ].join('');
-      }).join(''),
-      '  </div>',
-      '</div>'
-    ].join('');
-    document.body.appendChild(overlay);
-
-    function closeOverlay() { overlay.classList.remove('open'); }
-
-    overlay.querySelector('.lpo-backdrop').addEventListener('click', closeOverlay);
-    overlay.querySelector('.lpo-close').addEventListener('click', closeOverlay);
-    overlay.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeOverlay(); });
-
-    overlay.querySelector('.lpo-grid').addEventListener('click', function(e) {
-      var btn = e.target.closest('[data-level]');
-      if (!btn) return;
-      setStoredLevel(btn.dataset.level);
-      var platformUrls = {
-        a1: ROOT + 'plateformes/a1/index.html',
-        a2: ROOT + 'plateformes/a2/index.html',
-        b1: ROOT + 'plateformes/b1/index.html',
-        b2: ROOT + 'plateformes/b2/index.html',
-        c1c2: ROOT + 'plateformes/c1c2/index.html'
-      };
-      window.location.href = platformUrls[btn.dataset.level] || resolveUrl('index.html');
-    });
-
-    return overlay;
-  }
-
   function renderHeader() {
     if (!slotHeader || slotHeader.querySelector('.header')) return;
     var level = getStoredLevel();
-    var lv = level ? EF_LEVELS[level] : null;
-    var a1Progress = getLevelProgress('a1');
+    var lv = level && SITE_CORE ? SITE_CORE.getLevelData(level) : null;
+    var progressLevel = lv ? level : 'a1';
+    var progress = getLevelProgress(progressLevel);
+    var progressLabel = lv ? lv.label : 'A1';
     var levelChipHtml = lv
-      ? '<button class="header-level-chip" id="headerLevelChip" title="Changer de niveau" type="button" aria-label="Niveau ' + lv.label + ' — Changer">'
+      ? '<button class="header-level-card" id="headerLevelChip" title="Changer de niveau" type="button" aria-label="Niveau ' + lv.label + ' — Changer">'
         + '<span class="hlc-badge" style="background:' + lv.color + '">' + lv.label + '</span>'
-        + '<span class="hlc-icon">' + lv.icon + '</span>'
-        + '<span class="hlc-name">' + lv.name + '</span>'
+        + '<span class="hlc-copy"><strong>' + lv.name + '</strong><span>' + lv.icon + ' Niveau actuel</span></span>'
         + '</button>'
-      : '';
-    var a1ProgressHtml = '<div class="header-level-progress" role="progressbar" aria-label="Progression A1" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + a1Progress.pct + '">'
-      + '<span class="hlp-top"><strong>A1</strong><span>' + a1Progress.pct + '%</span></span>'
-      + '<span class="hlp-track"><span class="hlp-fill" style="width:' + a1Progress.pct + '%"></span></span>'
-      + '<span class="hlp-count">' + a1Progress.done + '/' + a1Progress.total + ' unités</span>'
+      : '<button class="header-level-card" id="headerLevelChip" title="Choisir un niveau" type="button" aria-label="Choisir un niveau">'
+        + '<span class="hlc-badge">?</span>'
+        + '<span class="hlc-copy"><strong>Niveau</strong><span>Choisir</span></span>'
+        + '</button>';
+    var progressHtml = '<div class="header-progress" role="progressbar" aria-label="Progression ' + progressLabel + '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + progress.pct + '">'
+      + '<span class="hp-meta"><strong>' + progressLabel + '</strong><span>' + progress.pct + '%</span><em>' + progress.done + '/' + progress.total + '</em></span>'
+      + '<span class="hp-track"><span class="hp-fill" style="width:' + progress.pct + '%"></span></span>'
       + '</div>';
 
     slotHeader.innerHTML = [
@@ -230,21 +172,19 @@
       '  <div class="header-row1">',
       '    <a href="' + BRAND.homeHref + '" class="header-logo">',
       '      <img src="' + ROOT + 'assets/logo.png" class="header-logo-img" alt="' + BRAND.alt + '" />',
-      '      <span class="header-logo-text"><span class="header-logo-blue">' + BRAND.blueHtml + '</span> <span class="header-logo-purple">' + BRAND.purpleHtml + '</span></span>',
+      '      <span class="header-logo-text"><strong>École</strong> Francophone</span>',
       '    </a>',
       '    <div class="header-right">',
       levelChipHtml,
-      a1ProgressHtml,
+      progressHtml,
       '    </div>',
       '  </div>',
       '</header>'
     ].join('');
 
-    if (lv) {
-      var overlay = renderLevelPickerOverlay();
+    if (SITE_CORE) {
       document.getElementById('headerLevelChip').addEventListener('click', function() {
-        overlay.classList.add('open');
-        overlay.querySelector('.lpo-close').focus();
+        SITE_CORE.openLevelPicker({ root: ROOT });
       });
     }
   }
@@ -307,41 +247,14 @@
     }
     if (sub) sub.textContent = COURSE_INDEX_TEXT.subtitle;
     if (COURSE_INDEX_TEXT.documentTitle) document.title = COURSE_INDEX_TEXT.documentTitle;
-    var PROGRESS_KEY = 'ah:cours:progress:v1';
-    var levelMap = {};
-    sections.forEach(function(s) {
-      if (s.prefix !== undefined) levelMap[s.prefix + 'unite-'] = 'level-' + s.cls;
-    });
-    levelMap['unite-'] = 'level-a1';
-    var activeLevel = null;
-    try {
-      var raw = localStorage.getItem(PROGRESS_KEY);
-      if (raw) {
-        var progress = JSON.parse(raw);
-        var keys = Object.keys(progress);
-        if (keys.length) {
-          var last = keys.reduce(function(a, b) {
-            return (progress[a].ts || 0) > (progress[b].ts || 0) ? a : b;
-          });
-          Object.keys(levelMap).forEach(function(pfx) {
-            if (last.indexOf(pfx) === 0) activeLevel = levelMap[pfx];
-          });
-        }
-      }
-    } catch(e) {}
-
     var storedLevel = getStoredLevel();
-
-    var visibleSections = storedLevel
-      ? sections.filter(function(section) { return section.cls === storedLevel; })
-      : sections;
-    if (!visibleSections.length) visibleSections = sections;
+    var visibleSections = sections;
 
     slot.innerHTML = visibleSections.map(function(section) {
       var levelId = 'level-' + section.cls;
       var isA1 = section.cls === 'a1';
       var isMyLevel = storedLevel && section.cls === storedLevel;
-      var openAttr = storedLevel ? ' open' : '';
+      var openAttr = isMyLevel ? ' open' : '';
       var myLevelBanner = isMyLevel
         ? '<div class="idx-my-level-banner">Mon niveau</div>'
         : '';

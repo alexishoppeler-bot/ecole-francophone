@@ -1,25 +1,26 @@
-# Ecole Francophone
+# École Francophone
 
-Site statique de cours et d'exercices de francais.
+Site statique de cours, entraînements et test de niveau en français.
 
 ## Structure
 
 - `index.html` : page d'accueil
+- `login.html` : choix du niveau
 - `cours/` : pages HTML des cours, entrainements et annexes
+- `test-francais/` : test de niveau
 - `css/` : styles communs
 - `js/` : logique du site
 - `assets/` : images, audio, polices
-- `docs/` : guides de modification
 
 ## Donnees a modifier
 
 ### Lecons
 
-- `js/course-data/levels/a1.js`
-- `js/course-data/levels/a2.js`
-- `js/course-data/levels/b1.js`
-- `js/course-data/levels/b2.js`
-- `js/course-data/levels/c1c2.js`
+- `js/course-data/a1.js`
+- `js/course-data/a2.js`
+- `js/course-data/b1.js`
+- `js/course-data/b2.js`
+- `js/course-data/c1c2.js`
 
 ### Exercices
 
@@ -33,8 +34,3 @@ Site statique de cours et d'exercices de francais.
 
 - `js/site-text.js`
 - `js/game-text.js`
-
-## Guides
-
-- `docs/MODIFIER-LECONS.md`
-- `docs/MODIFIER-EXERCICES.md`
