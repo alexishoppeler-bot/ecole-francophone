@@ -530,7 +530,7 @@
       '<button class="course-chatbot-toggle" type="button" aria-expanded="false" aria-controls="courseChatbotPanel">💬</button>',
       '<div class="course-chatbot-panel" id="courseChatbotPanel" hidden>',
       '  <div class="course-chatbot-head">',
-      '    <img class="course-chatbot-avatar" src="../assets/emanuelle.jpg" alt="Emmanuelle">',
+      '    <img class="course-chatbot-avatar" src="' + (window.EF_ROOT || '../') + 'assets/emanuelle.jpg" alt="Emmanuelle">',
       '    <span class="course-chatbot-title"><strong>Emmanuelle</strong><span>Assistante IA · réponses par boutons</span></span>',
       '  </div>',
       '  <div class="course-chatbot-log" aria-live="polite">',

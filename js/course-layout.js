@@ -228,7 +228,7 @@
       '<header class="header">',
       '  <div class="header-row1">',
       '    <a href="' + BRAND.homeHref + '" class="header-logo">',
-      '      <img src="../assets/logo.png" class="header-logo-img" alt="' + BRAND.alt + '" />',
+      '      <img src="' + hrefBase + '../assets/logo.png" class="header-logo-img" alt="' + BRAND.alt + '" />',
       '      <span class="header-logo-text"><span class="header-logo-blue">' + BRAND.blueHtml + '</span> <span class="header-logo-purple">' + BRAND.purpleHtml + '</span></span>',
       '    </a>',
       '    <div class="header-right">',
