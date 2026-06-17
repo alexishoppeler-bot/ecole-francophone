@@ -208,7 +208,7 @@
   }
 
   function renderHeader() {
-    if (!slotHeader) return;
+    if (!slotHeader || slotHeader.querySelector('.header')) return;
     var level = getStoredLevel();
     var lv = level ? EF_LEVELS[level] : null;
     var a1Progress = getLevelProgress('a1');

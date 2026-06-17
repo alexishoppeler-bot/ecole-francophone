@@ -28,7 +28,15 @@
       "Bash(git pull *)",
       "Bash(git stash *)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://127.0.0.1:5501/assets/logo.png)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://127.0.0.1:5501/cours/a1/unite-0.html)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://127.0.0.1:5501/cours/a1/unite-0.html)",
+      "Bash(python3 -m http.server 8080)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/assets/logo.png)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/cours/a1/unite-0.html)",
+      "Bash(curl -s http://localhost:8080/js/course-layout.js)",
+      "Bash(kill %1)",
+      "Bash(python3 -m http.server 8080 --bind 0.0.0.0)",
+      "Bash(curl -s http://localhost:8080/cours/a1/unite-0.html)",
+      "Bash(curl -s http://localhost:8080/js/course-ai.js)"
     ],
     "additionalDirectories": [
       "/tmp"
