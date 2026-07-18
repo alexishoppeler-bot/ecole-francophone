@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Évaluation finale | learning progress</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="moteur.js"></script>
+</head>
+<body>
+  <header>
+    <div class="gauche">
+      <a href="index.html" class="logo-shell">
+        <img src="logo.png" alt="Logo école francophone" class="logo-img">
+        <div class="logo-texte">learning progress</div>
+      </a>
+    </div>
+    <nav aria-label="Navigation principale">
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="index.html" class="nav-link">Accueil</a></li>
+        <li class="nav-item"><a href="unite.html?unite=a1-0" class="nav-link active">Démo</a></li>
+        <li class="nav-item"><a href="connexion.html" class="nav-link">Connexion</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ÉCRAN DÉMARRAGE -->
+    <section class="section" id="ecran-start">
+      <div class="eval-start">
+        <h2 id="evalTitre"></h2>
+        <div class="eval-objectifs" id="evalObjectifs"></div>
+        <div class="eval-infos">
+          <span>30 questions</span>
+          <span>80% pour valider</span>
+          <span>Temps illimité</span>
+        </div>
+        <button class="btn btn-principal" onclick="demarrer()">Commencer l'évaluation</button>
+      </div>
+    </section>
+
+    <!-- ÉCRAN QUESTIONS -->
+    <section class="section" id="ecran-eval" style="display:none">
+      <div class="jeu-conteneur">
+        <div class="jeu-header">
+          <div class="jeu-progress-bar"><div class="jeu-progress-fill" id="progress"></div></div>
+          <div class="jeu-stats">
+            <span id="compteur"></span>
+            <span id="categorie"></span>
+            <span id="timer">⏱ 0:00</span>
+          </div>
+        </div>
+        <div id="zone-question" class="jeu-card-anim">
+          <p class="jeu-question-text" id="question"></p>
+          <div class="jeu-options-grid" id="options"></div>
+          <p class="jeu-feedback" id="feedback"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ÉCRAN RÉSULTAT -->
+    <section class="section" id="ecran-resultat" style="display:none">
+      <div class="eval-resultat">
+        <div class="eval-resultat-header jeu-card-anim">
+          <div class="resultat-emoji" id="res-emoji"></div>
+          <h2 id="res-titre"></h2>
+          <p id="res-sous-titre"></p>
+        </div>
+
+        <div class="eval-scores">
+          <div class="eval-score-card" id="score-comm">
+            <span class="badge">Communication</span>
+            <div class="eval-score-ring">
+              <svg viewBox="0 0 80 80">
+                <circle cx="40" cy="40" r="34" class="eval-ring-bg"/>
+                <circle cx="40" cy="40" r="34" class="eval-ring-fill" id="ring-comm"/>
+              </svg>
+              <span class="eval-ring-text" id="pct-comm">0%</span>
+            </div>
+          </div>
+          <div class="eval-score-card" id="score-gram">
+            <span class="badge">Grammaire / Conjugaison</span>
+            <div class="eval-score-ring">
+              <svg viewBox="0 0 80 80">
+                <circle cx="40" cy="40" r="34" class="eval-ring-bg"/>
+                <circle cx="40" cy="40" r="34" class="eval-ring-fill" id="ring-gram"/>
+              </svg>
+              <span class="eval-ring-text" id="pct-gram">0%</span>
+            </div>
+          </div>
+          <div class="eval-score-card" id="score-vocab">
+            <span class="badge">Vocabulaire / Phonétique</span>
+            <div class="eval-score-ring">
+              <svg viewBox="0 0 80 80">
+                <circle cx="40" cy="40" r="34" class="eval-ring-bg"/>
+                <circle cx="40" cy="40" r="34" class="eval-ring-fill" id="ring-vocab"/>
+              </svg>
+              <span class="eval-ring-text" id="pct-vocab">0%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="eval-detail">
+          <p id="res-detail"></p>
+          <p id="res-temps"></p>
+        </div>
+
+        <div class="eval-actions">
+          <a href="#" id="lien-retour" class="btn btn-principal">Retour à l'unité</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer></footer>
+
+  <script>
+    const u = U();
+    if (u) {
+      document.querySelector("footer").textContent = "© 2026 learning progress · " + u.meta.label + " Évaluation";
+      document.title = "Évaluation finale | Unité " + u.meta.label;
+      document.getElementById("evalTitre").textContent = "Évaluation finale — Unité " + u.meta.numero;
+      document.getElementById("lien-retour").setAttribute("href", lienUnite("unite.html"));
+
+      const badges = ["Communication", "Grammaire et conjugaison", "Vocabulaire et phonétique"];
+      const objDiv = document.getElementById("evalObjectifs");
+      u.progression.objectifs.forEach((texte, i) => {
+        objDiv.innerHTML += '<div class="eval-obj"><span class="badge">' + badges[i] + '</span><p>' + texte + '</p></div>';
+      });
+
+      const questions = u.progression.questions;
+      let idx, scores, timerVal, timerRef, shuffled;
+
+      function demarrer() {
+        idx = 0;
+        scores = { comm: 0, gram: 0, vocab: 0 };
+        timerVal = 0;
+
+        shuffled = melangerTableau(questions);
+
+        document.getElementById("ecran-start").style.display = "none";
+        document.getElementById("ecran-resultat").style.display = "none";
+        document.getElementById("ecran-eval").style.display = "block";
+
+        clearInterval(timerRef);
+        timerRef = setInterval(() => {
+          timerVal++;
+          const m = Math.floor(timerVal / 60);
+          const s = String(timerVal % 60).padStart(2, "0");
+          document.getElementById("timer").textContent = "⏱ " + m + ":" + s;
+        }, 1000);
+
+        afficher();
+      }
+
+      const catNoms = { comm: "Communication", gram: "Grammaire / Conjugaison", vocab: "Vocabulaire / Phonétique" };
+
+      function afficher() {
+        const item = shuffled[idx];
+        document.getElementById("compteur").textContent = "Question " + (idx + 1) + " / " + shuffled.length;
+        document.getElementById("categorie").textContent = catNoms[item.cat];
+        document.getElementById("progress").style.width = ((idx / shuffled.length) * 100) + "%";
+        document.getElementById("feedback").textContent = "";
+        document.getElementById("feedback").className = "jeu-feedback";
+
+        const zone = document.getElementById("zone-question");
+        zone.classList.remove("jeu-card-anim");
+        void zone.offsetWidth;
+        zone.classList.add("jeu-card-anim");
+
+        document.getElementById("question").textContent = item.q;
+        const div = document.getElementById("options");
+        div.innerHTML = "";
+
+        const ordre = melangerTableau(item.o.map((_, i) => i));
+        ordre.forEach((origI, pos) => {
+          const btn = document.createElement("button");
+          btn.className = "quiz-option jeu-opt-anim";
+          btn.style.animationDelay = (pos * 0.07) + "s";
+          btn.textContent = item.o[origI];
+          btn.dataset.idx = origI;
+          btn.onclick = () => choisir(btn, origI, item);
+          div.appendChild(btn);
+        });
+      }
+
+      function choisir(btn, i, item) {
+        const div = document.getElementById("options");
+        const fb = document.getElementById("feedback");
+        div.querySelectorAll("button").forEach(b => { b.disabled = true; b.classList.add("quiz-disabled"); });
+
+        if (i === item.r) {
+          btn.classList.add("quiz-correct", "jeu-pulse");
+          fb.textContent = "Correct !";
+          fb.className = "jeu-feedback feedback-correct";
+          scores[item.cat]++;
+        } else {
+          btn.classList.add("quiz-incorrect", "jeu-shake");
+          div.querySelector('[data-idx="' + item.r + '"]').classList.add("quiz-correct");
+          fb.textContent = "Réponse : " + item.o[item.r];
+          fb.className = "jeu-feedback feedback-incorrect";
+        }
+
+        setTimeout(() => {
+          idx++;
+          if (idx < shuffled.length) afficher();
+          else terminer();
+        }, 1200);
+      }
+
+      function terminer() {
+        clearInterval(timerRef);
+        document.getElementById("ecran-eval").style.display = "none";
+        document.getElementById("ecran-resultat").style.display = "block";
+        document.getElementById("progress").style.width = "100%";
+
+        const total = scores.comm + scores.gram + scores.vocab;
+        const pctTotal = Math.round((total / 30) * 100);
+        const pctComm = Math.round((scores.comm / 10) * 100);
+        const pctGram = Math.round((scores.gram / 10) * 100);
+        const pctVocab = Math.round((scores.vocab / 10) * 100);
+        const valide = pctTotal >= 80;
+
+        sauvegarderEvaluation(pctTotal, valide);
+
+        document.getElementById("res-emoji").textContent = valide ? "🏆" : pctTotal >= 50 ? "👍" : "💪";
+        document.getElementById("res-titre").textContent = valide ? "Unité validée !" : "Pas encore validé";
+        document.getElementById("res-sous-titre").textContent = total + " / 30 — " + pctTotal + "%";
+        document.getElementById("res-detail").textContent = valide
+          ? "Félicitations ! Vous maîtrisez les objectifs de l'unité " + u.meta.numero + "."
+          : "Il faut 80% pour valider. Révisez et recommencez !";
+
+        const m = Math.floor(timerVal / 60);
+        const s = String(timerVal % 60).padStart(2, "0");
+        document.getElementById("res-temps").textContent = "Temps : " + m + ":" + s;
+
+        animerRing("ring-comm", pctComm, "pct-comm");
+        animerRing("ring-gram", pctGram, "pct-gram");
+        animerRing("ring-vocab", pctVocab, "pct-vocab");
+      }
+
+      function animerRing(ringId, pct, textId) {
+        const circle = document.getElementById(ringId);
+        const text = document.getElementById(textId);
+        const circ = 2 * Math.PI * 34;
+        circle.style.strokeDasharray = circ;
+        circle.style.strokeDashoffset = circ;
+
+        const color = pct >= 80 ? "#22c55e" : pct >= 50 ? "#f59e0b" : "#ef4444";
+        circle.style.stroke = color;
+
+        setTimeout(() => {
+          circle.style.transition = "stroke-dashoffset 1s ease";
+          circle.style.strokeDashoffset = circ - (circ * pct / 100);
+          text.textContent = pct + "%";
+          text.style.color = color;
+        }, 200);
+      }
+
+      window.demarrer = demarrer;
+    }
+  </script>
+  <script src="parole.js"></script>
+</body>
+</html>

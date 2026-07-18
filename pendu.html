@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Le Pendu | learning progress</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="moteur.js"></script>
+</head>
+<body>
+  <header>
+    <div class="gauche">
+      <a href="index.html" class="logo-shell">
+        <img src="logo.png" alt="Logo école francophone" class="logo-img">
+        <div class="logo-texte">learning progress</div>
+      </a>
+    </div>
+    <nav aria-label="Navigation principale">
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="index.html" class="nav-link">Accueil</a></li>
+        <li class="nav-item"><a href="unite.html?unite=a1-0" class="nav-link active">Démo</a></li>
+        <li class="nav-item"><a href="connexion.html" class="nav-link">Connexion</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <section class="section">
+      <div class="jeu-conteneur">
+        <div class="jeu-header">
+          <div class="jeu-stats">
+            <span id="compteur">Mot 1</span>
+            <span id="score">Gagnés : 0</span>
+          </div>
+        </div>
+        <div id="zone-jeu">
+          <div class="pendu-layout">
+            <canvas id="pendu-canvas" width="200" height="220"></canvas>
+            <div class="pendu-droite">
+              <p class="pendu-indice" id="indice"></p>
+              <div class="pendu-mot-zone" id="mot-zone"></div>
+              <div class="pendu-erreurs-zone">
+                <span id="erreurs-txt">Erreurs : 0 / 7</span>
+              </div>
+            </div>
+          </div>
+          <div class="pendu-clavier" id="clavier"></div>
+          <p class="jeu-feedback" id="feedback"></p>
+          <button class="btn-jeu" id="btn-suivant" style="display:none" onclick="suivant()">Mot suivant</button>
+        </div>
+        <div id="zone-resultat" class="jeu-resultat" style="display:none">
+          <div class="resultat-emoji" id="res-emoji"></div>
+          <h2 id="res-titre"></h2>
+          <p id="res-detail"></p>
+          <button class="btn-jeu" onclick="init()">Rejouer</button>
+          <a href="#" id="lien-retour" class="btn-jeu btn-jeu-sec">↩ Retour aux jeux</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer></footer>
+
+  <script>
+    const u = U();
+    if (u) {
+      document.querySelector("footer").textContent = "© 2026 learning progress · " + u.meta.label + " Le Pendu";
+      document.title = "Le Pendu | Unité " + u.meta.label;
+
+      const mots = u.pendu;
+      let motIdx, gagnes, mot, lettres, erreurs, maxErr = 7, fini;
+
+      const parties = [
+        (ctx) => { ctx.beginPath(); ctx.arc(100, 40, 20, 0, Math.PI * 2); ctx.stroke(); },
+        (ctx) => { ctx.beginPath(); ctx.moveTo(100, 60); ctx.lineTo(100, 130); ctx.stroke(); },
+        (ctx) => { ctx.beginPath(); ctx.moveTo(100, 80); ctx.lineTo(65, 110); ctx.stroke(); },
+        (ctx) => { ctx.beginPath(); ctx.moveTo(100, 80); ctx.lineTo(135, 110); ctx.stroke(); },
+        (ctx) => { ctx.beginPath(); ctx.moveTo(100, 130); ctx.lineTo(70, 180); ctx.stroke(); },
+        (ctx) => { ctx.beginPath(); ctx.moveTo(100, 130); ctx.lineTo(130, 180); ctx.stroke(); },
+        (ctx) => {
+          ctx.beginPath(); ctx.arc(92, 36, 3, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.arc(108, 36, 3, 0, Math.PI * 2); ctx.fill();
+        }
+      ];
+
+      function dessiner() {
+        const canvas = document.getElementById("pendu-canvas");
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, 200, 220);
+        ctx.strokeStyle = "rgba(255,255,255,0.5)";
+        ctx.fillStyle = "rgba(255,255,255,0.5)";
+        ctx.lineWidth = 3;
+        ctx.lineCap = "round";
+        ctx.beginPath(); ctx.moveTo(30, 210); ctx.lineTo(170, 210); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(60, 210); ctx.lineTo(60, 10); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(60, 10); ctx.lineTo(100, 10); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(100, 10); ctx.lineTo(100, 20); ctx.stroke();
+
+        ctx.strokeStyle = "#fca5a5";
+        ctx.fillStyle = "#fca5a5";
+        ctx.lineWidth = 3;
+        for (let i = 0; i < erreurs; i++) {
+          parties[i](ctx);
+        }
+      }
+
+      function init() {
+        motIdx = 0; gagnes = 0;
+        document.getElementById("zone-resultat").style.display = "none";
+        document.getElementById("zone-jeu").style.display = "block";
+        lancer();
+      }
+
+      function lancer() {
+        const item = mots[motIdx];
+        mot = item.mot; lettres = new Set(); erreurs = 0; fini = false;
+        document.getElementById("compteur").textContent = "Mot " + (motIdx + 1);
+        document.getElementById("score").textContent = "Gagnés : " + gagnes;
+        document.getElementById("indice").textContent = "Indice : " + item.indice;
+        document.getElementById("feedback").textContent = "";
+        document.getElementById("feedback").className = "jeu-feedback";
+        document.getElementById("btn-suivant").style.display = "none";
+        dessiner();
+        renderMot();
+        renderClavier();
+      }
+
+      function renderMot() {
+        const div = document.getElementById("mot-zone");
+        div.innerHTML = "";
+        mot.split("").forEach(l => {
+          const span = document.createElement("span");
+          span.className = "pendu-case" + (lettres.has(l) ? " pendu-case-found" : "");
+          span.textContent = lettres.has(l) ? l : "";
+          div.appendChild(span);
+        });
+      }
+
+      function renderClavier() {
+        const div = document.getElementById("clavier");
+        div.innerHTML = "";
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach((l, i) => {
+          const btn = document.createElement("button");
+          btn.className = "pendu-lettre jeu-opt-anim";
+          btn.style.animationDelay = (i * 0.02) + "s";
+          btn.textContent = l;
+          if (lettres.has(l)) {
+            btn.disabled = true;
+            btn.classList.add(mot.includes(l) ? "pendu-hit" : "pendu-miss");
+          }
+          btn.onclick = () => jouer(l);
+          div.appendChild(btn);
+        });
+      }
+
+      function jouer(l) {
+        if (fini) return;
+        lettres.add(l);
+        if (!mot.includes(l)) erreurs++;
+
+        document.getElementById("erreurs-txt").textContent = "Erreurs : " + erreurs + " / " + maxErr;
+        dessiner();
+        renderMot();
+        renderClavier();
+
+        const gagne = mot.split("").every(c => lettres.has(c));
+        const fb = document.getElementById("feedback");
+
+        if (gagne) {
+          fini = true;
+          fb.textContent = "Bravo, vous avez trouvé : " + mot + " !";
+          fb.className = "jeu-feedback feedback-correct";
+          gagnes++;
+          document.getElementById("score").textContent = "Gagnés : " + gagnes;
+          document.getElementById("mot-zone").classList.add("jeu-pulse");
+          montrerSuivant();
+        } else if (erreurs >= maxErr) {
+          fini = true;
+          fb.textContent = "Perdu ! Le mot était : " + mot;
+          fb.className = "jeu-feedback feedback-incorrect";
+          lettres = new Set(mot.split(""));
+          renderMot();
+          document.getElementById("mot-zone").classList.add("jeu-shake");
+          montrerSuivant();
+        }
+      }
+
+      function montrerSuivant() {
+        setTimeout(() => {
+          document.getElementById("mot-zone").classList.remove("jeu-pulse", "jeu-shake");
+          if (motIdx < mots.length - 1) {
+            document.getElementById("btn-suivant").style.display = "inline-flex";
+          } else {
+            terminer();
+          }
+        }, 1000);
+      }
+
+      function suivant() {
+        motIdx++;
+        lancer();
+      }
+
+      function terminer() {
+        document.getElementById("zone-jeu").style.display = "none";
+        const res = document.getElementById("zone-resultat");
+        res.style.display = "flex";
+        const pct = Math.round((gagnes / mots.length) * 100);
+        document.getElementById("res-emoji").textContent = pct >= 80 ? "🏆" : pct >= 50 ? "👍" : "💪";
+        document.getElementById("res-titre").textContent = gagnes + " / " + mots.length + " mots trouvés";
+        document.getElementById("res-detail").textContent = pct + "% de réussite.";
+        res.classList.add("jeu-card-anim");
+      }
+
+      document.getElementById("lien-retour").href = lienUnite("jeux.html");
+
+      window.init = init;
+      window.suivant = suivant;
+      init();
+    }
+  </script>
+  <script src="parole.js"></script>
+</body>
+</html>

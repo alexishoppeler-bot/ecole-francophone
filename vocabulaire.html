@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vocabulaire | learning progress</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="moteur.js"></script>
+</head>
+<body>
+  <header>
+    <div class="gauche">
+      <a href="index.html" class="logo-shell">
+        <img src="logo.png" alt="Logo école francophone" class="logo-img">
+        <div class="logo-texte">learning progress</div>
+      </a>
+    </div>
+    <nav aria-label="Navigation principale">
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="index.html" class="nav-link">Accueil</a></li>
+        <li class="nav-item"><a href="unite.html?unite=a1-0" class="nav-link active">Démo</a></li>
+        <li class="nav-item"><a href="connexion.html" class="nav-link">Connexion</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <section class="section">
+      <h2 id="sectionTitre"></h2>
+      <p class="section-intro" id="sectionIntro"></p>
+      <div class="cartes cartes-single" id="cartes"></div>
+    </section>
+
+    <div class="retour-actions">
+      <a href="#" id="lien-retour" class="btn btn-secondaire">↩ Retour à l'unité</a>
+    </div>
+  </main>
+  <footer></footer>
+
+  <script>
+    const u = U();
+    if (u) {
+      document.title = "Vocabulaire | Unité " + u.meta.label;
+      document.getElementById("sectionTitre").textContent = u.vocabulaire.sectionTitre;
+      document.getElementById("sectionIntro").textContent = u.vocabulaire.sectionIntro;
+      document.querySelector("footer").textContent = "© 2026 learning progress · " + u.meta.label + " Vocabulaire";
+
+      const div = document.getElementById("cartes");
+      u.vocabulaire.cartes.forEach((c) => {
+        const iconeCol = c.entetes && c.entetes[0] === "";
+        const entetesHTML = c.entetes ? "<thead><tr>" + c.entetes.map((e, i) => "<th" + (iconeCol && i === 0 ? ' class="col-icone"' : "") + ">" + e + "</th>").join("") + "</tr></thead>" : "";
+        const lignesHTML = "<tbody>" + c.lignes.map((l) => "<tr>" + l.map((cell, i) => "<td" + (iconeCol && i === 0 ? ' class="col-icone"' : "") + ">" + cell + "</td>").join("") + "</tr>").join("") + "</tbody>";
+        const iconeHTML = c.icone ? '<span class="vocab-icone">' + c.icone + '</span>' : "";
+        const contenuHTML = c.contenu ? '<div class="lecon-contenu">' + c.contenu + '</div>' : "";
+        div.innerHTML += '<div class="carte carte-vocab"><div class="vocab-badge-ligne">' + iconeHTML + '<span class="badge">' + c.badge + '</span></div>'
+          + '<div class="lecon-zone">' + contenuHTML + '<table class="gram-table">' + entetesHTML + lignesHTML + '</table></div>'
+          + quizZonesHTML(c.questions)
+          + '</div>';
+      });
+      attacherExplicationsQuestions(div, ".carte-vocab", u.vocabulaire.cartes, (c) => c.explication || "");
+      document.getElementById("lien-retour").href = lienUnite("unite.html");
+    }
+  </script>
+  <script src="parole.js"></script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plateforme complète | learning progress</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="gauche">
+      <a href="index.html" class="logo-shell">
+        <img src="logo.png" alt="Logo école francophone" class="logo-img">
+        <div class="logo-texte">learning progress</div>
+      </a>
+    </div>
+
+    <nav aria-label="Navigation principale">
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="index.html" class="nav-link">Accueil</a></li>
+        <li class="nav-item"><a href="unite.html?unite=a1-0" class="nav-link">Démo</a></li>
+        <li class="nav-item"><a href="plateforme.html" class="nav-link active" aria-current="page">Plateforme</a></li>
+        <li class="nav-item"><a href="connexion.html" class="nav-link">Connexion</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-image">
+        <img src="photo-emmanuelle.avif" alt="Photo Emmanuelle">
+      </div>
+
+      <div class="hero-copy">
+        <div class="hero-text">
+          <div class="eyebrow">Accès complet activé</div>
+          <h1>Plateforme complète</h1>
+          <span class="hero-lead">Bienvenue dans tous les niveaux et toutes les unités.</span>
+          <p>
+            Vous êtes connecté à l'espace complet.<br><br>
+            Ici, vous retrouvez le niveau A1 complet et les autres niveaux à venir dans la même plateforme.<br><br>
+            Choisissez votre entrée pour continuer.
+          </p>
+        </div>
+
+        <div class="hero-highlights">
+          <span>Tous les niveaux</span>
+          <span>Toutes les unités</span>
+          <span>Accès enseignant ou apprenant</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal">
+      <h2>Niveaux disponibles</h2>
+      <div class="cartes">
+        <a class="carte carte-lien" href="index-a1.html">
+          <span class="badge">Ouvert</span>
+          <h3>A1</h3>
+          <p>Débuter, comprendre les bases, construire les premiers automatismes.</p>
+        </a>
+        <div class="carte">
+          <span class="badge">Bientôt</span>
+          <h3>A2</h3>
+          <p>Développer la compréhension et les échanges du quotidien avec plus d'aisance.</p>
+        </div>
+        <div class="carte">
+          <span class="badge">Bientôt</span>
+          <h3>B1</h3>
+          <p>Gagner en autonomie, raconter, argumenter et gérer plus de situations.</p>
+        </div>
+        <div class="carte">
+          <span class="badge">Bientôt</span>
+          <h3>B2</h3>
+          <p>Renforcer la fluidité, la précision et la prise de parole sur des sujets variés.</p>
+        </div>
+        <div class="carte">
+          <span class="badge">Bientôt</span>
+          <h3>C1 / C2</h3>
+          <p>Affiner la maîtrise du français, la nuance et l'expression avancée.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal">
+      <h2>Raccourcis utiles</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <span class="badge">Parcours</span>
+          <h3>Continuer le niveau A1</h3>
+          <p>Reprendre directement le niveau A1 et ses unités déjà disponibles.</p>
+          <div class="boutons">
+            <a href="index-a1.html" class="btn btn-principal">Ouvrir A1</a>
+          </div>
+        </div>
+        <div class="feature-card">
+          <span class="badge">Compte</span>
+          <h3>Se déconnecter</h3>
+          <p>Fermer cette session locale et revenir à l'écran de connexion.</p>
+          <div class="boutons">
+            <button type="button" class="btn btn-secondaire" id="logout-btn">Se déconnecter</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    &copy; 2026 learning progress - Plateforme complète
+  </footer>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+        }
+      });
+    }, { threshold: 0.18 });
+
+    document.querySelectorAll(".reveal").forEach((element) => observer.observe(element));
+
+    const authKey = "lp-auth";
+    const sessionValue = localStorage.getItem(authKey);
+
+    if (sessionValue !== "ok") {
+      window.location.href = "connexion.html";
+    }
+
+    document.getElementById("logout-btn").addEventListener("click", () => {
+      localStorage.removeItem(authKey);
+      window.location.href = "connexion.html";
+    });
+  </script>
+  <script src="parole.js"></script>
+</body>
+</html>

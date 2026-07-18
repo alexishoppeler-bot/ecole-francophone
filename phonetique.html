@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phonétique | learning progress</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="moteur.js"></script>
+</head>
+<body>
+  <header>
+    <div class="gauche">
+      <a href="index.html" class="logo-shell">
+        <img src="logo.png" alt="Logo école francophone" class="logo-img">
+        <div class="logo-texte">learning progress</div>
+      </a>
+    </div>
+    <nav aria-label="Navigation principale">
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="index.html" class="nav-link">Accueil</a></li>
+        <li class="nav-item"><a href="unite.html?unite=a1-0" class="nav-link active">Démo</a></li>
+        <li class="nav-item"><a href="connexion.html" class="nav-link">Connexion</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <section class="section">
+      <h2 id="sectionTitre"></h2>
+      <p class="section-intro" id="sectionIntro"></p>
+      <div class="cartes cartes-single" id="cartes"></div>
+    </section>
+
+    <div class="retour-actions">
+      <a href="#" id="lien-retour" class="btn btn-secondaire">↩ Retour à l'unité</a>
+    </div>
+  </main>
+  <footer></footer>
+
+  <script>
+    const u = U();
+    if (u) {
+      document.title = "Phonétique | Unité " + u.meta.label;
+      document.getElementById("sectionTitre").textContent = u.phonetique.sectionTitre;
+      document.getElementById("sectionIntro").textContent = u.phonetique.sectionIntro;
+      document.querySelector("footer").textContent = "© 2026 learning progress · " + u.meta.label + " Phonétique";
+
+      const div = document.getElementById("cartes");
+      u.phonetique.cartes.forEach((c) => {
+        const contenuHTML = c.contenu ? '<p class="lecon-contenu">' + c.contenu + '</p>' : "";
+        const motsHTML = c.mots.map((m) => {
+          const estVoyelle = c.voyelles && c.voyelles.includes(m.toUpperCase());
+          return '<button class="phon-mot' + (estVoyelle ? ' phon-mot-voyelle' : '') + '" onclick="dire(this)">' + m + '</button>';
+        }).join("");
+        div.innerHTML += '<div class="carte carte-phon"><span class="badge">' + c.badge + '</span>'
+          + '<div class="lecon-zone">' + contenuHTML + '<div class="phon-mots">' + motsHTML + '</div></div>'
+          + quizZonesHTML(c.questions)
+          + '</div>';
+      });
+      attacherExplicationsQuestions(div, ".carte-phon", u.phonetique.cartes, (c) => c.explication || "");
+
+      document.getElementById("lien-retour").href = lienUnite("unite.html");
+    }
+  </script>
+  <script src="parole.js"></script>
+</body>
+</html>

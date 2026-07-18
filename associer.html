@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Associer | learning progress</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="moteur.js"></script>
+</head>
+<body>
+  <header>
+    <div class="gauche">
+      <a href="index.html" class="logo-shell">
+        <img src="logo.png" alt="Logo école francophone" class="logo-img">
+        <div class="logo-texte">learning progress</div>
+      </a>
+    </div>
+    <nav aria-label="Navigation principale">
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="index.html" class="nav-link">Accueil</a></li>
+        <li class="nav-item"><a href="unite.html?unite=a1-0" class="nav-link active">Démo</a></li>
+        <li class="nav-item"><a href="connexion.html" class="nav-link">Connexion</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <section class="section">
+      <div class="jeu-conteneur">
+        <div class="jeu-header">
+          <div class="jeu-stats">
+            <span id="manche"></span>
+            <span id="score">Paires : 0</span>
+          </div>
+        </div>
+        <div id="zone-jeu">
+          <div class="assoc-colonnes" id="colonnes">
+            <div class="assoc-col" id="col-g"></div>
+            <div class="assoc-col" id="col-d"></div>
+          </div>
+          <p class="jeu-feedback" id="feedback"></p>
+          <button class="btn-jeu" id="btn-suivant" style="display:none" onclick="mancheSuivante()">Manche suivante</button>
+        </div>
+        <div id="zone-resultat" class="jeu-resultat" style="display:none">
+          <div class="resultat-emoji">🏆</div>
+          <h2>Bravo !</h2>
+          <p id="res-detail"></p>
+          <button class="btn-jeu" onclick="init()">Rejouer</button>
+          <a href="#" id="lien-retour" class="btn-jeu btn-jeu-sec">↩ Retour aux jeux</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer></footer>
+
+  <script>
+    const u = U();
+    if (u) {
+      document.querySelector("footer").textContent = "© 2026 learning progress · " + u.meta.label + " Associer";
+      document.title = "Associer | Unité " + u.meta.label;
+
+      const manches = u.associer;
+      let mancheIdx, sel, trouve, erreurs;
+
+      function melArr(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+
+      function init() {
+        mancheIdx = 0; erreurs = 0;
+        document.getElementById("zone-resultat").style.display = "none";
+        document.getElementById("zone-jeu").style.display = "block";
+        lancerManche();
+      }
+
+      function lancerManche() {
+        sel = null; trouve = 0;
+        const m = manches[mancheIdx];
+        document.getElementById("manche").textContent = m.titre;
+        document.getElementById("score").textContent = "Paires : 0 / " + m.paires.length;
+        document.getElementById("feedback").textContent = "";
+        document.getElementById("btn-suivant").style.display = "none";
+
+        const gCol = document.getElementById("col-g");
+        const dCol = document.getElementById("col-d");
+        gCol.innerHTML = ""; dCol.innerHTML = "";
+
+        const droite = melArr(m.paires);
+
+        m.paires.forEach((p, i) => {
+          const btn = document.createElement("button");
+          btn.className = "assoc-btn jeu-opt-anim";
+          btn.style.animationDelay = (i * 0.06) + "s";
+          btn.textContent = p[0];
+          btn.dataset.key = p[0];
+          btn.onclick = () => clic(btn, "g");
+          gCol.appendChild(btn);
+        });
+
+        droite.forEach((p, i) => {
+          const btn = document.createElement("button");
+          btn.className = "assoc-btn jeu-opt-anim";
+          btn.style.animationDelay = (i * 0.06 + 0.3) + "s";
+          btn.textContent = p[1];
+          btn.dataset.key = p[0];
+          btn.onclick = () => clic(btn, "d");
+          dCol.appendChild(btn);
+        });
+      }
+
+      function clic(btn, cote) {
+        if (btn.disabled) return;
+        const fb = document.getElementById("feedback");
+
+        if (!sel) {
+          document.querySelectorAll(".assoc-btn").forEach(b => b.classList.remove("assoc-selected"));
+          btn.classList.add("assoc-selected");
+          sel = { btn, cote };
+          return;
+        }
+        if (sel.cote === cote) {
+          sel.btn.classList.remove("assoc-selected");
+          btn.classList.add("assoc-selected");
+          sel = { btn, cote };
+          return;
+        }
+
+        const keyG = cote === "g" ? btn.dataset.key : sel.btn.dataset.key;
+        const keyD = cote === "d" ? btn.dataset.key : sel.btn.dataset.key;
+
+        if (keyG === keyD) {
+          btn.classList.add("assoc-correct"); btn.disabled = true;
+          sel.btn.classList.add("assoc-correct"); sel.btn.disabled = true;
+          sel.btn.classList.remove("assoc-selected");
+          fb.textContent = "Bonne paire !";
+          fb.className = "jeu-feedback feedback-correct";
+          trouve++;
+          document.getElementById("score").textContent = "Paires : " + trouve + " / " + manches[mancheIdx].paires.length;
+
+          if (trouve === manches[mancheIdx].paires.length) {
+            if (mancheIdx < manches.length - 1) {
+              document.getElementById("btn-suivant").style.display = "inline-flex";
+            } else {
+              setTimeout(terminer, 800);
+            }
+          }
+        } else {
+          btn.classList.add("assoc-wrong");
+          sel.btn.classList.add("assoc-wrong");
+          fb.textContent = "Ce n'est pas la bonne paire.";
+          fb.className = "jeu-feedback feedback-incorrect";
+          erreurs++;
+          const b1 = btn, b2 = sel.btn;
+          setTimeout(() => {
+            b1.classList.remove("assoc-wrong");
+            b2.classList.remove("assoc-wrong", "assoc-selected");
+          }, 500);
+        }
+        sel = null;
+      }
+
+      function mancheSuivante() {
+        mancheIdx++;
+        lancerManche();
+      }
+
+      function terminer() {
+        document.getElementById("zone-jeu").style.display = "none";
+        const res = document.getElementById("zone-resultat");
+        res.style.display = "flex";
+        document.getElementById("res-detail").textContent = manches.length + " manches terminées avec " + erreurs + " erreur(s).";
+        res.classList.add("jeu-card-anim");
+      }
+
+      document.getElementById("lien-retour").href = lienUnite("jeux.html");
+
+      window.init = init;
+      window.mancheSuivante = mancheSuivante;
+      init();
+    }
+  </script>
+  <script src="parole.js"></script>
+</body>
+</html>

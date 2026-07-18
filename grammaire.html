@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grammaire | learning progress</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="moteur.js"></script>
+</head>
+<body>
+  <header>
+    <div class="gauche">
+      <a href="index.html" class="logo-shell">
+        <img src="logo.png" alt="Logo école francophone" class="logo-img">
+        <div class="logo-texte">learning progress</div>
+      </a>
+    </div>
+    <nav aria-label="Navigation principale">
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="index.html" class="nav-link">Accueil</a></li>
+        <li class="nav-item"><a href="unite.html?unite=a1-0" class="nav-link">Démo</a></li>
+        <li class="nav-item"><a href="connexion.html" class="nav-link">Connexion</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <section class="section">
+      <h2 id="sectionTitre"></h2>
+      <p class="section-intro" id="sectionIntro"></p>
+      <div class="cartes cartes-single" id="cartes"></div>
+    </section>
+
+    <div class="retour-actions">
+      <a href="#" id="lien-retour" class="btn btn-secondaire">↩ Retour à l'unité</a>
+    </div>
+  </main>
+  <footer></footer>
+
+  <script>
+    const u = U();
+    if (u) {
+      document.title = "Grammaire | Unité " + u.meta.label;
+      document.getElementById("sectionTitre").textContent = u.grammaire.sectionTitre;
+      document.getElementById("sectionIntro").textContent = u.grammaire.sectionIntro;
+      document.querySelector("footer").textContent = "© 2026 learning progress · " + u.meta.label + " Grammaire";
+
+      const div = document.getElementById("cartes");
+      u.grammaire.cartes.forEach((c) => {
+        div.innerHTML += '<div class="carte carte-gram"><span class="badge">' + c.badge + '</span>'
+          + '<div class="lecon-zone"><div class="lecon-contenu">' + c.contenu + '</div></div>'
+          + quizZonesHTML(c.questions)
+          + '</div>';
+      });
+      attacherExplicationsQuestions(div, ".carte-gram", u.grammaire.cartes, (c) => c.explication || c.contenu.replace(/<\/li>/g, "; ").replace(/<[^>]+>/g, ""));
+      document.getElementById("lien-retour").href = lienUnite("unite.html");
+    }
+  </script>
+  <script src="parole.js"></script>
+</body>
+</html>

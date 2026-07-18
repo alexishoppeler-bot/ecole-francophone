@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accueil | learning progress</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="gauche">
+      <a href="index.html" class="logo-shell">
+        <img src="logo.png" alt="Logo école francophone" class="logo-img">
+        <div class="logo-texte">learning progress</div>
+      </a>
+    </div>
+
+    <nav aria-label="Navigation principale">
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="index.html" class="nav-link active" aria-current="page">Accueil</a></li>
+        <li class="nav-item"><a href="unite.html?unite=a1-0" class="nav-link">Démo</a></li>
+        <li class="nav-item"><a href="connexion.html" class="nav-link">Connexion</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-image">
+        <img src="photo-emmanuelle.avif" alt="Photo Emmanuelle">
+      </div>
+
+      <div class="hero-copy">
+        <div class="hero-text">
+          <h1>Accueil</h1>
+          <span class="hero-lead">Bienvenue sur learning progress.</span>
+          <p>
+            Le bouton <strong>Démo</strong> vous montre un parcours d'essai avec le niveau A1.<br><br>
+            Le bouton <strong>Connexion</strong> sert à entrer dans la plateforme complète avec tous les niveaux et toutes les unités.
+          </p>
+        </div>
+
+        <div class="hero-highlights">
+          <span>Démo immédiate</span>
+          <span>Plateforme complète après connexion</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal">
+      <h2>Comment utiliser le site</h2>
+      <div class="feature-grid">
+        <a href="index.html" class="feature-card carte-lien">
+          <span class="badge">Accueil</span>
+          <h3>Comprendre le fonctionnement</h3>
+          <p>Cette page vous présente le site et vous oriente vers la bonne entrée.</p>
+        </a>
+        <a href="unite.html?unite=a1-0" class="feature-card carte-lien">
+          <span class="badge">Démo</span>
+          <h3>Essayer le parcours</h3>
+          <p>Vous pouvez tester le début du niveau A1 et voir comment les unités sont organisées.</p>
+        </a>
+        <a href="connexion.html" class="feature-card carte-lien">
+          <span class="badge">Connexion</span>
+          <h3>Accéder à tout le contenu</h3>
+          <p>La plateforme complète donne accès à tous les niveaux, toutes les unités et tout le suivi.</p>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    &copy; 2026 learning progress · Accueil
+  </footer>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+        }
+      });
+    }, { threshold: 0.18 });
+
+    document.querySelectorAll(".reveal").forEach((element) => observer.observe(element));
+  </script>
+  <script src="parole.js"></script>
+</body>
+</html>

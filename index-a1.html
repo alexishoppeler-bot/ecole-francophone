@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A1 | learning progress</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="gauche">
+      <a href="index.html" class="logo-shell">
+        <img src="logo.png" alt="Logo école-francophone" class="logo-img">
+        <div class="logo-texte">learning progress</div>
+      </a>
+    </div>
+
+    <nav aria-label="Navigation principale">
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="index.html" class="nav-link">Accueil</a></li>
+        <li class="nav-item"><a href="unite.html?unite=a1-0" class="nav-link active">Démo</a></li>
+        <li class="nav-item"><a href="connexion.html" class="nav-link">Connexion</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+
+    <section class="section reveal">
+      <h2>Unités A1</h2>
+      <div class="unit-grid">
+        <a href="unite.html?unite=a1-0" class="unit-card" aria-label="Unité 1 disponible">
+          <div class="unit-top">
+            <div>
+              <span class="unit-label">Unité</span>
+              <span class="unit-number">1</span>
+            </div>
+            <span class="unit-emoji">👋</span>
+          </div>
+          <h3>Bonjour</h3>
+          <p class="unit-desc">Saluer, remercier, s'excuser.</p>
+          <div class="unit-progress">
+            <span class="unit-status">Disponible</span>
+            <span class="unit-eval-status"></span>
+          </div>
+        </a>
+
+        <a href="unite.html?unite=a1-1" class="unit-card" aria-label="Unité 2 disponible">
+          <div class="unit-top">
+            <div>
+              <span class="unit-label">Unité</span>
+              <span class="unit-number">2</span>
+            </div>
+            <span class="unit-emoji">🙋</span>
+          </div>
+          <h3>Se présenter</h3>
+          <p class="unit-desc">Identité, nationalités, nombres.</p>
+          <div class="unit-progress">
+            <span class="unit-status">Disponible</span>
+            <span class="unit-eval-status"></span>
+          </div>
+        </a>
+
+        <a href="unite.html?unite=a1-2" class="unit-card" aria-label="Unité 3 disponible"><div class="unit-top"><div><span class="unit-label">Unité</span><span class="unit-number">3</span></div><span class="unit-emoji">🤝</span></div><h3>Faire connaissance</h3><p class="unit-desc">Renseignements, goûts, rendez-vous.</p><div class="unit-progress"><span class="unit-status">Disponible</span><span class="unit-eval-status"></span></div></a>
+        <a href="unite.html?unite=a1-3" class="unit-card" aria-label="Unité 4 disponible"><div class="unit-top"><div><span class="unit-label">Unité</span><span class="unit-number">4</span></div><span class="unit-emoji">🧭</span></div><h3>Se situer dans l'espace</h3><p class="unit-desc">Lieux, commerces, transports.</p><div class="unit-progress"><span class="unit-status">Disponible</span><span class="unit-eval-status"></span></div></a>
+        <a href="unite.html?unite=a1-4" class="unit-card" aria-label="Unité 5 disponible"><div class="unit-top"><div><span class="unit-label">Unité</span><span class="unit-number">5</span></div><span class="unit-emoji">👥</span></div><h3>Décrire quelqu'un et son logement</h3><p class="unit-desc">Personnes, logement, accord et désaccord.</p><div class="unit-progress"><span class="unit-status">Disponible</span><span class="unit-eval-status"></span></div></a>
+        <a href="unite.html?unite=a1-5" class="unit-card" aria-label="Unité 6 disponible"><div class="unit-top"><div><span class="unit-label">Unité</span><span class="unit-number">6</span></div><span class="unit-emoji">🗓️</span></div><h3>Le quotidien</h3><p class="unit-desc">Habitudes, sorties, invitations.</p><div class="unit-progress"><span class="unit-status">Disponible</span><span class="unit-eval-status"></span></div></a>
+        <a href="unite.html?unite=a1-6" class="unit-card" aria-label="Unité 7 disponible"><div class="unit-top"><div><span class="unit-label">Unité</span><span class="unit-number">7</span></div><span class="unit-emoji">🛍️</span></div><h3>Faire des achats</h3><p class="unit-desc">Objets, vêtements, achats.</p><div class="unit-progress"><span class="unit-status">Disponible</span><span class="unit-eval-status"></span></div></a>
+        <a href="unite.html?unite=a1-7" class="unit-card" aria-label="Unité 8 disponible"><div class="unit-top"><div><span class="unit-label">Unité</span><span class="unit-number">8</span></div><span class="unit-emoji">🍽️</span></div><h3>Manger et boire</h3><p class="unit-desc">Aliments, quantités, restaurant.</p><div class="unit-progress"><span class="unit-status">Disponible</span><span class="unit-eval-status"></span></div></a>
+        <a href="unite.html?unite=a1-8" class="unit-card" aria-label="Unité 9 disponible"><div class="unit-top"><div><span class="unit-label">Unité</span><span class="unit-number">9</span></div><span class="unit-emoji">✈️</span></div><h3>Voyager</h3><p class="unit-desc">Voyages, nature, météo.</p><div class="unit-progress"><span class="unit-status">Disponible</span><span class="unit-eval-status"></span></div></a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Affiche, sur chaque carte d'unité, le statut de son évaluation finale
+    // (sauvegardée par progression.html via sauvegarderEvaluation()).
+    let evaluations = {};
+    try { evaluations = JSON.parse(localStorage.getItem("lp-evaluations")) || {}; } catch (e) {}
+
+    document.querySelectorAll(".unit-card").forEach((carte) => {
+      const span = carte.querySelector(".unit-eval-status");
+      if (!span) return;
+      const uniteId = new URL(carte.getAttribute("href"), location.href).searchParams.get("unite");
+      const info = evaluations[uniteId];
+
+      if (!info) {
+        span.textContent = "Évaluation non faite";
+        span.classList.add("unit-eval-none");
+      } else if (info.valide) {
+        span.textContent = "Évaluation réussie";
+        span.classList.add("unit-eval-reussie");
+      } else {
+        span.textContent = "Évaluation faite";
+        span.classList.add("unit-eval-faite");
+      }
+    });
+  </script>
+  <script src="parole.js"></script>
+</body>
+</html>

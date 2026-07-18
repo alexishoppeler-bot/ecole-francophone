@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unité | learning progress</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="moteur.js"></script>
+</head>
+<body>
+  <header>
+    <div class="gauche">
+      <a href="index.html" class="logo-shell">
+        <img src="logo.png" alt="Logo école francophone" class="logo-img">
+        <div class="logo-texte">learning progress</div>
+      </a>
+    </div>
+    <nav aria-label="Navigation principale">
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="index.html" class="nav-link">Accueil</a></li>
+        <li class="nav-item"><a href="unite.html?unite=a1-0" class="nav-link active">Démo</a></li>
+        <li class="nav-item"><a href="connexion.html" class="nav-link">Connexion</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="section reveal">
+      <h2>Objectifs attendus</h2>
+      <div class="cartes" id="objectifs"></div>
+    </section>
+
+    <section class="section reveal">
+      <h2>Contenu de l'unité</h2>
+      <div class="cartes" id="contenus"></div>
+    </section>
+
+    <div class="retour-actions">
+      <a href="index-a1.html" id="lien-retour" class="btn btn-secondaire">↩ Retour au niveau A1</a>
+    </div>
+  </main>
+
+  <footer></footer>
+
+  <script>
+    const u = U();
+    if (u) {
+      document.title = "Unité " + u.meta.label + " | learning progress";
+      document.querySelector("footer").textContent = "© 2026 learning progress · Unité " + u.meta.label;
+
+      const objDiv = document.getElementById("objectifs");
+      u.unite.objectifs.forEach((o) => {
+        objDiv.innerHTML += '<div class="carte carte-info"><span class="badge">' + o.badge + '</span><p>' + o.texte + '</p></div>';
+      });
+
+      const pages = [
+        ["vocabulaire", "Vocabulaire"],
+        ["grammaire", "Grammaire"],
+        ["conjugaison", "Conjugaison"],
+        ["phonetique", "Phonétique"],
+        ["communication", "Communication"],
+        ["jeux", "Jeux"],
+        ["progression", "Évaluation"]
+      ];
+      const masquer = u.unite.masquer || [];
+      const contDiv = document.getElementById("contenus");
+      pages.filter(([cle]) => !masquer.includes(cle)).forEach(([cle, label]) => {
+        const href = lienUnite(cle + ".html");
+        const desc = cle === "progression"
+          ? "Validez vos connaissances avec 30 questions. Il faut 80% pour réussir."
+          : u.unite.contenus[cle];
+        contDiv.innerHTML += '<a href="' + href + '" class="carte carte-lien"><span class="badge">' + label + '</span><p>' + desc + '</p></a>';
+      });
+
+      const niveau = u.meta.label.split("-")[0];
+      document.getElementById("lien-retour").textContent = "↩ Retour au niveau " + niveau;
+
+      initReveal();
+    }
+  </script>
+  <script src="parole.js"></script>
+</body>
+</html>

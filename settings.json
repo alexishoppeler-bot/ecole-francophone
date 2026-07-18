@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -oE '\"[a-zéèêàç ]{3,}\"' a1-1-pendu.html)",
+      "Bash(sed -n '/const mots = \\\\[/,/\\\\];/p' a1-1-pendu.html)",
+      "Bash(sed -n '/VOCABULAIRE \\\\/ PHON/,/\\\\];/p' a1-1-progression.html)",
+      "Bash(sed -i 's|^  </main>$|  </main>\\\\n  <footer>© 2026 learning progress · A1-0 Grammaire</footer>|' a1-0-grammaire.html)",
+      "Bash(sed -i 's|^  </main>$|  </main>\\\\n  <footer>© 2026 learning progress · A1-0 Conjugaison</footer>|' a1-0-conjugaison.html)",
+      "Bash(node --check parole.js)",
+      "Bash(node -e ' *)",
+      "Bash(command -v chromium)",
+      "Bash(command -v google-chrome)",
+      "Bash(node -e \"console.log\\(process.version\\)\")",
+      "Bash(node --check data/a1-3.js)",
+      "Bash(node --check data/a1-4.js)",
+      "Bash(node --check data/a1-5.js)",
+      "Bash(node --check data/a1-6.js)",
+      "Bash(node --check data/a1-7.js)",
+      "Bash(node --check data/a1-8.js)",
+      "Bash(node --check data/a1-0.js)",
+      "Bash(node --check data/a1-1.js)",
+      "Bash(node --check data/a1-2.js)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
+    ]
+  }
+}

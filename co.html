@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compréhension orale | learning progress</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="moteur.js"></script>
+</head>
+<body>
+  <header>
+    <div class="gauche">
+      <a href="index.html" class="logo-shell">
+        <img src="logo.png" alt="Logo école francophone" class="logo-img">
+        <div class="logo-texte">learning progress</div>
+      </a>
+    </div>
+    <nav aria-label="Navigation principale">
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="index.html" class="nav-link">Accueil</a></li>
+        <li class="nav-item"><a href="unite.html?unite=a1-0" class="nav-link active">Démo</a></li>
+        <li class="nav-item"><a href="connexion.html" class="nav-link">Connexion</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="section">
+      <h2 id="sectionTitre"></h2>
+      <p class="section-intro" id="sectionIntro"></p>
+      <div class="parcours" id="histoires"></div>
+    </section>
+
+    <div class="retour-actions">
+      <a href="#" id="lien-retour" class="btn btn-secondaire">↩ Retour à communication</a>
+    </div>
+  </main>
+
+  <footer></footer>
+
+  <script>
+    const u = U();
+    if (u) {
+      document.title = "Compréhension orale | " + u.meta.label + " Communication";
+      document.getElementById("sectionTitre").textContent = u.co.sectionTitre;
+      document.getElementById("sectionIntro").textContent = u.co.sectionIntro;
+      document.querySelector("footer").textContent = "© 2026 learning progress · " + u.meta.label + " Compréhension orale";
+
+      const histoiresData = {};
+      const div = document.getElementById("histoires");
+      u.co.histoires.forEach((h, i) => {
+        const num = i + 1;
+        histoiresData[num] = h.texte;
+        const optsHTML = melangerTableau(h.options).map((o) => '<button class="quiz-option" onclick="verifier(this,' + (o[1] ? "true" : "false") + ')">' + o[0] + '</button>').join("");
+        div.innerHTML += '<div class="volet volet-histoire" id="histoire-' + num + '">'
+          + '<span class="volet-num">' + num + '</span>'
+          + '<div class="volet-body"><h3>' + h.titre + '</h3><p class="carte-desc">' + h.texte + '</p>'
+          + '<div class="audio-zone"><button class="btn-ecouter" onclick="lireHistoire(' + num + ')">🔊 Écouter</button><button class="btn-stop" onclick="arreterLecture()">⏹ Stop</button></div>'
+          + '<div class="quiz-zone"><p class="quiz-question">' + h.question + '</p><div class="quiz-options">' + optsHTML + '</div><p class="quiz-feedback"></p></div>'
+          + '</div></div>';
+      });
+
+      function lireHistoire(num) {
+        speechSynthesis.cancel();
+        const texte = histoiresData[num];
+        if (!texte) return;
+        // Un « — » marque un changement de personnage dans le dialogue :
+        // chaque réplique est alors lue avec une voix différente, en alternance.
+        const repliques = texte.split(/\s*—\s*/).filter((t) => t.trim());
+        const voixFR = speechSynthesis.getVoices().filter((v) => v.lang.startsWith("fr"));
+        const voixA = voixFR.find((v) => v.name.toLowerCase().includes("google")) || voixFR[0];
+        const voixB = voixFR.find((v) => v !== voixA) || voixA;
+        repliques.forEach((replique, i) => {
+          const utterance = new SpeechSynthesisUtterance(replique.replace(/<br>/g, " "));
+          utterance.lang = "fr-FR";
+          utterance.rate = 0.85;
+          const voix = i % 2 === 0 ? voixA : voixB;
+          if (voix) utterance.voice = voix;
+          speechSynthesis.speak(utterance);
+        });
+      }
+      function arreterLecture() { speechSynthesis.cancel(); }
+      window.lireHistoire = lireHistoire;
+      window.arreterLecture = arreterLecture;
+
+      document.getElementById("lien-retour").href = lienUnite("communication.html");
+    }
+  </script>
+  <script src="parole.js"></script>
+</body>
+</html>

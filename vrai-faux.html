@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vrai ou Faux | learning progress</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="moteur.js"></script>
+</head>
+<body>
+  <header>
+    <div class="gauche">
+      <a href="index.html" class="logo-shell">
+        <img src="logo.png" alt="Logo école francophone" class="logo-img">
+        <div class="logo-texte">learning progress</div>
+      </a>
+    </div>
+    <nav aria-label="Navigation principale">
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="index.html" class="nav-link">Accueil</a></li>
+        <li class="nav-item"><a href="unite.html?unite=a1-0" class="nav-link active">Démo</a></li>
+        <li class="nav-item"><a href="connexion.html" class="nav-link">Connexion</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="jeu-conteneur">
+        <div class="jeu-header">
+          <div class="jeu-progress-bar"><div class="jeu-progress-fill" id="progress"></div></div>
+          <div class="jeu-stats">
+            <span id="compteur"></span>
+            <span id="score">Score : 0</span>
+          </div>
+        </div>
+        <div id="zone-question" class="jeu-card-anim">
+          <p class="jeu-question-text vf-statement" id="question"></p>
+          <div class="vf-buttons">
+            <button class="vf-btn vf-vrai" onclick="repondre(true)">✓ Vrai</button>
+            <button class="vf-btn vf-faux" onclick="repondre(false)">✗ Faux</button>
+          </div>
+          <p class="jeu-feedback" id="feedback"></p>
+          <p class="vf-explication" id="explication"></p>
+        </div>
+        <div id="zone-resultat" class="jeu-resultat" style="display:none">
+          <div class="resultat-emoji" id="res-emoji"></div>
+          <h2 id="res-titre"></h2>
+          <p id="res-detail"></p>
+          <button class="btn-jeu" onclick="init()">Rejouer</button>
+          <a href="#" id="lien-retour" class="btn-jeu btn-jeu-sec">↩ Retour aux jeux</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer></footer>
+
+  <script>
+    const u = U();
+    if (u) {
+      document.querySelector("footer").textContent = "© 2026 learning progress · " + u.meta.label + " Vrai ou Faux";
+      document.title = "Vrai ou Faux | Unité " + u.meta.label;
+
+      const data = u.vraiFaux;
+
+      let idx, pts;
+
+      function init() {
+        idx = 0; pts = 0;
+        document.getElementById("zone-resultat").style.display = "none";
+        document.getElementById("zone-question").style.display = "block";
+        document.querySelector(".vf-buttons").style.pointerEvents = "auto";
+        afficher();
+      }
+
+      function afficher() {
+        document.getElementById("compteur").textContent = (idx + 1) + " / " + data.length;
+        document.getElementById("score").textContent = "Score : " + pts;
+        document.getElementById("progress").style.width = ((idx / data.length) * 100) + "%";
+        document.getElementById("feedback").textContent = "";
+        document.getElementById("feedback").className = "jeu-feedback";
+        document.getElementById("explication").textContent = "";
+
+        const zone = document.getElementById("zone-question");
+        zone.classList.remove("jeu-card-anim");
+        void zone.offsetWidth;
+        zone.classList.add("jeu-card-anim");
+
+        document.getElementById("question").textContent = data[idx].q;
+        document.querySelector(".vf-buttons").style.pointerEvents = "auto";
+        document.querySelectorAll(".vf-btn").forEach(b => {
+          b.classList.remove("vf-correct", "vf-incorrect");
+        });
+      }
+
+      function repondre(choix) {
+        const item = data[idx];
+        const fb = document.getElementById("feedback");
+        const ex = document.getElementById("explication");
+        const btns = document.querySelector(".vf-buttons");
+        btns.style.pointerEvents = "none";
+
+        const correct = choix === item.r;
+        const btnVrai = document.querySelector(".vf-vrai");
+        const btnFaux = document.querySelector(".vf-faux");
+
+        if (correct) {
+          (choix ? btnVrai : btnFaux).classList.add("vf-correct");
+          fb.textContent = "Correct !";
+          fb.className = "jeu-feedback feedback-correct";
+          pts++;
+        } else {
+          (choix ? btnVrai : btnFaux).classList.add("vf-incorrect");
+          (item.r ? btnVrai : btnFaux).classList.add("vf-correct");
+          fb.textContent = "Incorrect !";
+          fb.className = "jeu-feedback feedback-incorrect";
+        }
+        ex.textContent = item.e;
+        document.getElementById("score").textContent = "Score : " + pts;
+
+        setTimeout(() => { idx++; idx < data.length ? afficher() : terminer(); }, 1800);
+      }
+
+      function terminer() {
+        document.getElementById("zone-question").style.display = "none";
+        document.getElementById("progress").style.width = "100%";
+        const res = document.getElementById("zone-resultat");
+        res.style.display = "flex";
+        const pct = Math.round((pts / data.length) * 100);
+        document.getElementById("res-emoji").textContent = pct >= 80 ? "🏆" : pct >= 50 ? "👍" : "💪";
+        document.getElementById("res-titre").textContent = pts + " / " + data.length;
+        document.getElementById("res-detail").textContent = pct + "% de bonnes réponses.";
+        res.classList.add("jeu-card-anim");
+      }
+
+      document.getElementById("lien-retour").href = lienUnite("jeux.html");
+
+      window.init = init;
+      window.repondre = repondre;
+      init();
+    }
+  </script>
+  <script src="parole.js"></script>
+</body>
+</html>
